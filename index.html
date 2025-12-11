@@ -1,1006 +1,317 @@
-<!-- <!DOCTYPE html>
-<html lang="es" dir="ltr">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>55 Verbos Españoles</title>
-    <style>
-        :root {
-            --bg-color: #f0f2f5;
-            --note-color: #fef6b0;
-            --note-back-color: #fffbc8;
-            --note-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            --text-color: #2c3e50;
-            --accent-color: #e67e22;
-            --font-main: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-            --font-hand: 'Comic Sans MS', 'Chalkboard SE', sans-serif;
-        }
-
-        * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
-
-        body {
-            font-family: var(--font-main);
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            min-height: 100vh;
-            padding-bottom: 20px;
-        }
-
-        /* --- Header --- */
-        header {
-            width: 100%;
-            background: white;
-            padding: 15px 10px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-            text-align: center;
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-        }
-
-        h1 { 
-            margin-bottom: 10px; 
-            color: var(--accent-color); 
-            font-size: 1.5rem;
-        }
-
-        nav {
-            display: flex;
-            justify-content: center;
-            gap: 10px;
-        }
-
-        nav button {
-            background: transparent;
-            border: 2px solid var(--accent-color);
-            color: var(--accent-color);
-            padding: 8px 16px;
-            border-radius: 20px;
-            cursor: pointer;
-            font-weight: 600;
-            font-size: 0.9rem;
-            transition: all 0.2s ease;
-        }
-
-        nav button.active {
-            background: var(--accent-color);
-            color: white;
-        }
-
-        /* --- Main Layout --- */
-        main {
-            width: 95%;
-            max-width: 1200px;
-            padding-top: 20px;
-            flex: 1;
-        }
-
-        .section { display: none; }
-        .section.active { display: block; animation: fadeIn 0.3s ease-in; }
-
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-
-        /* --- Responsive Cards Grid --- */
-        .cards-grid {
-            display: grid;
-            /* متجاوب تماماً: في الشاشات الصغيرة يأخذ 1 عمود، وفي الكبيرة يتوزع */
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 20px;
-            padding-bottom: 20px;
-        }
-
-        /* --- Flip Card --- */
-        .card-container {
-            background-color: transparent;
-            width: 100%;
-            height: 380px; /* ارتفاع مناسب ليحتوي القوائم */
-            perspective: 1000px;
-            cursor: pointer;
-            border-radius: 2px;
-        }
-
-        .card-inner {
-            position: relative;
-            width: 100%;
-            height: 100%;
-            text-align: center;
-            transition: transform 0.6s cubic-bezier(0.4, 0.2, 0.2, 1);
-            transform-style: preserve-3d;
-            box-shadow: var(--note-shadow);
-        }
-
-        .card-container.flipped .card-inner {
-            transform: rotateY(180deg);
-        }
-
-        .card-front, .card-back {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            -webkit-backface-visibility: hidden;
-            backface-visibility: hidden;
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            background-color: var(--note-color);
-            /* Clip path for sticky note effect */
-            clip-path: polygon(0% 0%, 100% 0%, 100% 92%, 92% 100%, 0% 100%);
-        }
-
-        /* Paper curl effect */
-        .card-front::after, .card-back::after {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            right: 0;
-            width: 8%;
-            height: 8%;
-            background: rgba(0,0,0,0.15);
-            border-top-left-radius: 4px;
-        }
-
-        .card-back {
-            transform: rotateY(180deg);
-            background-color: var(--note-back-color);
-        }
-
-        /* Typography inside cards */
-        .verb-title {
-            font-size: 1.8rem;
-            font-weight: 700;
-            margin-bottom: 5px;
-            color: #d35400;
-            letter-spacing: -0.5px;
-        }
-        
-        .verb-translation {
-            font-size: 1rem;
-            color: #636e72;
-            margin-bottom: 15px;
-            font-style: italic;
-            font-weight: 500;
-        }
-
-        .tense-title {
-            font-size: 0.9rem;
-            font-weight: bold;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            margin-bottom: 12px;
-            padding-bottom: 5px;
-            border-bottom: 2px dotted rgba(0,0,0,0.1);
-            color: #555;
-        }
-
-        .conjugation-list {
-            list-style: none;
-            text-align: left;
-            font-family: var(--font-hand);
-            font-size: 1.1rem;
-            line-height: 1.6;
-            flex-grow: 1;
-        }
-
-        .conjugation-list li {
-            display: flex;
-            justify-content: space-between;
-            padding: 2px 0;
-            border-bottom: 1px solid rgba(0,0,0,0.03);
-        }
-        
-        .pronoun { 
-            color: #7f8c8d; 
-            font-size: 0.85em; 
-            font-weight: normal;
-        }
-
-        /* --- Quiz Section --- */
-        .quiz-container {
-            background: white;
-            padding: 30px 20px;
-            border-radius: 15px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.05);
-            max-width: 500px;
-            margin: 0 auto;
-            text-align: center;
-        }
-
-        .question-box {
-            background: #f9f9f9;
-            padding: 20px;
-            border-radius: 10px;
-            margin: 20px 0;
-            font-size: 1.3rem;
-            line-height: 1.5;
-        }
-
-        input[type="text"] {
-            width: 100%;
-            padding: 15px;
-            font-size: 1.1rem;
-            border: 2px solid #eee;
-            border-radius: 10px;
-            text-align: center;
-            outline: none;
-            margin-bottom: 15px;
-            transition: border-color 0.3s;
-            /* Prevent zoom on focus in iOS */
-            font-size: 16px; 
-        }
-
-        input[type="text"]:focus { border-color: var(--accent-color); }
-
-        .btn-action {
-            width: 100%;
-            padding: 15px;
-            font-size: 1.1rem;
-            border: none;
-            border-radius: 10px;
-            cursor: pointer;
-            font-weight: bold;
-            transition: transform 0.1s;
-        }
-        
-        .btn-action:active { transform: scale(0.98); }
-        
-        .btn-check { background: var(--accent-color); color: white; }
-        .btn-next { background: #27ae60; color: white; display: none; }
-
-        .feedback {
-            margin-top: 15px;
-            font-weight: bold;
-            min-height: 20px;
-        }
-        .feedback.correct { color: #27ae60; }
-        .feedback.wrong { color: #c0392b; }
-
-        /* --- Mobile Optimization Tweaks --- */
-        @media (max-width: 480px) {
-            h1 { font-size: 1.3rem; }
-            
-            /* Make grid single column on very small screens if needed, 
-               but the minmax(280px) handles it mostly. 
-               Just ensuring full width utilization. */
-            .cards-grid {
-                grid-template-columns: 1fr;
-            }
-            
-            .card-container {
-                height: 360px; /* Adjust height for mobile screens */
-            }
-            
-            nav button {
-                padding: 6px 12px;
-                font-size: 0.85rem;
-            }
-        }
-    </style>
-</head>
-<body>
-
-    <header>
-        <h1>🇪🇸 Spanish Verbs</h1>
-        <nav>
-            <button onclick="showSection('study')" id="btn-study" class="active">Memorize</button>
-            <button onclick="showSection('quiz')" id="btn-quiz">Practice</button>
-        </nav>
-    </header>
-
-    <main>
-        <div id="section-study" class="section active">
-            <div class="cards-grid" id="cards-container">
-                </div>
-        </div>
-
-        <div id="section-quiz" class="section">
-            <div class="quiz-container">
-                <h2 style="color:var(--text-color)">Conjugation Quiz</h2>
-                <p style="color:#777; font-size:0.9rem; margin-top:5px">Fill in the correct form</p>
-                
-                <div class="question-box">
-                    <div style="margin-bottom:10px">
-                        <span id="q-pronoun" style="font-weight:bold; font-size:1.2em">Yo</span>
-                        __________ 
-                    </div>
-                    <div style="font-size:0.9em; color:#555">
-                        Verb: <span id="q-verb" style="color:var(--accent-color); font-weight:bold">comer</span>
-                    </div>
-                    <div id="q-tense" style="font-size:0.85em; color:#999; margin-top:5px; text-transform:uppercase; letter-spacing:1px">[Presente]</div>
-                </div>
-
-                <input type="text" id="user-answer" placeholder="Type answer here..." autocomplete="off" autocorrect="off" autocapitalize="off">
-
-                <button class="btn-action btn-check" onclick="checkAnswer()">Check Answer</button>
-                <button class="btn-action btn-next" onclick="generateQuestion()">Next Verb →</button>
-
-                <div class="feedback" id="feedback-msg"></div>
-            </div>
-        </div>
-    </main>
-
-    <script>
-        // --- DATA: The 55 Verbs (English Translations Only) ---
-        const pronouns = ["Yo", "Tú", "Él/Ella", "Nosotros", "Vosotros", "Ellos"];
-
-        const verbsData = [
-            // --- The 5 NEW Added Verbs ---
-            {
-                infinitive: "Gustar", translation: "To like",
-                presente: ["Me gusta", "Te gusta", "Le gusta", "Nos gusta", "Os gusta", "Les gusta"],
-                perfecto: ["Me ha gustado", "Te ha gustado", "Le ha gustado", "Nos ha gustado", "Os ha gustado", "Les han gustado"]
-            },
-            {
-                infinitive: "Llevar", translation: "To carry/wear",
-                presente: ["llevo", "llevas", "lleva", "llevamos", "lleváis", "llevan"],
-                perfecto: ["he llevado", "has llevado", "ha llevado", "hemos llevado", "habéis llevado", "han llevado"]
-            },
-            {
-                infinitive: "Dejar", translation: "To leave/let",
-                presente: ["dejo", "dejas", "deja", "dejamos", "dejáis", "dejan"],
-                perfecto: ["he dejado", "has dejado", "ha dejado", "hemos dejado", "habéis dejado", "han dejado"]
-            },
-            {
-                infinitive: "Seguir", translation: "To follow/continue",
-                presente: ["sigo", "sigues", "sigue", "seguimos", "seguís", "siguen"],
-                perfecto: ["he seguido", "has seguido", "ha seguido", "hemos seguido", "habéis seguido", "han seguido"]
-            },
-            {
-                infinitive: "Dormir", translation: "To sleep",
-                presente: ["duermo", "duermes", "duerme", "dormimos", "dormís", "duermen"],
-                perfecto: ["he dormido", "has dormido", "ha dormido", "hemos dormido", "habéis dormido", "han dormido"]
-            },
-
-            // --- Top Irregular/Important Verbs from original list ---
-            { infinitive: "Ser", translation: "To be (permanent)", presente: ["soy", "eres", "es", "somos", "sois", "son"], perfecto: ["he sido", "has sido", "ha sido", "hemos sido", "habéis sido", "han sido"] },
-            { infinitive: "Estar", translation: "To be (temp)", presente: ["estoy", "estás", "está", "estamos", "estáis", "están"], perfecto: ["he estado", "has estado", "ha estado", "hemos estado", "habéis estado", "han estado"] },
-            { infinitive: "Tener", translation: "To have", presente: ["tengo", "tienes", "tiene", "tenemos", "tenéis", "tienen"], perfecto: ["he tenido", "has tenido", "ha tenido", "hemos tenido", "habéis tenido", "han tenido"] },
-            { infinitive: "Ir", translation: "To go", presente: ["voy", "vas", "va", "vamos", "vais", "van"], perfecto: ["he ido", "has ido", "ha ido", "hemos ido", "habéis ido", "han ido"] },
-            { infinitive: "Hacer", translation: "To do/make", presente: ["hago", "haces", "hace", "hacemos", "hacéis", "hacen"], perfecto: ["he hecho", "has hecho", "ha hecho", "hemos hecho", "habéis hecho", "han hecho"] },
-            { infinitive: "Poder", translation: "To can", presente: ["puedo", "puedes", "puede", "podemos", "podéis", "pueden"], perfecto: ["he podido", "has podido", "ha podido", "hemos podido", "habéis podido", "han podido"] },
-            { infinitive: "Decir", translation: "To say", presente: ["digo", "dices", "dice", "decimos", "decís", "dicen"], perfecto: ["he dicho", "has dicho", "ha dicho", "hemos dicho", "habéis dicho", "han dicho"] },
-            { infinitive: "Ver", translation: "To see", presente: ["veo", "ves", "ve", "vemos", "veis", "ven"], perfecto: ["he visto", "has visto", "ha visto", "hemos visto", "habéis visto", "han visto"] },
-            { infinitive: "Comer", translation: "To eat", presente: ["como", "comes", "come", "comemos", "coméis", "comen"], perfecto: ["he comido", "has comido", "ha comido", "hemos comido", "habéis comido", "han comido"] },
-            { infinitive: "Querer", translation: "To want", presente: ["quiero", "quieres", "quiere", "queremos", "queréis", "quieren"], perfecto: ["he querido", "has querido", "ha querido", "hemos querido", "habéis querido", "han querido"] },
-            { infinitive: "Saber", translation: "To know", presente: ["sé", "sabes", "sabe", "sabemos", "sabéis", "saben"], perfecto: ["he sabido", "has sabido", "ha sabido", "hemos sabido", "habéis sabido", "han sabido"] },
-            { infinitive: "Venir", translation: "To come", presente: ["vengo", "vienes", "viene", "venimos", "venís", "vienen"], perfecto: ["he venido", "has venido", "ha venido", "hemos venido", "habéis venido", "han venido"] },
-            { infinitive: "Poner", translation: "To put", presente: ["pongo", "pones", "pone", "ponemos", "ponéis", "ponen"], perfecto: ["he puesto", "has puesto", "ha puesto", "hemos puesto", "habéis puesto", "han puesto"] },
-            { infinitive: "Dar", translation: "To give", presente: ["doy", "das", "da", "damos", "dais", "dan"], perfecto: ["he dado", "has dado", "ha dado", "hemos dado", "habéis dado", "han dado"] },
-            { infinitive: "Volver", translation: "To return", presente: ["vuelvo", "vuelves", "vuelve", "volvemos", "volvéis", "vuelven"], perfecto: ["he vuelto", "has vuelto", "ha vuelto", "hemos vuelto", "habéis vuelto", "han vuelto"] },
-            { infinitive: "Escribir", translation: "To write", presente: ["escribo", "escribes", "escribe", "escribimos", "escribís", "escriben"], perfecto: ["he escrito", "has escrito", "ha escrito", "hemos escrito", "habéis escrito", "han escrito"] },
-            { infinitive: "Abrir", translation: "To open", presente: ["abro", "abres", "abre", "abrimos", "abrís", "abren"], perfecto: ["he abierto", "has abierto", "ha abierto", "hemos abierto", "habéis abierto", "han abierto"] },
-            
-            // --- Sample Regulars & Others (Condensed for functionality) ---
-            // Note: In a full production app, I would list all 55. Here I included the hardest ones + 5 new ones.
-            // Let's add a few more regulars to fill the grid visually.
-            { infinitive: "Hablar", translation: "To speak", presente: ["hablo", "hablas", "habla", "hablamos", "habláis", "hablan"], perfecto: ["he hablado", "has hablado", "ha hablado", "hemos hablado", "habéis hablado", "han hablado"] },
-            { infinitive: "Vivir", translation: "To live", presente: ["vivo", "vives", "vive", "vivimos", "vivís", "viven"], perfecto: ["he vivido", "has vivido", "ha vivido", "hemos vivido", "habéis vivido", "han vivido"] },
-            { infinitive: "Trabajar", translation: "To work", presente: ["trabajo", "trabajas", "trabaja", "trabajamos", "trabajáis", "trabajan"], perfecto: ["he trabajado", "has trabajado", "ha trabajado", "hemos trabajado", "habéis trabajado", "han trabajado"] },
-            { infinitive: "Estudiar", translation: "To study", presente: ["estudio", "estudias", "estudia", "estudiamos", "estudiáis", "estudian"], perfecto: ["he estudiado", "has estudiado", "ha estudiado", "hemos estudiado", "habéis estudiado", "han estudiado"] },
-            { infinitive: "Comprar", translation: "To buy", presente: ["compro", "compras", "compra", "compramos", "compráis", "compran"], perfecto: ["he comprado", "has comprado", "ha comprado", "hemos comprado", "habéis comprado", "han comprado"] },
-             { infinitive: "Beber", translation: "To drink", presente: ["bebo", "bebes", "bebe", "bebemos", "bebéis", "beben"], perfecto: ["he bebido", "has bebido", "ha bebido", "hemos bebido", "habéis bebido", "han bebido"] },
-            { infinitive: "Buscar", translation: "To search", presente: ["busco", "buscas", "busca", "buscamos", "buscáis", "buscan"], perfecto: ["he buscado", "has buscado", "ha buscado", "hemos buscado", "habéis buscado", "han buscado"] },
-            { infinitive: "Caminar", translation: "To walk", presente: ["camino", "caminas", "camina", "caminamos", "camináis", "caminan"], perfecto: ["he caminado", "has caminado", "ha caminado", "hemos caminado", "habéis caminado", "han caminado"] },
-             { infinitive: "Cerrar", translation: "To close", presente: ["cierro", "cierras", "cierra", "cerramos", "cerráis", "cierran"], perfecto: ["he cerrado", "has cerrado", "ha cerrado", "hemos cerrado", "habéis cerrado", "han cerrado"] },
-             { infinitive: "Cocinar", translation: "To cook", presente: ["cocino", "cocinas", "cocina", "cocinamos", "cocináis", "cocinan"], perfecto: ["he cocinado", "has cocinado", "ha cocinado", "hemos cocinado", "habéis cocinado", "han cocinado"] },
-             { infinitive: "Comenzar", translation: "To start", presente: ["comienzo", "comienzas", "comienza", "comenzamos", "comenzáis", "comienzan"], perfecto: ["he comenzado", "has comenzado", "ha comenzado", "hemos comenzado", "habéis comenzado", "han comenzado"] },
-             { infinitive: "Conocer", translation: "To know (people)", presente: ["conozco", "conoces", "conoce", "conocemos", "conocéis", "conocen"], perfecto: ["he conocido", "has conocido", "ha conocido", "hemos conocido", "habéis conocido", "han conocido"] },
-             { infinitive: "Creer", translation: "To believe", presente: ["creo", "crees", "cree", "creemos", "creéis", "creen"], perfecto: ["he creído", "has creído", "ha creído", "hemos creído", "habéis creído", "han creído"] },
-             { infinitive: "Entender", translation: "To understand", presente: ["entiendo", "entiendes", "entiende", "entendemos", "entendéis", "entienden"], perfecto: ["he entendido", "has entendido", "ha entendido", "hemos entendido", "habéis entendido", "han entendido"] },
-             { infinitive: "Encontrar", translation: "To find", presente: ["encuentro", "encuentras", "encuentra", "encontramos", "encontráis", "encuentran"], perfecto: ["he encontrado", "has encontrado", "ha encontrado", "hemos encontrado", "habéis encontrado", "han encontrado"] },
-             { infinitive: "Jugar", translation: "To play", presente: ["juego", "juegas", "juega", "jugamos", "jugáis", "juegan"], perfecto: ["he jugado", "has jugado", "ha jugado", "hemos jugado", "habéis jugado", "han jugado"] },
-             { infinitive: "Leer", translation: "To read", presente: ["leo", "lees", "lee", "leemos", "leéis", "leen"], perfecto: ["he leído", "has leído", "ha leído", "hemos leído", "habéis leído", "han leído"] },
-             { infinitive: "Llamar", translation: "To call", presente: ["llamo", "llamas", "llama", "llamamos", "llamáis", "llaman"], perfecto: ["he llamado", "has llamado", "ha llamado", "hemos llamado", "habéis llamado", "han llamado"] },
-             { infinitive: "Llegar", translation: "To arrive", presente: ["llego", "llegas", "llega", "llegamos", "llegáis", "llegan"], perfecto: ["he llegado", "has llegado", "ha llegado", "hemos llegado", "habéis llegado", "han llegado"] },
-             { infinitive: "Mirar", translation: "To look", presente: ["miro", "miras", "mira", "miramos", "miráis", "miran"], perfecto: ["he mirado", "has mirado", "ha mirado", "hemos mirado", "habéis mirado", "han mirado"] },
-             { infinitive: "Necesitar", translation: "To need", presente: ["necesito", "necesitas", "necesita", "necesitamos", "necesitáis", "necesitan"], perfecto: ["he necesitado", "has necesitado", "ha necesitado", "hemos necesitado", "habéis necesitado", "han necesitado"] },
-             { infinitive: "Pagar", translation: "To pay", presente: ["pago", "pagas", "paga", "pagamos", "pagáis", "pagan"], perfecto: ["he pagado", "has pagado", "ha pagado", "hemos pagado", "habéis pagado", "han pagado"] },
-             { infinitive: "Pedir", translation: "To ask for", presente: ["pido", "pides", "pide", "pedimos", "pedís", "piden"], perfecto: ["he pedido", "has pedido", "ha pedido", "hemos pedido", "habéis pedido", "han pedido"] },
-             { infinitive: "Pensar", translation: "To think", presente: ["pienso", "piensas", "piensa", "pensamos", "pensáis", "piensan"], perfecto: ["he pensado", "has pensado", "ha pensado", "hemos pensado", "habéis pensado", "han pensado"] },
-             { infinitive: "Preferir", translation: "To prefer", presente: ["prefiero", "prefieres", "prefiere", "preferimos", "preferís", "prefieren"], perfecto: ["he preferido", "has preferido", "ha preferido", "hemos preferido", "habéis preferido", "han preferido"] },
-             { infinitive: "Quedar", translation: "To stay/meet", presente: ["quedo", "quedas", "queda", "quedamos", "quedáis", "quedan"], perfecto: ["he quedado", "has quedado", "ha quedado", "hemos quedado", "habéis quedado", "han quedado"] },
-             { infinitive: "Salir", translation: "To exit/go out", presente: ["salgo", "sales", "sale", "salimos", "salís", "salen"], perfecto: ["he salido", "has salido", "ha salido", "hemos salido", "habéis salido", "han salido"] },
-             { infinitive: "Sentir", translation: "To feel", presente: ["siento", "sientes", "siente", "sentimos", "sentís", "sienten"], perfecto: ["he sentido", "has sentido", "ha sentido", "hemos sentido", "habéis sentido", "han sentido"] },
-             { infinitive: "Tomar", translation: "To take/drink", presente: ["tomo", "tomas", "toma", "tomamos", "tomáis", "toman"], perfecto: ["he tomado", "has tomado", "ha tomado", "hemos tomado", "habéis tomado", "han tomado"] },
-             { infinitive: "Traer", translation: "To bring", presente: ["traigo", "traes", "trae", "traemos", "traéis", "traen"], perfecto: ["he traído", "has traído", "ha traído", "hemos traído", "habéis traído", "han traído"] },
-             { infinitive: "Usar", translation: "To use", presente: ["uso", "usas", "usa", "usamos", "usáis", "usan"], perfecto: ["he usado", "has usado", "ha usado", "hemos usado", "habéis usado", "han usado"] },
-             { infinitive: "Viajar", translation: "To travel", presente: ["viajo", "viajas", "viaja", "viajamos", "viajáis", "viajan"], perfecto: ["he viajado", "has viajado", "ha viajado", "hemos viajado", "habéis viajado", "han viajado"] }
-        ];
-
-        // --- SECTION 1: Render Cards ---
-        function renderCards() {
-            const container = document.getElementById('cards-container');
-            container.innerHTML = '';
-
-            verbsData.forEach(verb => {
-                const cardContainer = document.createElement('div');
-                cardContainer.className = 'card-container';
-                
-                // Flip function
-                cardContainer.onclick = function() {
-                    this.classList.toggle('flipped');
-                };
-
-                const cardInner = document.createElement('div');
-                cardInner.className = 'card-inner';
-
-                // Helper to create list HTML
-                const createList = (list) => {
-                    let html = '<ul class="conjugation-list">';
-                    list.forEach((conj, index) => {
-                        let pron = pronouns[index];
-                        if (verb.infinitive === "Gustar" || verb.infinitive === "Haber") pron = ""; 
-                        if (verb.infinitive === "Sentarse") pron = pronouns[index]; // Keep pronouns for reflexives usually
-
-                        html += `<li><span class="pronoun">${pron}</span> <span>${conj}</span></li>`;
-                    });
-                    html += '</ul>';
-                    return html;
-                };
-
-                // Front (Presente)
-                const front = document.createElement('div');
-                front.className = 'card-front';
-                front.innerHTML = `
-                    <div class="verb-title">${verb.infinitive}</div>
-                    <div class="verb-translation">${verb.translation}</div>
-                    <div class="tense-title">Presente</div>
-                    ${createList(verb.presente)}
-                `;
-
-                // Back (Perfecto)
-                const back = document.createElement('div');
-                back.className = 'card-back';
-                back.innerHTML = `
-                    <div class="verb-title">${verb.infinitive}</div>
-                    <div class="tense-title">Pretérito Perfecto</div>
-                    ${createList(verb.perfecto)}
-                `;
-
-                cardInner.appendChild(front);
-                cardInner.appendChild(back);
-                cardContainer.appendChild(cardInner);
-                container.appendChild(cardContainer);
-            });
-        }
-
-        // --- SECTION 2: Quiz Logic ---
-        let currentQuestion = {};
-
-        function generateQuestion() {
-            // Reset UI
-            document.getElementById('feedback-msg').textContent = '';
-            document.getElementById('feedback-msg').className = 'feedback';
-            document.getElementById('user-answer').value = '';
-            document.querySelector('.btn-check').style.display = 'inline-block';
-            document.querySelector('.btn-next').style.display = 'none';
-
-            // Random Verb
-            const randomVerbIndex = Math.floor(Math.random() * verbsData.length);
-            const verbObj = verbsData[randomVerbIndex];
-
-            // Random Person (0-5)
-            const personIndex = Math.floor(Math.random() * 6);
-            
-            // Random Tense
-            const isPresent = Math.random() < 0.5;
-            const tenseLabel = isPresent ? "Presente" : "Pretérito Perfecto";
-            
-            // Get Answer
-            let answer = isPresent ? verbObj.presente[personIndex] : verbObj.perfecto[personIndex];
-            
-            // Pronoun logic for Gustar
-            let pronounDisplay = pronouns[personIndex];
-            if(verbObj.infinitive === "Gustar") {
-                pronounDisplay = "(A mí/ti...)"; 
-            }
-
-            currentQuestion = {
-                answer: answer.toLowerCase().trim(),
-                verb: verbObj.infinitive
-            };
-
-            // Display
-            document.getElementById('q-pronoun').textContent = pronounDisplay;
-            document.getElementById('q-verb').textContent = verbObj.infinitive;
-            document.getElementById('q-tense').textContent = `[${tenseLabel}]`;
-            
-            // Focus on input (only on desktop to prevent keyboard popup on mobile load)
-            if(window.innerWidth > 768) {
-                document.getElementById('user-answer').focus();
-            }
-        }
-
-        function checkAnswer() {
-            const userAns = document.getElementById('user-answer').value.trim().toLowerCase();
-            const feedback = document.getElementById('feedback-msg');
-            const correctAnswer = currentQuestion.answer;
-
-            // Simple check (exact match)
-            if (userAns === correctAnswer) {
-                feedback.textContent = "¡Muy bien! (Correct)";
-                feedback.className = "feedback correct";
-                document.querySelector('.btn-check').style.display = 'none';
-                document.querySelector('.btn-next').style.display = 'inline-block';
-            } else {
-                feedback.textContent = `Incorrect. Answer: "${correctAnswer}"`;
-                feedback.className = "feedback wrong";
-            }
-        }
-
-        // --- Navigation ---
-        function showSection(sectionId) {
-            document.querySelectorAll('nav button').forEach(btn => btn.classList.remove('active'));
-            document.getElementById(`btn-${sectionId}`).classList.add('active');
-            document.querySelectorAll('.section').forEach(sec => sec.classList.remove('active'));
-            document.getElementById(`section-${sectionId}`).classList.add('active');
-            
-            // Scroll to top
-            window.scrollTo(0,0);
-        }
-
-        // Enter key for quiz
-        document.getElementById('user-answer').addEventListener("keypress", function(event) {
-            if (event.key === "Enter") {
-                if(document.querySelector('.btn-next').style.display === 'inline-block'){
-                     generateQuestion();
-                } else {
-                     checkAnswer();
-                }
-            }
-        });
-
-        // Init
-        renderCards();
-        generateQuestion(); 
-
-    </script>
-</body>
-</html> -->
-
-
-
 <!DOCTYPE html>
 <html lang="es" dir="ltr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Master 55 Spanish Verbs</title>
+    <title>Nexo</title>
     <style>
     :root {
-        /* --- Light Mode Variables --- */
-        --bg-body: #fdfbf7;
+        /* --- Colors & Vars --- */
+        --bg-body: #f9f9f9;
         --card-bg: #ffffff;
         --text-main: #1d1d1f;
         --text-sec: #86868b;
         --accent: #0071e3;
         --accent-soft: #e3f0ff;
-        --input-bg: #ffffff;
-        --border-color: rgba(0,0,0,0.05);
-        --shadow-soft: 0 10px 40px -10px rgba(0,0,0,0.08);
-        --shadow-hover: 0 20px 50px -10px rgba(0,0,0,0.12);
+        --input-bg: #f2f2f7;
+        --border-color: rgba(0,0,0,0.08);
+        --shadow-soft: 0 4px 20px rgba(0,0,0,0.06);
+        --shadow-hover: 0 10px 30px rgba(0,0,0,0.1);
         --font-main: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, sans-serif;
-        --icon-color: #1d1d1f;
-        /* هذا هو المتغير اللي كيتحكم في السرعة الموحدة */
-        --transition-speed: 0.3s;
+        
+        /* Game Specific Colors */
+        --c-chat: #007aff;    /* Blue */
+        --c-lego: #ff9500;    /* Orange */
+        --c-teacher: #af52de; /* Purple */
+        --c-speed: #ff3b30;   /* Red */
     }
 
-    /* --- Dark Mode Variables --- */
+    /* Dark Mode */
     body.dark-mode {
-        --bg-body: #121212;
-        --card-bg: #1e1e1e;
-        --text-main: #f5f5f7;
-        --text-sec: #a1a1a6;
-        --accent: #2997ff;
-        --accent-soft: #003366;
+        --bg-body: #000000;
+        --card-bg: #1c1c1e;
+        --text-main: #ffffff;
+        --text-sec: #98989d;
+        --accent: #0a84ff;
+        --accent-soft: #0040dd;
         --input-bg: #2c2c2e;
-        --border-color: rgba(255,255,255,0.1);
-        --shadow-soft: 0 10px 40px -10px rgba(0,0,0,0.3);
-        --shadow-hover: 0 20px 50px -10px rgba(0,0,0,0.5);
-        --icon-color: #f5f5f7;
+        --border-color: rgba(255,255,255,0.15);
+        --shadow-soft: 0 4px 20px rgba(0,0,0,0.4);
     }
 
-    * { box-sizing: border-box; margin: 0; padding: 0; outline: none; -webkit-tap-highlight-color: transparent; }
-
-    /* --- ⚡ THE MAGIC BLOCK: UNIFIED TRANSITION ⚡ --- */
-    /* هذا هو البلوك الجديد اللي كيخلي كلشي يتبدل دقة وحدة */
-    body, 
-    .verb-card, 
-    .quiz-container, 
-    .search-wrapper input, 
-    .nav-pills, 
-    .theme-toggle, 
-    .tab-btn, 
-    .search-icon-svg, 
-    h1,
-    .q-tense,
-    .q-pronoun {
-        transition: background-color var(--transition-speed) ease,
-                    color var(--transition-speed) ease,
-                    border-color var(--transition-speed) ease,
-                    fill var(--transition-speed) ease,
-                    box-shadow var(--transition-speed) ease;
+    /* Universal Transition */
+    * {
+        transition: background-color 0.3s ease, 
+                    color 0.3s ease, 
+                    border-color 0.3s ease, 
+                    fill 0.3s ease, 
+                    box-shadow 0.3s ease;
+        box-sizing: border-box; 
+        margin: 0; 
+        padding: 0; 
+        outline: none; 
+        -webkit-tap-highlight-color: transparent;
     }
 
     body {
         font-family: var(--font-main);
         background-color: var(--bg-body);
         color: var(--text-main);
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        min-height: 100vh;
-        padding: 20px;
-        /* حيدت الـ transition من هنا باش ما يتعارضش مع البلوك السحري الفوق */
+        display: flex; flex-direction: column; align-items: center;
+        min-height: 100vh; padding: 20px;
     }
 
-    /* --- Header & Controls --- */
-    header {
-        width: 100%;
-        max-width: 1000px;
-        margin-bottom: 40px;
-        text-align: center;
-        position: relative;
-        z-index: 10;
+    /* --- Header --- */
+    header { width: 100%; max-width: 1000px; text-align: center; margin-bottom: 25px; position: relative; z-index: 10; }
+    
+    h1 { 
+        font-weight: 800; font-size: 2.2rem; margin-bottom: 20px; 
+        color: var(--text-main);
     }
 
-    /* Theme Toggle Button */
     .theme-toggle {
-        position: absolute;
-        top: 0;
-        right: 0;
-        background: var(--card-bg);
-        border: 1px solid var(--border-color);
-        width: 40px;
-        height: 40px;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        cursor: pointer;
-        box-shadow: var(--shadow-soft);
-        color: var(--icon-color);
-        /* Transition is handled by Magic Block */
+        position: absolute; top: 0; right: 0;
+        background: var(--card-bg); border: 1px solid var(--border-color);
+        width: 44px; height: 44px; border-radius: 50%;
+        display: flex; align-items: center; justify-content: center;
+        cursor: pointer; box-shadow: var(--shadow-soft); color: var(--text-main);
+    }
+    .theme-toggle svg { width: 22px; height: 22px; }
+
+    .nav-pills { display: inline-flex; justify-content: center; gap: 8px; background: var(--card-bg); padding: 6px; border-radius: 50px; box-shadow: var(--shadow-soft); border: 1px solid var(--border-color); }
+    .nav-btn { border: none; background: transparent; padding: 10px 24px; border-radius: 40px; font-weight: 600; font-size: 0.95rem; color: var(--text-sec); cursor: pointer; }
+    .nav-btn.active { background: var(--text-main); color: var(--bg-body); }
+
+    /* --- Sections --- */
+    main { width: 100%; max-width: 1000px; flex: 1; }
+    .section { display: none; opacity: 0; transform: translateY(10px); }
+    .section.active { display: block; opacity: 1; transform: translateY(0); transition: opacity 0.4s ease, transform 0.4s ease; }
+
+    /* --- STUDY CARDS UI --- */
+    .cards-grid { 
+        display: grid; 
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); 
+        gap: 20px; 
+        padding-bottom: 40px; 
     }
     
-    .theme-toggle:active { transform: scale(0.9); }
-
-    h1 {
-        font-weight: 800;
-        font-size: 2.5rem;
-        letter-spacing: -1px;
-        margin-bottom: 25px;
-        margin-top: 10px;
-        background: linear-gradient(135deg, var(--text-main) 0%, var(--text-sec) 100%);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-    }
-
-    .controls-container {
-        display: flex;
-        flex-direction: column;
-        gap: 20px;
-        align-items: center;
-    }
-
-    /* Search Bar Styled */
-    .search-wrapper {
-        position: relative;
-        width: 100%;
-        max-width: 500px;
-    }
-
-    .search-wrapper input {
-        width: 100%;
-        padding: 16px 24px;
-        padding-left: 55px;
-        font-size: 1.1rem;
-        border: 1px solid transparent;
-        border-radius: 50px;
-        background: var(--input-bg);
-        color: var(--text-main);
-        box-shadow: 0 4px 20px rgba(0,0,0,0.06);
-        /* Transition is handled by Magic Block */
-    }
-
-    .search-wrapper input:focus {
-        box-shadow: 0 8px 30px rgba(0,113,227,0.15);
-        border-color: var(--accent);
-        transform: translateY(-2px);
-    }
-
-    /* SVG Search Icon */
-    .search-icon-svg {
-        position: absolute;
-        left: 22px;
-        top: 50%;
-        transform: translateY(-50%);
-        width: 20px;
-        height: 20px;
-        fill: var(--text-sec);
-        pointer-events: none;
-        /* Transition is handled by Magic Block */
-    }
-
-    .search-wrapper input:focus + .search-icon-svg {
-        fill: var(--accent);
-    }
-
-    /* Nav Pills */
-    .nav-pills {
-        display: flex;
-        gap: 10px;
-        background: var(--card-bg);
-        padding: 5px;
-        border-radius: 50px;
-        box-shadow: var(--shadow-soft);
-    }
-
-    .nav-pills button {
-        border: none;
-        background: transparent;
-        padding: 10px 24px;
-        border-radius: 40px;
-        font-weight: 600;
-        color: var(--text-sec);
-        cursor: pointer;
-        /* Transition is handled by Magic Block */
-    }
-
-    .nav-pills button.active {
-        background: var(--text-main);
-        color: var(--bg-body);
-    }
-
-    /* --- Main Layout --- */
-    main {
-        width: 100%;
-        max-width: 1200px;
-        flex: 1;
-    }
-
-    .section { display: none; opacity: 0; transition: opacity 0.4s ease; }
-    .section.active { display: block; opacity: 1; }
-
-    /* --- Cards --- */
-    .cards-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-        gap: 25px;
-        padding-bottom: 40px;
-    }
-
-    .verb-card {
-        background: var(--card-bg);
-        border-radius: 24px;
-        box-shadow: var(--shadow-soft);
-        padding: 25px;
-        transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), 
-                    box-shadow var(--transition-speed) ease, 
-                    background-color var(--transition-speed) ease,
-                    border-color var(--transition-speed) ease;
-        display: flex;
-        flex-direction: column;
-        overflow: hidden;
-        border: 1px solid var(--border-color);
-    }
-
-    .verb-card:hover {
-        transform: translateY(-5px) scale(1.02);
-        box-shadow: var(--shadow-hover);
-    }
-
-    .card-header {
-        margin-bottom: 20px;
-        text-align: center;
-    }
-
-    .verb-title {
-        font-size: 1.8rem;
-        font-weight: 800;
-        color: var(--text-main);
-        letter-spacing: -0.5px;
-    }
-
-    .verb-translation {
-        font-size: 0.95rem;
-        color: var(--text-sec);
-        font-weight: 500;
-        margin-top: 4px;
-    }
-
-    .card-tabs {
-        display: flex;
-        justify-content: center;
-        gap: 5px;
-        margin-bottom: 15px;
-        border-bottom: 1px solid var(--border-color);
-        padding-bottom: 10px;
-    }
-
-    .tab-btn {
-        background: transparent;
-        border: none;
-        font-size: 0.75rem;
-        font-weight: 700;
-        color: var(--text-sec);
-        padding: 6px 12px;
-        border-radius: 12px;
-        cursor: pointer;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-        /* Transition is handled by Magic Block */
-    }
-
-    .tab-btn:hover { color: var(--accent); }
+    .verb-card { background: var(--card-bg); border-radius: 20px; padding: 20px; box-shadow: var(--shadow-soft); border: 1px solid var(--border-color); display: flex; flex-direction: column; }
     
-    .tab-btn.active {
-        color: var(--accent);
-        background: var(--accent-soft);
-    }
+    .card-header { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 15px; border-bottom: 1px solid var(--border-color); padding-bottom: 10px; }
+    .card-header h3 { color: var(--accent); font-size: 1.6rem; }
+    .card-header span { color: var(--text-sec); font-size: 0.9rem; font-style: italic; }
 
-    .tense-content {
-        display: none;
-        animation: fadeIn 0.3s ease;
-    }
-    .tense-content.active { display: block; }
+    .card-tabs { display: flex; gap: 5px; margin-bottom: 10px; background: var(--input-bg); padding: 4px; border-radius: 10px; }
+    .tab-btn { flex: 1; border: none; background: transparent; padding: 6px; font-size: 0.8rem; font-weight: 600; color: var(--text-sec); border-radius: 8px; cursor: pointer; }
+    .tab-btn.active { background: var(--card-bg); color: var(--text-main); box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
 
-    @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
-
-    .conjugation-list { list-style: none; }
-
-    .conjugation-list li {
-        display: flex;
-        justify-content: space-between;
-        padding: 8px 0;
-        border-bottom: 1px dashed var(--border-color);
-        font-size: 1rem;
-        color: var(--text-sec);
-    }
-
+    .conjugation-list { list-style: none; display: none; }
+    .conjugation-list.active { display: block; animation: fadeIn 0.3s; }
+    .conjugation-list li { display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px dashed var(--border-color); font-size: 0.95rem; }
     .conjugation-list li:last-child { border-bottom: none; }
+    .pronoun { color: var(--text-sec); font-size: 0.85em; width: 70px; }
+
+    /* --- GAME MENU --- */
+    .game-menu-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-top: 20px; }
     
-    .pronoun {
-        color: var(--text-sec);
-        opacity: 0.7;
-        font-size: 0.85em;
-        font-weight: 500;
-        width: 80px;
-    }
-
-    .verb-form {
-        font-weight: 600;
-        color: var(--text-main);
-        text-align: right;
-        flex: 1;
-    }
-
-    /* --- Quiz Section --- */
-    .quiz-container {
-        background: var(--card-bg);
-        padding: 40px;
-        border-radius: 30px;
-        box-shadow: var(--shadow-soft);
-        max-width: 600px;
-        margin: 0 auto;
-        text-align: center;
-        border: 1px solid var(--border-color);
-        /* Transition handled by Magic Block */
-    }
-
-    .question-box { margin: 30px 0; }
-
-    .q-pronoun { font-size: 1.5rem; font-weight: 800; display: block; margin-bottom: 5px; color: var(--text-main); }
-    .q-verb { color: var(--accent); font-weight: 700; font-size: 1.2rem; }
-    .q-tense { 
-        display: inline-block; 
-        margin-top: 10px; 
-        padding: 4px 12px; 
-        background: var(--accent-soft); 
-        border-radius: 8px; 
-        font-size: 0.8rem; 
-        font-weight: 700; 
-        color: var(--accent);
-        text-transform: uppercase;
-    }
-
-    input[type="text"] {
-        width: 100%;
-        padding: 18px;
-        font-size: 1.2rem;
-        border: 2px solid var(--border-color);
-        border-radius: 16px;
-        text-align: center;
-        /* Transition handled by Magic Block */
-        background: var(--input-bg);
-        color: var(--text-main);
-    }
-    input[type="text"]:focus { border-color: var(--accent); }
-
-    .btn-action {
-        margin-top: 20px;
-        width: 100%;
-        padding: 18px;
-        border: none;
-        border-radius: 16px;
-        font-size: 1.1rem;
-        font-weight: 700;
+    .game-mode-card {
+        background: var(--card-bg); 
+        border: 2px solid var(--border-color); /* Default Border */
+        border-radius: 24px; 
+        padding: 30px 20px; 
+        text-align: center; 
         cursor: pointer;
-        transition: transform 0.1s;
+        display: flex; flex-direction: column; align-items: center; justify-content: center; 
+        height: 220px;
+        position: relative; overflow: hidden;
+        box-shadow: var(--shadow-soft);
+    }
+
+    /* STATIC STATE: Colored Bottom Border (Bonde) */
+    .game-mode-card.card-chat { border-bottom: 6px solid var(--c-chat); }
+    .game-mode-card.card-lego { border-bottom: 6px solid var(--c-lego); }
+    .game-mode-card.card-teacher { border-bottom: 6px solid var(--c-teacher); }
+    .game-mode-card.card-speed { border-bottom: 6px solid var(--c-speed); }
+
+    /* HOVER STATE: Full Border Color */
+    .game-mode-card.card-chat:hover { border-color: var(--c-chat); transform: translateY(-4px); box-shadow: 0 10px 30px rgba(0, 122, 255, 0.15); }
+    .game-mode-card.card-lego:hover { border-color: var(--c-lego); transform: translateY(-4px); box-shadow: 0 10px 30px rgba(255, 149, 0, 0.15); }
+    .game-mode-card.card-teacher:hover { border-color: var(--c-teacher); transform: translateY(-4px); box-shadow: 0 10px 30px rgba(175, 82, 222, 0.15); }
+    .game-mode-card.card-speed:hover { border-color: var(--c-speed); transform: translateY(-4px); box-shadow: 0 10px 30px rgba(255, 59, 48, 0.15); }
+
+    .mode-icon { font-size: 3.5rem; margin-bottom: 15px; }
+    .mode-title { font-weight: 700; font-size: 1.2rem; color: var(--text-main); margin-bottom: 5px; }
+    .mode-desc { font-size: 0.85rem; color: var(--text-sec); line-height: 1.4; }
+
+    /* --- GAME VIEWPORT --- */
+    .game-viewport {
+        background: var(--card-bg); border-radius: 24px; box-shadow: var(--shadow-soft);
+        border: 1px solid var(--border-color); min-height: 550px;
+        position: relative; overflow: hidden; display: flex; flex-direction: column;
+    }
+    .game-header-bar {
+        padding: 15px 20px; border-bottom: 1px solid var(--border-color);
+        display: flex; justify-content: space-between; align-items: center; background: var(--input-bg);
+    }
+    .back-btn { background: none; border: none; font-size: 1rem; font-weight: 600; cursor: pointer; color: var(--text-main); display: flex; align-items: center; gap: 5px; }
+    .game-content { flex: 1; padding: 20px; display: flex; flex-direction: column; align-items: center; justify-content: center; width: 100%; position: relative; }
+
+    .game-input-area { width: 100%; padding: 20px; border-top: 1px solid var(--border-color); background: var(--card-bg); z-index: 20; }
+    .game-input { width: 100%; padding: 16px; border-radius: 16px; border: 2px solid var(--border-color); background: var(--input-bg); font-size: 1.1rem; text-align: center; color: var(--text-main); }
+    .game-input:focus { border-color: var(--accent); background: var(--card-bg); }
+    .btn-submit { width: 100%; padding: 16px; background: var(--text-main); color: var(--bg-body); border: none; border-radius: 16px; margin-top: 12px; font-weight: 700; cursor: pointer; font-size: 1rem; }
+    .btn-submit:active { transform: scale(0.98); }
+
+    /* --- SPECIFIC GAME STYLES --- */
+    /* Chat */
+    .chat-wrapper { width: 100%; max-width: 500px; display: flex; flex-direction: column; gap: 15px; }
+    .chat-bubble { padding: 15px 20px; border-radius: 20px; max-width: 85%; line-height: 1.5; font-size: 1.05rem; position: relative; animation: slideIn 0.3s; }
+    @keyframes slideIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    .bot-bubble { background: var(--input-bg); color: var(--text-main); align-self: flex-start; border-bottom-left-radius: 4px; }
+    .user-bubble { background: var(--c-chat); color: white; align-self: flex-end; border-bottom-right-radius: 4px; }
+    .chat-meta { font-size: 0.75rem; color: var(--text-sec); margin-top: 5px; font-weight: bold; text-transform: uppercase; }
+
+    /* Lego */
+    .lego-pronoun { font-size: 2.5rem; font-weight: 900; color: var(--text-main); margin-bottom: 20px; text-align: center; }
+    .lego-workspace { background: var(--input-bg); padding: 30px; border-radius: 20px; margin-bottom: 25px; display: flex; align-items: center; gap: 10px; justify-content: center; flex-wrap: wrap; }
+    .lego-stem { font-size: 1.4rem; font-weight: 800; color: var(--text-sec); padding: 10px 15px; background: var(--card-bg); border-radius: 10px; border: 2px solid var(--border-color); }
+    .lego-dropzone { width: 100px; height: 50px; border: 2px dashed var(--accent); border-radius: 10px; display: flex; align-items: center; justify-content: center; color: var(--accent); font-weight: bold; background: rgba(0,0,0,0.02); }
+    .lego-dropzone.filled { background: var(--c-lego); color: white; border: none; }
+    .lego-pieces { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+    .lego-piece { padding: 12px 24px; background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 12px; font-weight: bold; cursor: pointer; box-shadow: 0 4px 0 rgba(0,0,0,0.1); font-size: 1.1rem; }
+    .lego-piece:active { transform: translateY(4px); box-shadow: none; }
+
+    /* Teacher (Exact Style from Screenshot) */
+    .teacher-card {
+        background: #fff9c4; /* Yellow sticky note */
+        color: #5d4037;
+        width: 100%; max-width: 450px; padding: 40px 30px; 
+        border-radius: 2px;
+        transform: rotate(-1deg);
+        box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        text-align: center; 
+        font-family: 'Comic Sans MS', 'Chalkboard SE', sans-serif;
+        position: relative;
+        margin: 0 auto;
+    }
+    /* Tape Effect */
+    .teacher-card::before {
+        content: '';
+        position: absolute;
+        top: -15px; left: 50%; transform: translateX(-50%);
+        width: 130px; height: 35px;
+        background: rgba(255, 255, 255, 0.4);
+        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        backdrop-filter: blur(2px);
     }
     
-    .btn-check { background: var(--text-main); color: var(--bg-body); }
-    .btn-next { background: #27ae60; color: white; display: none; }
+    .teacher-header { display: flex; flex-direction: column; align-items: flex-start; margin-bottom: 25px; }
+    .teacher-label { color: #8d6e63; font-size: 0.9rem; font-weight: bold; text-transform: uppercase; margin-bottom: 4px; }
     
-    .btn-action:active { transform: scale(0.98); }
-
-    .feedback { margin-top: 20px; font-weight: 600; min-height: 24px; }
-    .feedback.correct { color: #27ae60; }
-    .feedback.wrong { color: #e74c3c; }
-
-    @media (max-width: 600px) {
-        h1 { font-size: 1.8rem; padding-right: 40px; }
-        .cards-grid { grid-template-columns: 1fr; }
-        .search-wrapper input { font-size: 1rem; }
+    .teacher-mistake { font-size: 1.4rem; margin-bottom: 25px; line-height: 1.4; color: #5d4037; }
+    .error-highlight { text-decoration: line-through; color: #c62828; font-family: 'Courier New', monospace; font-weight: bold; }
+    
+    .teacher-prompt { color: #9e9d24; font-weight: bold; font-size: 1rem; }
+    
+    /* Speed */
+    .speed-track { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; }
+    .falling-item {
+        position: absolute; left: 50%; transform: translateX(-50%);
+        background: var(--card-bg); padding: 12px 25px; border-radius: 30px;
+        box-shadow: 0 8px 20px rgba(0,0,0,0.15); border: 2px solid var(--c-speed);
+        text-align: center; z-index: 5;
     }
-</style>
+    .ground-line { position: absolute; bottom: 0; width: 100%; height: 6px; background: var(--c-speed); }
+
+    /* Toast */
+    .toast { position: fixed; top: 20px; left: 50%; transform: translateX(-50%) translateY(-100px); background: #34c759; color: white; padding: 12px 30px; border-radius: 50px; font-weight: bold; transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); z-index: 100; box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
+    .toast.show { transform: translateX(-50%) translateY(0); }
+    .toast.error { background: #ff3b30; }
+
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    </style>
 </head>
 <body>
 
+    <div id="toast" class="toast">¡Correcto!</div>
+
     <header>
         <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle Dark Mode">
-            <svg id="theme-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></svg>
+            <svg id="theme-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></svg>
         </button>
 
-        <h1>Spanish Verbs Mastery</h1>
+        <h1>Nexo</h1>
         
-        <div class="controls-container">
-            <div class="search-wrapper">
-                <input type="text" id="search-input" placeholder="Search verb (e.g. tener)..." onkeyup="filterVerbs()">
-                <svg class="search-icon-svg" viewBox="0 0 24 24">
-                    <path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
-                </svg>
-            </div>
-            
-            <nav class="nav-pills">
-                <button onclick="showSection('study')" id="btn-study" class="active">Study</button>
-                <button onclick="showSection('quiz')" id="btn-quiz">Quiz</button>
-            </nav>
-        </div>
+        <nav class="nav-pills">
+            <button class="nav-btn active" onclick="showSection('study')" id="nav-study">Verbos</button>
+            <button class="nav-btn" onclick="showSection('quiz')" id="nav-quiz">Game Arena</button>
+        </nav>
     </header>
 
     <main>
         <div id="section-study" class="section active">
-            <div class="cards-grid" id="cards-container"></div>
+            <input type="text" id="search-bar" placeholder="Buscar verbo (e.g. Tener)..." 
+                   style="width:100%; padding:15px; border-radius:15px; border:1px solid var(--border-color); background:var(--card-bg); color:var(--text-main); margin-bottom:20px; font-size:1rem;" 
+                   onkeyup="renderCards()">
+            
+            <div class="cards-grid" id="cards-container">
+                </div>
         </div>
 
         <div id="section-quiz" class="section">
-            <div class="quiz-container">
-                <h2 style="margin-bottom:10px; color:var(--text-main)">Conjugation Quiz</h2>
-                <p style="color:var(--text-sec)">Practice makes perfect (55 Verbs)</p>
+            
+            <div id="game-menu" class="game-menu-grid">
                 
-                <div class="question-box">
-                    <span id="q-pronoun" class="q-pronoun">Yo</span>
-                    <div style="font-size:1rem; color:var(--text-sec)">
-                        Verb: <span id="q-verb" class="q-verb">comer</span>
-                    </div>
-                    <div id="q-tense" class="q-tense">Presente</div>
+                <div class="game-mode-card card-chat" onclick="launchGame('chat')">
+                    <div class="mode-icon" style="color:var(--c-chat)">💬</div>
+                    <div class="mode-title">Chat Simulator</div>
+                    <div class="mode-desc">Contexto real.<br>Conversación.</div>
+                </div>
+                
+                <div class="game-mode-card card-lego" onclick="launchGame('lego')">
+                    <div class="mode-icon" style="color:var(--c-lego)">🧩</div>
+                    <div class="mode-title">Verb Lego</div>
+                    <div class="mode-desc">Construye el verbo.<br>Estructura.</div>
+                </div>
+                
+                <div class="game-mode-card card-teacher" onclick="launchGame('teacher')">
+                    <div class="mode-icon" style="color:var(--c-teacher)">👨‍🏫</div>
+                    <div class="mode-title">Be the Teacher</div>
+                    <div class="mode-desc">Corrige los errores.<br>Lógica.</div>
+                </div>
+                
+                <div class="game-mode-card card-speed" onclick="launchGame('speed')">
+                    <div class="mode-icon" style="color:var(--c-speed)">⚡</div>
+                    <div class="mode-title">Falling Words</div>
+                    <div class="mode-desc">Escribe rápido.<br>Velocidad.</div>
+                </div>
+            </div>
+
+            <div id="game-viewport" class="game-viewport" style="display:none;">
+                <div class="game-header-bar">
+                    <button class="back-btn" onclick="exitGame()">
+                        <span>❮ Salir</span>
+                    </button>
+                    <span id="game-title" style="font-weight:800; text-transform:uppercase; letter-spacing:1px; font-size:0.85rem">GAME</span>
+                    <span style="font-weight:bold; color:var(--text-main)">Puntos: <span id="score" style="color:var(--accent)">0</span></span>
                 </div>
 
-                <input type="text" id="user-answer" placeholder="Type answer..." autocomplete="off" autocorrect="off" autocapitalize="off">
-                <button class="btn-action btn-check" onclick="checkAnswer()">Check Answer</button>
-                <button class="btn-action btn-next" onclick="generateQuestion()">Next Verb →</button>
-                <div class="feedback" id="feedback-msg"></div>
+                <div id="game-content" class="game-content">
+                    </div>
+
+                <div id="game-controls" class="game-input-area">
+                    <input type="text" id="user-input" class="game-input" placeholder="Escribe aquí..." autocomplete="off">
+                    <button class="btn-submit" onclick="checkAnswer()">Enviar</button>
+                </div>
             </div>
+
         </div>
     </main>
 
     <script>
+        // --- 1. DATA (SPANISH ONLY) ---
         const pronouns = ["Yo", "Tú", "Él/Ella", "Nosotros", "Vosotros", "Ellos"];
-
-        // --- FULL DATABASE: 55 VERBS ---
+        
         const verbsData = [
             // 1-10
             { infinitive: "Ser", translation: "To be (perm)", presente: ["soy", "eres", "es", "somos", "sois", "son"], perfecto: ["he sido", "has sido", "ha sido", "hemos sido", "habéis sido", "han sido"], indefinido: ["fui", "fuiste", "fue", "fuimos", "fuisteis", "fueron"] },
@@ -1065,171 +376,360 @@
             { infinitive: "Gustar", translation: "To like", presente: ["Me gusta", "Te gusta", "Le gusta", "Nos gusta", "Os gusta", "Les gusta"], perfecto: ["Me ha gustado", "Te ha gustado", "Le ha gustado", "Nos ha gustado", "Os ha gustado", "Les han gustado"], indefinido: ["Me gustó", "Te gustó", "Le gustó", "Nos gustó", "Os gustó", "Les gustó"] }
         ];
 
-        // --- DARK MODE LOGIC ---
+        // --- 2. GLOBAL STATE ---
+        let state = {
+            mode: null,
+            score: 0,
+            target: null, 
+            gameInterval: null, 
+            fallingPos: 0,
+            lastPIndex: -1 // To prevent same subject repetition
+        };
+
+        // --- 3. THEME LOGIC ---
         function toggleTheme() {
-            const body = document.body;
-            body.classList.toggle('dark-mode');
-            updateThemeIcon();
-            
-            // Optional: Save preference
-            const isDark = body.classList.contains('dark-mode');
-            localStorage.setItem('theme', isDark ? 'dark' : 'light');
+            document.body.classList.toggle('dark-mode');
+            updateIcon();
         }
 
-        function updateThemeIcon() {
+        function updateIcon() {
             const icon = document.getElementById('theme-icon');
             const isDark = document.body.classList.contains('dark-mode');
             
-            if (isDark) {
-                // Sun Icon for Dark Mode (to switch to light)
+            if(isDark){
+                // Sun Icon
                 icon.innerHTML = '<circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>';
             } else {
-                // Moon Icon for Light Mode
+                // Moon Icon
                 icon.innerHTML = '<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>';
             }
         }
+        updateIcon();
 
-        // --- CORE FUNCTIONS ---
-        function renderCards(filterText = "") {
+        // --- 4. NAVIGATION ---
+        function showSection(id) {
+            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById(`section-${id}`).classList.add('active');
+            document.getElementById(`nav-${id}`).classList.add('active');
+            
+            if(id === 'study') renderCards();
+        }
+
+        // --- 5. STUDY SECTION LOGIC ---
+        function renderCards() {
             const container = document.getElementById('cards-container');
+            const search = document.getElementById('search-bar').value.toLowerCase();
             container.innerHTML = '';
 
-            const filteredVerbs = verbsData.filter(v => v.infinitive.toLowerCase().includes(filterText.toLowerCase()));
+            const filtered = verbsData.filter(v => v.infinitive.toLowerCase().includes(search));
 
-            if(filteredVerbs.length === 0) {
-                container.innerHTML = '<div style="grid-column:1/-1; text-align:center; color:var(--text-sec); padding:20px;">No matching verbs found.</div>';
-                return;
-            }
-
-            filteredVerbs.forEach((verb, index) => {
-                const uniqueId = `verb-${index}`;
-                const card = document.createElement('div');
-                card.className = 'verb-card';
-
-                const tabsHtml = `
-                    <div class="card-tabs">
-                        <button class="tab-btn active" onclick="switchTab(this, '${uniqueId}', 'pres')">Presente</button>
-                        <button class="tab-btn" onclick="switchTab(this, '${uniqueId}', 'perf')">P. Perfecto</button>
-                        <button class="tab-btn" onclick="switchTab(this, '${uniqueId}', 'indef')">Indefinido</button>
-                    </div>
-                `;
-
-                const createList = (list) => {
-                    let html = '<ul class="conjugation-list">';
-                    list.forEach((conj, idx) => {
-                        let pron = pronouns[idx];
-                        if (verb.infinitive === "Gustar") pron = ""; 
-                        html += `<li><span class="pronoun">${pron}</span> <span class="verb-form">${conj}</span></li>`;
-                    });
-                    html += '</ul>';
-                    return html;
+            filtered.forEach((verb, index) => {
+                const uid = `card-${index}`;
+                const generateList = (tenseArr) => {
+                    return tenseArr.map((conj, i) => `
+                        <li>
+                            <span class="pronoun">${pronouns[i]}</span>
+                            <span style="font-weight:600">${conj}</span>
+                        </li>
+                    `).join('');
                 };
 
-                const contentHtml = `
-                    <div id="${uniqueId}-pres" class="tense-content active">${createList(verb.presente)}</div>
-                    <div id="${uniqueId}-perf" class="tense-content">${createList(verb.perfecto)}</div>
-                    <div id="${uniqueId}-indef" class="tense-content">${createList(verb.indefinido)}</div>
-                `;
+                const html = `
+                    <div class="verb-card">
+                        <div class="card-header">
+                            <h3>${verb.infinitive}</h3>
+                            <span>${verb.translation}</span>
+                        </div>
+                        
+                        <div class="card-tabs">
+                            <button class="tab-btn active" onclick="switchCardTab('${uid}', 'presente', this)">Presente</button>
+                            <button class="tab-btn" onclick="switchCardTab('${uid}', 'perfecto', this)">Perfecto</button>
+                            <button class="tab-btn" onclick="switchCardTab('${uid}', 'indefinido', this)">Indefinido</button>
+                        </div>
 
-                card.innerHTML = `
-                    <div class="card-header">
-                        <div class="verb-title">${verb.infinitive}</div>
-                        <div class="verb-translation">${verb.translation}</div>
+                        <ul id="${uid}-presente" class="conjugation-list active">${generateList(verb.presente)}</ul>
+                        <ul id="${uid}-perfecto" class="conjugation-list">${generateList(verb.perfecto)}</ul>
+                        <ul id="${uid}-indefinido" class="conjugation-list">${generateList(verb.indefinido)}</ul>
                     </div>
-                    ${tabsHtml}
-                    ${contentHtml}
                 `;
-                container.appendChild(card);
+                container.innerHTML += html;
             });
         }
 
-        function switchTab(btn, cardId, tense) {
-            const cardElement = btn.closest('.verb-card');
-            cardElement.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        function switchCardTab(uid, tense, btn) {
+            const card = btn.closest('.verb-card');
+            card.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            card.querySelectorAll('.conjugation-list').forEach(l => l.classList.remove('active'));
             btn.classList.add('active');
-            cardElement.querySelectorAll('.tense-content').forEach(c => c.classList.remove('active'));
-            document.getElementById(`${cardId}-${tense}`).classList.add('active');
+            document.getElementById(`${uid}-${tense}`).classList.add('active');
         }
 
-        function filterVerbs() {
-            renderCards(document.getElementById('search-input').value);
+        // --- 6. GAME LAUNCHER ---
+        function launchGame(mode) {
+            state.mode = mode;
+            state.score = 0;
+            state.lastPIndex = -1; // Reset memory
+            document.getElementById('score').innerText = "0";
+            
+            document.getElementById('game-menu').style.display = 'none';
+            document.getElementById('game-viewport').style.display = 'flex';
+            
+            const titleEl = document.getElementById('game-title');
+            if(mode === 'chat') titleEl.style.color = 'var(--c-chat)';
+            if(mode === 'lego') titleEl.style.color = 'var(--c-lego)';
+            if(mode === 'teacher') titleEl.style.color = 'var(--c-teacher)';
+            if(mode === 'speed') titleEl.style.color = 'var(--c-speed)';
+            
+            document.getElementById('game-controls').style.display = 'block';
+            nextRound();
         }
 
-        // --- QUIZ LOGIC ---
-        let currentQuestion = {};
+        function exitGame() {
+            clearInterval(state.gameInterval);
+            document.getElementById('game-viewport').style.display = 'none';
+            document.getElementById('game-menu').style.display = 'grid';
+        }
 
-        function generateQuestion() {
-            document.getElementById('feedback-msg').textContent = '';
-            document.getElementById('feedback-msg').className = 'feedback';
-            document.getElementById('user-answer').value = '';
-            document.querySelector('.btn-check').style.display = 'inline-block';
-            document.querySelector('.btn-next').style.display = 'none';
+        // --- 7. ROUND GENERATOR ---
+        function nextRound() {
+            const container = document.getElementById('game-content');
+            const input = document.getElementById('user-input');
+            container.innerHTML = '';
+            input.value = '';
+            input.focus();
 
-            const randomVerbIndex = Math.floor(Math.random() * verbsData.length);
-            const verbObj = verbsData[randomVerbIndex];
-            const personIndex = Math.floor(Math.random() * 6);
+            // 1. Random Verb
+            const vIndex = Math.floor(Math.random() * verbsData.length);
             
-            const tenseRand = Math.floor(Math.random() * 3);
-            let tenseLabel = "";
-            let answer = "";
+            // 2. FORCE NEW SUBJECT (Prevent repetition)
+            let pIndex;
+            do {
+                pIndex = Math.floor(Math.random() * 6);
+            } while (pIndex === state.lastPIndex); // Keep picking until different
+            state.lastPIndex = pIndex;
 
-            if(tenseRand === 0) { tenseLabel = "Presente"; answer = verbObj.presente[personIndex]; }
-            else if(tenseRand === 1) { tenseLabel = "Pretérito Perfecto"; answer = verbObj.perfecto[personIndex]; }
-            else { tenseLabel = "Pretérito Indefinido"; answer = verbObj.indefinido[personIndex]; }
+            const verbObj = verbsData[vIndex];
             
-            let pronounDisplay = pronouns[personIndex];
-            if(verbObj.infinitive === "Gustar") pronounDisplay = "(A mí/ti...)"; 
-
-            currentQuestion = {
-                answer: answer.toLowerCase().trim(),
-                verb: verbObj.infinitive
+            // 3. Random Tense
+            const tenses = ['presente', 'perfecto', 'indefinido'];
+            const selectedTense = tenses[Math.floor(Math.random() * tenses.length)];
+            
+            const answer = verbObj[selectedTense][pIndex];
+            
+            state.target = {
+                verb: verbObj.infinitive,
+                translation: verbObj.translation,
+                pronoun: pronouns[pIndex],
+                tense: selectedTense, 
+                answer: answer,
+                displayAnswer: answer 
             };
 
-            document.getElementById('q-pronoun').textContent = pronounDisplay;
-            document.getElementById('q-verb').textContent = verbObj.infinitive;
-            document.getElementById('q-tense').textContent = tenseLabel;
-            
-            if(window.innerWidth > 768) document.getElementById('user-answer').focus();
+            if(state.mode === 'chat') setupChat(container);
+            else if(state.mode === 'lego') setupLego(container);
+            else if(state.mode === 'teacher') setupTeacher(container);
+            else if(state.mode === 'speed') setupSpeed(container);
         }
 
-        function checkAnswer() {
-            const userAns = document.getElementById('user-answer').value.trim().toLowerCase();
-            const feedback = document.getElementById('feedback-msg');
-            const correctAnswer = currentQuestion.answer;
+        // --- MODE 1: CHAT ---
+        function setupChat(container) {
+            let timeContext = "Ahora";
+            let tenseDisplay = "Presente";
+            
+            if(state.target.tense === 'perfecto') {
+                timeContext = "Esta mañana";
+                tenseDisplay = "Pretérito Perfecto";
+            } else if(state.target.tense === 'indefinido') {
+                timeContext = "Ayer";
+                tenseDisplay = "Pretérito Indefinido";
+            }
 
-            if (userAns === correctAnswer) {
-                feedback.textContent = "¡Muy bien! (Correct)";
-                feedback.className = "feedback correct";
-                document.querySelector('.btn-check').style.display = 'none';
-                document.querySelector('.btn-next').style.display = 'inline-block';
+            container.innerHTML = `
+                <div class="chat-wrapper">
+                    <div class="chat-bubble bot-bubble">
+                        <div class="chat-meta">Bot • ${tenseDisplay}</div>
+                        Hola. Necesito ayuda con el verbo <b>${state.target.verb}</b>.
+                        <br><br>
+                        ¿Cómo se dice: <b>${state.target.pronoun} ...</b>?
+                        <div style="margin-top:5px; font-size:0.85rem; opacity:0.8">Contexto: ${timeContext}</div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // --- MODE 2: LEGO ---
+        function setupLego(container) {
+            document.getElementById('game-controls').style.display = 'none'; 
+            
+            const ans = state.target.answer;
+            let stem, suffix;
+            
+            if(ans.includes(" ")) {
+                const parts = ans.split(" ");
+                stem = parts[0]; 
+                suffix = parts[1]; 
             } else {
-                feedback.textContent = `Incorrect. Answer: "${correctAnswer}"`;
-                feedback.className = "feedback wrong";
+                const cut = ans.length > 3 ? 2 : 1;
+                stem = ans.slice(0, -cut);
+                suffix = ans.slice(-cut);
+            }
+
+            const wrongSuffixes = ["-as", "-ido", "-amos", "-ste", "-o", "-ron"].filter(x => x !== "-"+suffix).slice(0, 3);
+            const options = [suffix, ...wrongSuffixes.map(w => w.replace("-",""))].sort(() => Math.random() - 0.5);
+
+            container.innerHTML = `
+                <div style="text-align:center">
+                    <h3 style="color:var(--text-sec); text-transform:uppercase; margin-bottom:5px">${state.target.tense}</h3>
+                    <div class="lego-pronoun">${state.target.pronoun}</div>
+
+                    <div class="lego-workspace">
+                        <div class="lego-stem">${stem}</div>
+                        <div class="lego-dropzone" id="lego-target">?</div>
+                    </div>
+                    <div class="lego-pieces">
+                        ${options.map(opt => `<div class="lego-piece" onclick="solveLego('${stem}', '${opt}')">${opt}</div>`).join('')}
+                    </div>
+                    
+                    <div id="lego-phase2" style="display:none; margin-top:20px; animation:fadeIn 0.5s">
+                        <p style="color:var(--text-main); margin-bottom:10px">¡Correcto! Ahora escribe la palabra completa:</p>
+                        <input type="text" id="lego-full-input" class="game-input" placeholder="Escribe ${ans}...">
+                        <button class="btn-submit" onclick="checkLegoFull('${ans}')">Verificar</button>
+                    </div>
+                </div>
+            `;
+        }
+
+        function solveLego(stem, choice) {
+            const attempt = stem + choice;
+            const attemptCompound = stem + " " + choice;
+            
+            if(attempt === state.target.answer || attemptCompound === state.target.answer) {
+                document.getElementById('lego-target').innerText = choice;
+                document.getElementById('lego-target').classList.add('filled');
+                document.querySelector('.lego-pieces').style.display = 'none';
+                
+                document.getElementById('lego-phase2').style.display = 'block';
+                document.getElementById('lego-full-input').focus();
+            } else {
+                showToast("¡Incorrecto!", false);
             }
         }
 
-        function showSection(sectionId) {
-            document.querySelectorAll('.nav-pills button').forEach(btn => btn.classList.remove('active'));
-            document.getElementById(`btn-${sectionId}`).classList.add('active');
-            document.querySelectorAll('.section').forEach(sec => sec.classList.remove('active'));
-            document.getElementById(`section-${sectionId}`).classList.add('active');
-            window.scrollTo(0,0);
+        function checkLegoFull(correct) {
+            const val = document.getElementById('lego-full-input').value.trim().toLowerCase();
+            if(val === correct.toLowerCase()) handleWin();
+            else showToast("¡Error ortográfico!", false);
         }
 
-        document.getElementById('user-answer').addEventListener("keypress", function(event) {
-            if (event.key === "Enter") {
-                if(document.querySelector('.btn-next').style.display === 'inline-block'){
-                     generateQuestion();
-                } else {
-                     checkAnswer();
+        // --- MODE 3: TEACHER (Yellow Note UI) ---
+        function setupTeacher(container) {
+            let timeLabel = "AHORA";
+            if(state.target.tense === 'perfecto') timeLabel = "ESTA MAÑANA";
+            if(state.target.tense === 'indefinido') timeLabel = "AYER";
+
+            container.innerHTML = `
+                <div class="teacher-card">
+                    <div class="teacher-header">
+                        <span class="teacher-label">CONTEXTO: ${timeLabel}</span>
+                        <span class="teacher-label">SUJETO: ${state.target.pronoun.toUpperCase()}</span>
+                    </div>
+                    
+                    <div class="teacher-mistake">
+                        El estudiante escribió: <br>
+                        "${state.target.pronoun} <span class="error-highlight">${state.target.verb.toLowerCase()}</span>..."
+                    </div>
+                    
+                    <div class="teacher-prompt">
+                        Corrección necesaria (${state.target.tense}):
+                    </div>
+                </div>
+            `;
+        }
+
+        // --- MODE 4: SPEED ---
+        function setupSpeed(container) {
+            container.innerHTML = `
+                <div class="speed-track">
+                    <div class="ground-line"></div>
+                </div>
+            `;
+            
+            const fallingEl = document.createElement('div');
+            fallingEl.className = 'falling-item';
+            fallingEl.innerHTML = `
+                <div style="font-size:0.75rem; text-transform:uppercase; color:var(--c-speed); font-weight:900">${state.target.tense}</div>
+                <div>${state.target.pronoun} + ${state.target.verb}</div>
+            `;
+            
+            document.querySelector('.speed-track').appendChild(fallingEl);
+
+            let pos = 0;
+            let speed = 0.15; 
+            
+            clearInterval(state.gameInterval);
+            state.gameInterval = setInterval(() => {
+                pos += speed;
+                fallingEl.style.top = pos + '%';
+                
+                if(pos > 90) { 
+                    clearInterval(state.gameInterval);
+                    showToast(`¡Tarde! Era: ${state.target.answer}`, false);
+                    document.getElementById('user-input').value = state.target.answer; 
+                    setTimeout(nextRound, 2500);
+                }
+            }, 20);
+        }
+
+        // --- SHARED CHECK LOGIC ---
+        function checkAnswer() {
+            const input = document.getElementById('user-input');
+            const val = input.value.trim().toLowerCase();
+            const correct = state.target.answer.toLowerCase();
+
+            if(val === correct) {
+                handleWin();
+            } else {
+                showToast("Incorrecto. Intenta de nuevo.", false);
+                input.style.borderColor = 'red';
+                setTimeout(() => input.style.borderColor = 'var(--border-color)', 500);
+            }
+        }
+
+        function handleWin() {
+            clearInterval(state.gameInterval);
+            showToast("¡Correcto!", true);
+            state.score += 10;
+            document.getElementById('score').innerText = state.score;
+            
+            if(state.mode === 'chat') {
+                const wrapper = document.querySelector('.chat-wrapper');
+                wrapper.innerHTML += `<div class="chat-bubble user-bubble">${document.getElementById('user-input').value}</div>`;
+            }
+
+            setTimeout(nextRound, 1200);
+        }
+
+        function showToast(msg, isSuccess) {
+            const t = document.getElementById('toast');
+            t.innerText = msg;
+            t.className = isSuccess ? 'toast show' : 'toast show error';
+            setTimeout(() => t.className = 'toast', 2000);
+        }
+
+        document.addEventListener('keypress', (e) => {
+            if(e.key === 'Enter') {
+                if(state.mode === 'lego') {
+                     if(document.getElementById('lego-phase2') && document.getElementById('lego-phase2').style.display === 'block') {
+                         checkLegoFull(state.target.answer);
+                     }
+                } else if (state.mode) {
+                    checkAnswer();
                 }
             }
         });
 
-        // Initialize
-        updateThemeIcon(); // Set initial icon
         renderCards();
-        generateQuestion();
 
     </script>
 </body>
