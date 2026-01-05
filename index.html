@@ -69,14 +69,18 @@
         color: var(--text-main);
     }
 
-    .theme-toggle {
+    .header-controls {
         position: absolute; top: 0; right: 0;
+        display: flex; gap: 10px;
+    }
+
+    .icon-btn {
         background: var(--card-bg); border: 1px solid var(--border-color);
         width: 44px; height: 44px; border-radius: 50%;
         display: flex; align-items: center; justify-content: center;
         cursor: pointer; box-shadow: var(--shadow-soft); color: var(--text-main);
     }
-    .theme-toggle svg { width: 22px; height: 22px; }
+    .icon-btn svg { width: 22px; height: 22px; }
 
     .nav-pills { display: inline-flex; justify-content: center; gap: 8px; background: var(--card-bg); padding: 6px; border-radius: 50px; box-shadow: var(--shadow-soft); border: 1px solid var(--border-color); }
     .nav-btn { border: none; background: transparent; padding: 10px 24px; border-radius: 40px; font-weight: 600; font-size: 0.95rem; color: var(--text-sec); cursor: pointer; }
@@ -181,7 +185,7 @@
     .lego-piece { padding: 12px 24px; background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 12px; font-weight: bold; cursor: pointer; box-shadow: 0 4px 0 rgba(0,0,0,0.1); font-size: 1.1rem; }
     .lego-piece:active { transform: translateY(4px); box-shadow: none; }
 
-    /* Teacher (Exact Style from Screenshot) */
+    /* Teacher */
     .teacher-card {
         background: #fff9c4; /* Yellow sticky note */
         color: #5d4037;
@@ -194,7 +198,6 @@
         position: relative;
         margin: 0 auto;
     }
-    /* Tape Effect */
     .teacher-card::before {
         content: '';
         position: absolute;
@@ -204,13 +207,10 @@
         box-shadow: 0 1px 3px rgba(0,0,0,0.1);
         backdrop-filter: blur(2px);
     }
-    
     .teacher-header { display: flex; flex-direction: column; align-items: flex-start; margin-bottom: 25px; }
     .teacher-label { color: #8d6e63; font-size: 0.9rem; font-weight: bold; text-transform: uppercase; margin-bottom: 4px; }
-    
     .teacher-mistake { font-size: 1.4rem; margin-bottom: 25px; line-height: 1.4; color: #5d4037; }
     .error-highlight { text-decoration: line-through; color: #c62828; font-family: 'Courier New', monospace; font-weight: bold; }
-    
     .teacher-prompt { color: #9e9d24; font-weight: bold; font-size: 1rem; }
     
     /* Speed */
@@ -228,17 +228,104 @@
     .toast.show { transform: translateX(-50%) translateY(0); }
     .toast.error { background: #ff3b30; }
 
+    /* AUTH OVERLAY */
+    #auth-overlay {
+        position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+        background: var(--bg-body); z-index: 9999;
+        display: flex; flex-direction: column; align-items: center; justify-content: center;
+        padding: 20px;
+    }
+    .auth-box {
+        background: var(--card-bg); padding: 30px; border-radius: 20px;
+        box-shadow: var(--shadow-hover); border: 1px solid var(--border-color);
+        width: 100%; max-width: 320px; text-align: center;
+    }
+    .auth-title { font-size: 1.5rem; font-weight: 800; margin-bottom: 20px; color: var(--text-main); }
+
+    /* ADD VERB MODAL */
+    #add-verb-modal {
+        position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+        background: rgba(0,0,0,0.5); z-index: 2000;
+        backdrop-filter: blur(5px);
+        display: none; align-items: center; justify-content: center;
+        padding: 20px;
+    }
+    .modal-content {
+        background: var(--card-bg); width: 100%; max-width: 600px;
+        max-height: 90vh; overflow-y: auto;
+        border-radius: 24px; padding: 25px;
+        box-shadow: var(--shadow-hover);
+        border: 1px solid var(--border-color);
+    }
+    .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+    .modal-title { font-size: 1.4rem; font-weight: 700; color: var(--text-main); }
+    .close-modal { background: none; border: none; font-size: 1.5rem; cursor: pointer; color: var(--text-sec); }
+    
+    .form-group { margin-bottom: 15px; }
+    .form-label { display: block; margin-bottom: 5px; font-size: 0.9rem; font-weight: 600; color: var(--text-sec); }
+    .form-input { width: 100%; padding: 10px; border-radius: 10px; border: 1px solid var(--border-color); background: var(--input-bg); color: var(--text-main); }
+    
+    .form-grid-6 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 15px; }
+    .form-section-title { font-size: 1rem; color: var(--accent); font-weight: bold; margin: 15px 0 10px; border-bottom: 1px solid var(--border-color); padding-bottom: 5px; }
+
     @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
     </style>
 </head>
 <body>
 
+    <!-- AUTH OVERLAY -->
+    <div id="auth-overlay">
+        <div class="auth-box">
+            <h2 class="auth-title">🔐 Acceso</h2>
+            <p style="color:var(--text-sec); margin-bottom:15px">Introduce el código de acceso</p>
+            <input type="password" id="auth-pass" class="game-input" placeholder="Passcode" style="margin-bottom:15px">
+            <button class="btn-submit" onclick="checkAuth()">Entrar</button>
+            <p id="auth-error" style="color:red; font-size:0.9rem; margin-top:10px; display:none">Código incorrecto</p>
+        </div>
+    </div>
+
+    <!-- ADD VERB MODAL -->
+    <div id="add-verb-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span class="modal-title">Añadir Nuevo Verbo</span>
+                <button class="close-modal" onclick="closeAddModal()">×</button>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">Infinitivo (ej. Cantar)</label>
+                <input type="text" id="new-infinitive" class="form-input" placeholder="Cantar">
+            </div>
+            <div class="form-group">
+                <label class="form-label">Traducción (ej. To sing)</label>
+                <input type="text" id="new-trans" class="form-input" placeholder="To sing">
+            </div>
+
+            <div id="conjugation-forms">
+                <!-- Javascript will generate inputs here -->
+            </div>
+
+            <button class="btn-submit" onclick="saveNewVerb()">Guardar Verbo</button>
+        </div>
+    </div>
+
     <div id="toast" class="toast">¡Correcto!</div>
 
     <header>
-        <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle Dark Mode">
-            <svg id="theme-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></svg>
-        </button>
+        <div class="header-controls">
+            <!-- Add Verb Button -->
+            <button class="icon-btn" onclick="openAddModal()" aria-label="Add Verb">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="12" y1="5" x2="12" y2="19"></line>
+                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                </svg>
+            </button>
+            
+            <!-- Theme Toggle -->
+            <button class="icon-btn" onclick="toggleTheme()" aria-label="Toggle Dark Mode">
+                <svg id="theme-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></svg>
+            </button>
+        </div>
 
         <h1>Nexo</h1>
         
@@ -312,6 +399,7 @@
         // --- 1. DATA (SPANISH ONLY) ---
         const pronouns = ["Yo", "Tú", "Él/Ella", "Nosotros", "Vosotros", "Ellos"];
         
+        // Using 'const' for the array reference, but we can push new items into it
         const verbsData = [
             // 1-10
             { infinitive: "Ser", translation: "To be (perm)", presente: ["soy", "eres", "es", "somos", "sois", "son"], perfecto: ["he sido", "has sido", "ha sido", "hemos sido", "habéis sido", "han sido"], indefinido: ["fui", "fuiste", "fue", "fuimos", "fuisteis", "fueron"] },
@@ -376,6 +464,21 @@
             { infinitive: "Gustar", translation: "To like", presente: ["Me gusta", "Te gusta", "Le gusta", "Nos gusta", "Os gusta", "Les gusta"], perfecto: ["Me ha gustado", "Te ha gustado", "Le ha gustado", "Nos ha gustado", "Os ha gustado", "Les han gustado"], indefinido: ["Me gustó", "Te gustó", "Le gustó", "Nos gustó", "Os gustó", "Les gustó"] }
         ];
 
+        // --- AUTHENTICATION ---
+        function checkAuth() {
+            const pass = document.getElementById('auth-pass').value;
+            if(pass === 'brobbey') {
+                document.getElementById('auth-overlay').style.display = 'none';
+            } else {
+                document.getElementById('auth-error').style.display = 'block';
+            }
+        }
+        
+        // Ensure auth check on Enter key
+        document.getElementById('auth-pass').addEventListener('keypress', (e) => {
+            if(e.key === 'Enter') checkAuth();
+        });
+
         // --- 2. GLOBAL STATE ---
         let state = {
             mode: null,
@@ -383,7 +486,7 @@
             target: null, 
             gameInterval: null, 
             fallingPos: 0,
-            lastPIndex: -1 // To prevent same subject repetition
+            lastPIndex: -1 
         };
 
         // --- 3. THEME LOGIC ---
@@ -464,6 +567,74 @@
             btn.classList.add('active');
             document.getElementById(`${uid}-${tense}`).classList.add('active');
         }
+
+        // --- 5.5 ADD VERB LOGIC ---
+        function openAddModal() {
+            const container = document.getElementById('conjugation-forms');
+            container.innerHTML = '';
+            
+            const tenses = ['presente', 'perfecto', 'indefinido'];
+            
+            tenses.forEach(tense => {
+                let html = `<div class="form-section-title">${tense.charAt(0).toUpperCase() + tense.slice(1)}</div>`;
+                html += `<div class="form-grid-6">`;
+                
+                pronouns.forEach(p => {
+                    html += `
+                        <div>
+                            <label class="form-label" style="font-size:0.75rem">${p}</label>
+                            <input type="text" class="form-input new-verb-input" data-tense="${tense}" placeholder="...">
+                        </div>
+                    `;
+                });
+                
+                html += `</div>`;
+                container.innerHTML += html;
+            });
+            
+            document.getElementById('add-verb-modal').style.display = 'flex';
+        }
+
+        function closeAddModal() {
+            document.getElementById('add-verb-modal').style.display = 'none';
+        }
+
+        function saveNewVerb() {
+            const inf = document.getElementById('new-infinitive').value.trim();
+            const trans = document.getElementById('new-trans').value.trim();
+            
+            if(!inf || !trans) {
+                alert("Por favor, escribe el infinitivo y la traducción.");
+                return;
+            }
+
+            const inputs = document.querySelectorAll('.new-verb-input');
+            let newVerb = {
+                infinitive: inf,
+                translation: trans,
+                presente: [],
+                perfecto: [],
+                indefinido: []
+            };
+
+            inputs.forEach(inp => {
+                const tense = inp.getAttribute('data-tense');
+                const val = inp.value.trim() || "---"; // Placeholder if empty
+                newVerb[tense].push(val);
+            });
+
+            // ADD TO MEMORY DATA
+            verbsData.push(newVerb);
+            
+            showToast("¡Verbo añadido exitosamente!", true);
+            closeAddModal();
+            renderCards(); // Refresh UI
+            
+            // Reset inputs
+            document.getElementById('new-infinitive').value = "";
+            document.getElementById('new-trans').value = "";
+        }
+
 
         // --- 6. GAME LAUNCHER ---
         function launchGame(mode) {
