@@ -86,6 +86,23 @@
     .section.active { display: block; opacity: 1; transform: translateY(0); transition: opacity 0.4s ease, transform 0.4s ease; }
 
     /* --- STUDY CARDS UI --- */
+    /* Filters */
+    .filter-chips {
+        display: flex; gap: 10px; overflow-x: auto; padding-bottom: 5px; margin-bottom: 20px;
+        -ms-overflow-style: none; scrollbar-width: none;
+    }
+    .filter-chips::-webkit-scrollbar { display: none; }
+    
+    .filter-btn {
+        background: var(--card-bg); border: 1px solid var(--border-color);
+        padding: 8px 16px; border-radius: 20px; font-size: 0.9rem; font-weight: 600;
+        color: var(--text-sec); cursor: pointer; white-space: nowrap;
+    }
+    .filter-btn.active {
+        background: var(--accent); color: white; border-color: var(--accent);
+        box-shadow: 0 4px 10px rgba(0, 113, 227, 0.3);
+    }
+
     .cards-grid { 
         display: grid; 
         grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); 
@@ -127,8 +144,11 @@
     .game-header {
         padding: 15px 20px; border-bottom: 1px solid var(--border-color);
         display: flex; justify-content: space-between; align-items: center; background: var(--input-bg);
+        font-size: 0.9rem;
     }
     .back-btn { background: none; border: none; font-weight: 600; cursor: pointer; color: var(--text-main); }
+    
+    .score-board { display: flex; gap: 15px; }
 
     .game-content {
         flex: 1; padding: 30px 20px; 
@@ -261,8 +281,16 @@
         <!-- STUDY SECTION -->
         <div id="section-study" class="section active">
             <input type="text" id="search-bar" placeholder="Buscar verbo (e.g. Tener)..." 
-                   style="width:100%; padding:15px; border-radius:15px; border:1px solid var(--border-color); background:var(--card-bg); color:var(--text-main); margin-bottom:20px; font-size:1rem;" 
+                   style="width:100%; padding:15px; border-radius:15px; border:1px solid var(--border-color); background:var(--card-bg); color:var(--text-main); margin-bottom:15px; font-size:1rem;" 
                    onkeyup="renderCards()">
+            
+            <!-- NEW FILTER BUTTONS -->
+            <div class="filter-chips">
+                <button class="filter-btn" id="filter-presente" onclick="toggleFilter('presente')">Presente</button>
+                <button class="filter-btn" id="filter-perfecto" onclick="toggleFilter('perfecto')">Perfecto</button>
+                <button class="filter-btn" id="filter-indefinido" onclick="toggleFilter('indefinido')">Indefinido</button>
+            </div>
+
             <div class="cards-grid" id="cards-container"></div>
         </div>
 
@@ -281,7 +309,10 @@
                 <div class="game-header">
                     <button class="back-btn" onclick="exitGame()">❮ Salir</button>
                     <span id="game-mode-title" style="font-weight:bold; color:var(--accent); text-transform:uppercase"></span>
-                    <span style="font-weight:bold">Puntos: <span id="score">0</span></span>
+                    <div class="score-board">
+                        <span>Restantes: <b id="verbs-remaining">0</b></span>
+                        <span style="font-weight:bold">Pts: <span id="score">0</span></span>
+                    </div>
                 </div>
 
                 <div class="game-content">
@@ -421,12 +452,17 @@
 
         ];
 
-
         // --- AUTH ---
+        // Check local storage immediately
+        if(localStorage.getItem('nexo_auth_token') === 'valid') {
+            document.getElementById('auth-overlay').style.display = 'none';
+        }
+
         function checkAuth() {
             const pass = document.getElementById('auth-pass').value;
-            if(pass === 'brobbey') {
+            if(pass === 'walo') {
                 document.getElementById('auth-overlay').style.display = 'none';
+                localStorage.setItem('nexo_auth_token', 'valid'); // Save to local storage
             } else {
                 document.getElementById('auth-error').style.display = 'block';
             }
@@ -460,6 +496,22 @@
         }
 
         // --- STUDY SECTION LOGIC ---
+        let activeTenseFilter = null;
+
+        function toggleFilter(tense) {
+            if (activeTenseFilter === tense) {
+                // Deactivate
+                activeTenseFilter = null;
+                document.getElementById(`filter-${tense}`).classList.remove('active');
+            } else {
+                // Activate new, remove old
+                activeTenseFilter = tense;
+                document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                document.getElementById(`filter-${tense}`).classList.add('active');
+            }
+            renderCards();
+        }
+
         function renderCards() {
             const container = document.getElementById('cards-container');
             const search = document.getElementById('search-bar').value.toLowerCase();
@@ -478,6 +530,17 @@
                     `).join('');
                 };
 
+                // Logic to set active tab based on filter
+                const defaultTense = activeTenseFilter ? activeTenseFilter : 'presente';
+                
+                const isPresActive = defaultTense === 'presente' ? 'active' : '';
+                const isPerfActive = defaultTense === 'perfecto' ? 'active' : '';
+                const isIndefActive = defaultTense === 'indefinido' ? 'active' : '';
+
+                const showPres = defaultTense === 'presente' ? 'active' : '';
+                const showPerf = defaultTense === 'perfecto' ? 'active' : '';
+                const showIndef = defaultTense === 'indefinido' ? 'active' : '';
+
                 const html = `
                     <div class="verb-card">
                         <div class="card-header">
@@ -486,14 +549,14 @@
                         </div>
                         
                         <div class="card-tabs">
-                            <button class="tab-btn active" onclick="switchCardTab('${uid}', 'presente', this)">Presente</button>
-                            <button class="tab-btn" onclick="switchCardTab('${uid}', 'perfecto', this)">Perfecto</button>
-                            <button class="tab-btn" onclick="switchCardTab('${uid}', 'indefinido', this)">Indefinido</button>
+                            <button class="tab-btn ${isPresActive}" onclick="switchCardTab('${uid}', 'presente', this)">Presente</button>
+                            <button class="tab-btn ${isPerfActive}" onclick="switchCardTab('${uid}', 'perfecto', this)">Perfecto</button>
+                            <button class="tab-btn ${isIndefActive}" onclick="switchCardTab('${uid}', 'indefinido', this)">Indefinido</button>
                         </div>
 
-                        <ul id="${uid}-presente" class="conjugation-list active">${generateList(verb.presente)}</ul>
-                        <ul id="${uid}-perfecto" class="conjugation-list">${generateList(verb.perfecto)}</ul>
-                        <ul id="${uid}-indefinido" class="conjugation-list">${generateList(verb.indefinido)}</ul>
+                        <ul id="${uid}-presente" class="conjugation-list ${showPres}">${generateList(verb.presente)}</ul>
+                        <ul id="${uid}-perfecto" class="conjugation-list ${showPerf}">${generateList(verb.perfecto)}</ul>
+                        <ul id="${uid}-indefinido" class="conjugation-list ${showIndef}">${generateList(verb.indefinido)}</ul>
                     </div>
                 `;
                 container.innerHTML += html;
@@ -547,7 +610,7 @@
             currentContext: "",
             pronounQueue: [],
             targetIndex: -1,
-            verbQueue: [] // NEW: Queue for verbs to ensure no repetition
+            verbQueue: [] 
         };
 
         function startGame(tense) {
@@ -558,6 +621,7 @@
             
             // Reset Verb Queue when starting a new game session
             refillVerbQueue();
+            updateGameCounter();
 
             document.getElementById('tense-menu').style.display = 'none';
             document.getElementById('game-viewport').style.display = 'flex';
@@ -570,18 +634,25 @@
             document.getElementById('tense-menu').style.display = 'grid';
         }
 
-        // NEW FUNCTION: Refill the queue with all verb indices and shuffle them
         function refillVerbQueue() {
             gameState.verbQueue = Array.from({length: verbsData.length}, (_, i) => i);
             // Shuffle array
             gameState.verbQueue.sort(() => Math.random() - 0.5);
         }
 
+        // NEW: Update Remaining Verbs Counter
+        function updateGameCounter() {
+            document.getElementById('verbs-remaining').innerText = gameState.verbQueue.length;
+        }
+
         function loadNewVerb() {
             // Check if queue is empty, if so, refill it (infinite play, but no repeats until full cycle)
             if (gameState.verbQueue.length === 0) {
                 refillVerbQueue();
+                showToast("¡Ronda completada! Reiniciando...", true);
             }
+            
+            updateGameCounter();
 
             // Get next verb index from the shuffled queue
             const nextIndex = gameState.verbQueue.pop();
