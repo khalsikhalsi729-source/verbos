@@ -116,8 +116,8 @@
     .card-header h3 { color: var(--accent); font-size: 1.6rem; }
     .card-header span { color: var(--text-sec); font-size: 0.9rem; font-style: italic; }
 
-    .card-tabs { display: flex; gap: 5px; margin-bottom: 10px; background: var(--input-bg); padding: 4px; border-radius: 10px; }
-    .tab-btn { flex: 1; border: none; background: transparent; padding: 6px; font-size: 0.8rem; font-weight: 600; color: var(--text-sec); border-radius: 8px; cursor: pointer; }
+    .card-tabs { display: flex; gap: 5px; margin-bottom: 10px; background: var(--input-bg); padding: 4px; border-radius: 10px; overflow-x: auto; }
+    .tab-btn { flex: 1; border: none; background: transparent; padding: 6px; font-size: 0.8rem; font-weight: 600; color: var(--text-sec); border-radius: 8px; cursor: pointer; white-space: nowrap; }
     .tab-btn.active { background: var(--card-bg); color: var(--text-main); box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
 
     .conjugation-list { list-style: none; display: none; }
@@ -127,11 +127,11 @@
     .pronoun { color: var(--text-sec); font-size: 0.85em; width: 70px; }
 
     /* --- GAME AREA STYLES --- */
-    .tense-menu { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-top: 20px; }
+    .tense-menu { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 15px; margin-top: 20px; }
     .tense-btn {
         background: var(--card-bg); border: 2px solid var(--border-color);
         border-radius: 20px; padding: 30px; text-align: center; cursor: pointer;
-        box-shadow: var(--shadow-soft); font-size: 1.2rem; font-weight: 800;
+        box-shadow: var(--shadow-soft); font-size: 1.1rem; font-weight: 800;
         color: var(--text-main);
     }
     .tense-btn:hover { border-color: var(--accent); transform: translateY(-3px); }
@@ -146,7 +146,9 @@
         display: flex; justify-content: space-between; align-items: center; background: var(--input-bg);
         font-size: 0.9rem;
     }
+    .game-header-left { display: flex; gap: 10px; align-items: center; }
     .back-btn { background: none; border: none; font-weight: 600; cursor: pointer; color: var(--text-main); }
+    .skip-btn { background: var(--text-sec); color: #fff; border: none; font-weight: 600; cursor: pointer; font-size: 0.75rem; padding: 4px 10px; border-radius: 12px; opacity: 0.8; }
     
     .score-board { display: flex; gap: 15px; }
 
@@ -233,7 +235,6 @@
 </head>
 <body>
 
-    <!-- AUTH OVERLAY -->
     <div id="auth-overlay">
         <div class="auth-box">
             <h2 style="margin-bottom:20px">🔐 Acceso</h2>
@@ -243,7 +244,6 @@
         </div>
     </div>
 
-    <!-- ADD VERB MODAL -->
     <div id="add-verb-modal">
         <div class="modal-content">
             <div style="display:flex; justify-content:space-between; margin-bottom:20px">
@@ -278,15 +278,14 @@
     </header>
 
     <main>
-        <!-- STUDY SECTION -->
         <div id="section-study" class="section active">
             <input type="text" id="search-bar" placeholder="Buscar verbo (e.g. Tener)..." 
                    style="width:100%; padding:15px; border-radius:15px; border:1px solid var(--border-color); background:var(--card-bg); color:var(--text-main); margin-bottom:15px; font-size:1rem;" 
                    onkeyup="renderCards()">
             
-            <!-- NEW FILTER BUTTONS -->
             <div class="filter-chips">
                 <button class="filter-btn" id="filter-presente" onclick="toggleFilter('presente')">Presente</button>
+                <button class="filter-btn" id="filter-imperfecto" onclick="toggleFilter('imperfecto')">Imperfecto</button>
                 <button class="filter-btn" id="filter-perfecto" onclick="toggleFilter('perfecto')">Perfecto</button>
                 <button class="filter-btn" id="filter-indefinido" onclick="toggleFilter('indefinido')">Indefinido</button>
             </div>
@@ -294,20 +293,21 @@
             <div class="cards-grid" id="cards-container"></div>
         </div>
 
-        <!-- GAME SECTION -->
         <div id="section-quiz" class="section">
             
-            <!-- Step 1: Select Tense -->
             <div id="tense-menu" class="tense-menu">
                 <div class="tense-btn" onclick="startGame('presente')">Presente</div>
+                <div class="tense-btn" onclick="startGame('imperfecto')">Imperfecto</div>
                 <div class="tense-btn" onclick="startGame('perfecto')">Perfecto</div>
                 <div class="tense-btn" onclick="startGame('indefinido')">Indefinido</div>
             </div>
 
-            <!-- Step 2: Game Viewport -->
             <div id="game-viewport" class="game-viewport" style="display:none;">
                 <div class="game-header">
-                    <button class="back-btn" onclick="exitGame()">❮ Salir</button>
+                    <div class="game-header-left">
+                        <button class="back-btn" onclick="exitGame()">❮ Salir</button>
+                        <button class="skip-btn" onclick="skipVerb()">⏭ Saltar</button>
+                    </div>
                     <span id="game-mode-title" style="font-weight:bold; color:var(--accent); text-transform:uppercase"></span>
                     <div class="score-board">
                         <span>Restantes: <b id="verbs-remaining">0</b></span>
@@ -360,100 +360,79 @@
             "Gustar": "el chocolate."
         };
 
-        
-         const verbsData = [
-            // 1-10
-            { infinitive: "Ser", translation: "To be (perm)", presente: ["soy", "eres", "es", "somos", "sois", "son"], perfecto: ["he sido", "has sido", "ha sido", "hemos sido", "habéis sido", "han sido"], indefinido: ["fui", "fuiste", "fue", "fuimos", "fuisteis", "fueron"] },
-            { infinitive: "Estar", translation: "To be (temp)", presente: ["estoy", "estás", "está", "estamos", "estáis", "están"], perfecto: ["he estado", "has estado", "ha estado", "hemos estado", "habéis estado", "han estado"], indefinido: ["estuve", "estuviste", "estuvo", "estuvimos", "estuvisteis", "estuvieron"] },
-            { infinitive: "Tener", translation: "To have", presente: ["tengo", "tienes", "tiene", "tenemos", "tenéis", "tienen"], perfecto: ["he tenido", "has tenido", "ha tenido", "hemos tenido", "habéis tenido", "han tenido"], indefinido: ["tuve", "tuviste", "tuvo", "tuvimos", "tuvisteis", "tuvieron"] },
-            { infinitive: "Ir", translation: "To go", presente: ["voy", "vas", "va", "vamos", "vais", "van"], perfecto: ["he ido", "has ido", "ha ido", "hemos ido", "habéis ido", "han ido"], indefinido: ["fui", "fuiste", "fue", "fuimos", "fuisteis", "fueron"] },
-            { infinitive: "Hacer", translation: "To do/make", presente: ["hago", "haces", "hace", "hacemos", "hacéis", "hacen"], perfecto: ["he hecho", "has hecho", "ha hecho", "hemos hecho", "habéis hecho", "han hecho"], indefinido: ["hice", "hiciste", "hizo", "hicimos", "hicisteis", "hicieron"] },
-            { infinitive: "Poder", translation: "To can", presente: ["puedo", "puedes", "puede", "podemos", "podéis", "pueden"], perfecto: ["he podido", "has podido", "ha podido", "hemos podido", "habéis podido", "han podido"], indefinido: ["pude", "pudiste", "pudo", "pudimos", "pudisteis", "pudieron"] },
-            { infinitive: "Decir", translation: "To say", presente: ["digo", "dices", "dice", "decimos", "decís", "dicen"], perfecto: ["he dicho", "has dicho", "ha dicho", "hemos dicho", "habéis dicho", "han dicho"], indefinido: ["dije", "dijiste", "dijo", "dijimos", "dijisteis", "dijeron"] },
-            { infinitive: "Ver", translation: "To see", presente: ["veo", "ves", "ve", "vemos", "veis", "ven"], perfecto: ["he visto", "has visto", "ha visto", "hemos visto", "habéis visto", "han visto"], indefinido: ["vi", "viste", "vio", "vimos", "visteis", "vieron"] },
-            { infinitive: "Comer", translation: "To eat", presente: ["como", "comes", "come", "comemos", "coméis", "comen"], perfecto: ["he comido", "has comido", "ha comido", "hemos comido", "habéis comido", "han comido"], indefinido: ["comí", "comiste", "comió", "comimos", "comisteis", "comieron"] },
-            { infinitive: "Tomar", translation: "To take/drink", presente: ["tomo", "tomas", "toma", "tomamos", "tomáis", "toman"], perfecto: ["he tomado", "has tomado", "ha tomado", "hemos tomado", "habéis tomado", "han tomado"], indefinido: ["tomé", "tomaste", "tomó", "tomamos", "tomasteis", "tomaron"] },
-            // 11-20
-            { infinitive: "Querer", translation: "To want", presente: ["quiero", "quieres", "quiere", "queremos", "queréis", "quieren"], perfecto: ["he querido", "has querido", "ha querido", "hemos querido", "habéis querido", "han querido"], indefinido: ["quise", "quisiste", "quiso", "quisimos", "quisisteis", "quisieron"] },
-            { infinitive: "Saber", translation: "To know (info)", presente: ["sé", "sabes", "sabe", "sabemos", "sabéis", "saben"], perfecto: ["he sabido", "has sabido", "ha sabido", "hemos sabido", "habéis sabido", "han sabido"], indefinido: ["supe", "supiste", "supo", "supimos", "supisteis", "supieron"] },
-            { infinitive: "Venir", translation: "To come", presente: ["vengo", "vienes", "viene", "venimos", "venís", "vienen"], perfecto: ["he venido", "has venido", "ha venido", "hemos venido", "habéis venido", "han venido"], indefinido: ["vine", "viniste", "vino", "vinimos", "vinisteis", "vinieron"] },
-            { infinitive: "Poner", translation: "To put", presente: ["pongo", "pones", "pone", "ponemos", "ponéis", "ponen"], perfecto: ["he puesto", "has puesto", "ha puesto", "hemos puesto", "habéis puesto", "han puesto"], indefinido: ["puse", "pusiste", "puso", "pusimos", "pusisteis", "pusieron"] },
-            { infinitive: "Dar", translation: "To give", presente: ["doy", "das", "da", "damos", "dais", "dan"], perfecto: ["he dado", "has dado", "ha dado", "hemos dado", "habéis dado", "han dado"], indefinido: ["di", "diste", "dio", "dimos", "disteis", "dieron"] },
-            { infinitive: "Llegar", translation: "To arrive", presente: ["llego", "llegas", "llega", "llegamos", "llegáis", "llegan"], perfecto: ["he llegado", "has llegado", "ha llegado", "hemos llegado", "habéis llegado", "han llegado"], indefinido: ["llegué", "llegaste", "llegó", "llegamos", "llegasteis", "llegaron"] },
-            { infinitive: "Pasar", translation: "To pass/happen", presente: ["paso", "pasas", "pasa", "pasamos", "pasáis", "pasan"], perfecto: ["he pasado", "has pasado", "ha pasado", "hemos pasado", "habéis pasado", "han pasado"], indefinido: ["pasé", "pasaste", "pasó", "pasamos", "pasasteis", "pasaron"] },
-            { infinitive: "Deber", translation: "To must/owe", presente: ["debo", "debes", "debe", "debemos", "debéis", "deben"], perfecto: ["he debido", "has debido", "ha debido", "hemos debido", "habéis debido", "han debido"], indefinido: ["debí", "debiste", "debió", "debimos", "debisteis", "debieron"] },
-            { infinitive: "Quedar", translation: "To stay/meet", presente: ["quedo", "quedas", "queda", "quedamos", "quedáis", "quedan"], perfecto: ["he quedado", "has quedado", "ha quedado", "hemos quedado", "habéis quedado", "han quedado"], indefinido: ["quedé", "quedaste", "quedó", "quedamos", "quedasteis", "quedaron"] },
-            { infinitive: "Creer", translation: "To believe", presente: ["creo", "crees", "cree", "creemos", "creéis", "creen"], perfecto: ["he creído", "has creído", "ha creído", "hemos creído", "habéis creído", "han creído"], indefinido: ["creí", "creíste", "creyó", "creímos", "creísteis", "creyeron"] },
-            // 21-30
-            { infinitive: "Hablar", translation: "To speak", presente: ["hablo", "hablas", "habla", "hablamos", "habláis", "hablan"], perfecto: ["he hablado", "has hablado", "ha hablado", "hemos hablado", "habéis hablado", "han hablado"], indefinido: ["hablé", "hablaste", "habló", "hablamos", "hablasteis", "hablaron"] },
-            { infinitive: "Llevar", translation: "To carry/wear", presente: ["llevo", "llevas", "lleva", "llevamos", "lleváis", "llevan"], perfecto: ["he llevado", "has llevado", "ha llevado", "hemos llevado", "habéis llevado", "han llevado"], indefinido: ["llevé", "llevaste", "llevó", "llevamos", "llevasteis", "llevaron"] },
-            { infinitive: "Dejar", translation: "To leave/let", presente: ["dejo", "dejas", "deja", "dejamos", "dejáis", "dejan"], perfecto: ["he dejado", "has dejado", "ha dejado", "hemos dejado", "habéis dejado", "han dejado"], indefinido: ["dejé", "dejaste", "dejó", "dejamos", "dejasteis", "dejaron"] },
-            { infinitive: "Seguir", translation: "To follow", presente: ["sigo", "sigues", "sigue", "seguimos", "seguís", "siguen"], perfecto: ["he seguido", "has seguido", "ha seguido", "hemos seguido", "habéis seguido", "han seguido"], indefinido: ["seguí", "seguiste", "siguió", "seguimos", "seguisteis", "siguieron"] },
-            { infinitive: "Encontrar", translation: "To find", presente: ["encuentro", "encuentras", "encuentra", "encontramos", "encontráis", "encuentran"], perfecto: ["he encontrado", "has encontrado", "ha encontrado", "hemos encontrado", "habéis encontrado", "han encontrado"], indefinido: ["encontré", "encontraste", "encontró", "encontramos", "encontrasteis", "encontraron"] },
-            { infinitive: "Llamar", translation: "To call", presente: ["llamo", "llamas", "llama", "llamamos", "llamáis", "llaman"], perfecto: ["he llamado", "has llamado", "ha llamado", "hemos llamado", "habéis llamado", "han llamado"], indefinido: ["llamé", "llamaste", "llamó", "llamamos", "llamasteis", "llamaron"] },
-            { infinitive: "Vivir", translation: "To live", presente: ["vivo", "vives", "vive", "vivimos", "vivís", "viven"], perfecto: ["he vivido", "has vivido", "ha vivido", "hemos vivido", "habéis vivido", "han vivido"], indefinido: ["viví", "viviste", "vivió", "vivimos", "vivisteis", "vivieron"] },
-            { infinitive: "Escuchar", translation: "To listen", presente: ["escucho", "escuchas", "escucha", "escuchamos", "escucháis", "escuchan"], perfecto: ["he escuchado", "has escuchado", "ha escuchado", "hemos escuchado", "habéis escuchado", "han escuchado"], indefinido: ["escuché", "escuchaste", "escuchó", "escuchamos", "escuchasteis", "escucharon"] },
-            { infinitive: "Mirar", translation: "To look", presente: ["miro", "miras", "mira", "miramos", "miráis", "miran"], perfecto: ["he mirado", "has mirado", "ha mirado", "hemos mirado", "habéis mirado", "han mirado"], indefinido: ["miré", "miraste", "miró", "miramos", "mirasteis", "miraron"] },
-            { infinitive: "Jugar", translation: "To play", presente: ["juego", "juegas", "juega", "jugamos", "jugáis", "juegan"], perfecto: ["he jugado", "has jugado", "ha jugado", "hemos jugado", "habéis jugado", "han jugado"], indefinido: ["jugué", "jugaste", "jugó", "jugamos", "jugasteis", "jugaron"] },
-            // 31-40
-            { infinitive: "Empezar", translation: "To start", presente: ["empiezo", "empiezas", "empieza", "empezamos", "empezáis", "empiezan"], perfecto: ["he empezado", "has empezado", "ha empezado", "hemos empezado", "habéis empezado", "han empezado"], indefinido: ["empecé", "empezaste", "empezó", "empezamos", "empezasteis", "empezaron"] },
-            { infinitive: "Buscar", translation: "To search", presente: ["busco", "buscas", "busca", "buscamos", "buscáis", "buscan"], perfecto: ["he buscado", "has buscado", "ha buscado", "hemos buscado", "habéis buscado", "han buscado"], indefinido: ["busqué", "buscaste", "buscó", "buscamos", "buscasteis", "buscaron"] },
-            { infinitive: "Escribir", translation: "To write", presente: ["escribo", "escribes", "escribe", "escribimos", "escribís", "escriben"], perfecto: ["he escrito", "has escrito", "ha escrito", "hemos escrito", "habéis escrito", "han escrito"], indefinido: ["escribí", "escribiste", "escribió", "escribimos", "escribisteis", "escribieron"] },
-            { infinitive: "Leer", translation: "To read", presente: ["leo", "lees", "lee", "leemos", "leéis", "leen"], perfecto: ["he leído", "has leído", "ha leído", "hemos leído", "habéis leído", "han leído"], indefinido: ["leí", "leíste", "leyó", "leímos", "leísteis", "leyeron"] },
-            { infinitive: "Caer", translation: "To fall", presente: ["caigo", "caes", "cae", "caemos", "caéis", "caen"], perfecto: ["he caído", "has caído", "ha caído", "hemos caído", "habéis caído", "han caído"], indefinido: ["caí", "caíste", "cayó", "caímos", "caísteis", "cayeron"] },
-            { infinitive: "Dormir", translation: "To sleep", presente: ["duermo", "duermes", "duerme", "dormimos", "dormís", "duermen"], perfecto: ["he dormido", "has dormido", "ha dormido", "hemos dormido", "habéis dormido", "han dormido"], indefinido: ["dormí", "dormiste", "durmió", "dormimos", "dormisteis", "durmieron"] },
-            { infinitive: "Entender", translation: "To understand", presente: ["entiendo", "entiendes", "entiende", "entendemos", "entendéis", "entienden"], perfecto: ["he entendido", "has entendido", "ha entendido", "hemos entendido", "habéis entendido", "han entendido"], indefinido: ["entendí", "entendiste", "entendió", "entendimos", "entendisteis", "entendieron"] },
-            { infinitive: "Pedir", translation: "To ask for", presente: ["pido", "pides", "pide", "pedimos", "pedís", "piden"], perfecto: ["he pedido", "has pedido", "ha pedido", "hemos pedido", "habéis pedido", "han pedido"], indefinido: ["pedí", "pediste", "pidió", "pedimos", "pedisteis", "pidieron"] },
-            { infinitive: "Pensar", translation: "To think", presente: ["pienso", "piensas", "piensa", "pensamos", "pensáis", "piensan"], perfecto: ["he pensado", "has pensado", "ha pensado", "hemos pensado", "habéis pensado", "han pensado"], indefinido: ["pensé", "pensaste", "pensó", "pensamos", "pensasteis", "pensaron"] },
-            { infinitive: "Perder", translation: "To lose", presente: ["pierdo", "pierdes", "pierde", "perdemos", "perdéis", "pierden"], perfecto: ["he perdido", "has perdido", "ha perdido", "hemos perdido", "habéis perdido", "han perdido"], indefinido: ["perdí", "perdiste", "perdió", "perdimos", "perdisteis", "perdieron"] },
-            // 41-50
-            { infinitive: "Preferir", translation: "To prefer", presente: ["prefiero", "prefieres", "prefiere", "preferimos", "preferís", "prefieren"], perfecto: ["he preferido", "has preferido", "ha preferido", "hemos preferido", "habéis preferido", "han preferido"], indefinido: ["preferí", "preferiste", "prefirió", "preferimos", "preferisteis", "prefirieron"] },
-            { infinitive: "Sentir", translation: "To feel", presente: ["siento", "sientes", "siente", "sentimos", "sentís", "sienten"], perfecto: ["he sentido", "has sentido", "ha sentido", "hemos sentido", "habéis sentido", "han sentido"], indefinido: ["sentí", "sentiste", "sintió", "sentimos", "sentisteis", "sintieron"] },
-            { infinitive: "Traer", translation: "To bring", presente: ["traigo", "traes", "trae", "traemos", "traéis", "traen"], perfecto: ["he traído", "has traído", "ha traído", "hemos traído", "habéis traído", "han traído"], indefinido: ["traje", "trajiste", "trajo", "trajimos", "trajisteis", "trajeron"] },
-            { infinitive: "Volver", translation: "To return", presente: ["vuelvo", "vuelves", "vuelve", "volvemos", "volvéis", "vuelven"], perfecto: ["he vuelto", "has vuelto", "ha vuelto", "hemos vuelto", "habéis vuelto", "han vuelto"], indefinido: ["volví", "volviste", "volvió", "volvimos", "volvisteis", "volvieron"] },
-            { infinitive: "Conocer", translation: "To know (people)", presente: ["conozco", "conoces", "conoce", "conocemos", "conocéis", "conocen"], perfecto: ["he conocido", "has conocido", "ha conocido", "hemos conocido", "habéis conocido", "han conocido"], indefinido: ["conocí", "conociste", "conoció", "conocimos", "conocisteis", "conocieron"] },
-            { infinitive: "Salir", translation: "To go out", presente: ["salgo", "sales", "sale", "salimos", "salís", "salen"], perfecto: ["he salido", "has salido", "ha salido", "hemos salido", "habéis salido", "han salido"], indefinido: ["salí", "saliste", "salió", "salimos", "salisteis", "salieron"] },
-            { infinitive: "Abrir", translation: "To open", presente: ["abro", "abres", "abre", "abrimos", "abrís", "abren"], perfecto: ["he abierto", "has abierto", "ha abierto", "hemos abierto", "habéis abierto", "han abierto"], indefinido: ["abrí", "abriste", "abrió", "abrimos", "abristeis", "abrieron"] },
-            { infinitive: "Cerrar", translation: "To close", presente: ["cierro", "cierras", "cierra", "cerramos", "cerráis", "cierran"], perfecto: ["he cerrado", "has cerrado", "ha cerrado", "hemos cerrado", "habéis cerrado", "han cerrado"], indefinido: ["cerré", "cerraste", "cerró", "cerramos", "cerrasteis", "cerraron"] },
-            { infinitive: "Comprar", translation: "To buy", presente: ["compro", "compras", "compra", "compramos", "compráis", "compran"], perfecto: ["he comprado", "has comprado", "ha comprado", "hemos comprado", "habéis comprado", "han comprado"], indefinido: ["compré", "compraste", "compró", "compramos", "comprasteis", "compraron"] },
-            { infinitive: "Viajar", translation: "To travel", presente: ["viajo", "viajas", "viaja", "viajamos", "viajáis", "viajan"], perfecto: ["he viajado", "has viajado", "ha viajado", "hemos viajado", "habéis viajado", "han viajado"], indefinido: ["viajé", "viajaste", "viajó", "viajamos", "viajasteis", "viajaron"] },
-            // 51-55
-            { infinitive: "Beber", translation: "To drink", presente: ["bebo", "bebes", "bebe", "bebemos", "bebéis", "beben"], perfecto: ["he bebido", "has bebido", "ha bebido", "hemos bebido", "habéis bebido", "han bebido"], indefinido: ["bebí", "bebiste", "bebió", "bebimos", "bebisteis", "bebieron"] },
-            { infinitive: "Caminar", translation: "To walk", presente: ["camino", "caminas", "camina", "caminamos", "camináis", "caminan"], perfecto: ["he caminado", "has caminado", "ha caminado", "hemos caminado", "habéis caminado", "han caminado"], indefinido: ["caminé", "caminaste", "caminó", "caminamos", "caminasteis", "caminaron"] },
-            { infinitive: "Cocinar", translation: "To cook", presente: ["cocino", "cocinas", "cocina", "cocinamos", "cocináis", "cocinan"], perfecto: ["he cocinado", "has cocinado", "ha cocinado", "hemos cocinado", "habéis cocinado", "han cocinado"], indefinido: ["cociné", "cocinaste", "cocinó", "cocinamos", "cocinasteis", "cocinaron"] },
-            { infinitive: "Usar", translation: "To use", presente: ["uso", "usas", "usa", "usamos", "usáis", "usan"], perfecto: ["he usado", "has usado", "ha usado", "hemos usado", "habéis usado", "han usado"], indefinido: ["usé", "usaste", "usó", "usamos", "usasteis", "usaron"] },
-            { infinitive: "Gustar", translation: "To like", presente: ["Me gusta", "Te gusta", "Le gusta", "Nos gusta", "Os gusta", "Les gusta"], perfecto: ["Me ha gustado", "Te ha gustado", "Le ha gustado", "Nos ha gustado", "Os ha gustado", "Les han gustado"], indefinido: ["Me gustó", "Te gustó", "Le gustó", "Nos gustó", "Os gustó", "Les gustó"] },
-
-  { infinitive: "Haber", translation: "To have / To exist", presente: ["he", "has", "ha", "hemos", "habéis", "han"], perfecto: ["he habido", "has habido", "ha habido", "hemos habido", "habéis habido", "han habido"], indefinido: ["hube", "hubiste", "hubo", "hubimos", "hubisteis", "hubieron"] },
-
-  { infinitive: "Parecer", translation: "To seem", presente: ["parezco", "pareces", "parece", "parecemos", "parecéis", "parecen"], perfecto: ["he parecido", "has parecido", "ha parecido", "hemos parecido", "habéis parecido", "han parecido"], indefinido: ["parecí", "pareciste", "pareció", "parecimos", "parecisteis", "parecieron"] },
-
-  { infinitive: "Soler", translation: "To usually do / To tend to", presente: ["suelo", "sueles", "suele", "solemos", "soléis", "suelen"], perfecto: ["he solido", "has solido", "ha solido", "hemos solido", "habéis solido", "han solido"], indefinido: ["solí", "soliste", "solió", "solimos", "solisteis", "solieron"] },
-
-  { infinitive: "Traducir", translation: "To translate", presente: ["traduzco", "traduces", "traduce", "traducimos", "traducís", "traducen"], perfecto: ["he traducido", "has traducido", "ha traducido", "hemos traducido", "habéis traducido", "han traducido"], indefinido: ["traduje", "tradujiste", "tradujo", "tradujimos", "tradujisteis", "tradujeron"] },
-
-  { infinitive: "Producir", translation: "To produce", presente: ["produzco", "produces", "produce", "producimos", "producís", "producen"], perfecto: ["he producido", "has producido", "ha producido", "hemos producido", "habéis producido", "han producido"], indefinido: ["produje", "produjiste", "produjo", "produjimos", "produjisteis", "produjeron"] },
-
-  { infinitive: "Conducir", translation: "To drive / To lead", presente: ["conduzco", "conduces", "conduce", "conducimos", "conducís", "conducen"], perfecto: ["he conducido", "has conducido", "ha conducido", "hemos conducido", "habéis conducido", "han conducido"], indefinido: ["conduje", "condujiste", "condujo", "condujimos", "condujisteis", "condujeron"] },
-
-  { infinitive: "Oír", translation: "To hear", presente: ["oigo", "oyes", "oye", "oímos", "oís", "oyen"], perfecto: ["he oído", "has oído", "ha oído", "hemos oído", "habéis oído", "han oído"], indefinido: ["oí", "oíste", "oyó", "oímos", "oísteis", "oyeron"] },
-
-  { infinitive: "Morir", translation: "To die", presente: ["muero", "mueres", "muere", "morimos", "morís", "mueren"], perfecto: ["he muerto", "has muerto", "ha muerto", "hemos muerto", "habéis muerto", "han muerto"], indefinido: ["morí", "moriste", "murió", "morimos", "moristeis", "murieron"] },
-
-  { infinitive: "Costar", translation: "To cost", presente: ["cuesto", "cuestas", "cuesta", "costamos", "costáis", "cuestan"], perfecto: ["he costado", "has costado", "ha costado", "hemos costado", "habéis costado", "han costado"], indefinido: ["costé", "costaste", "costó", "costamos", "costasteis", "costaron"] },
-
-  { infinitive: "Sentirse", translation: "To feel", presente: ["me siento", "te sientes", "se siente", "nos sentimos", "os sentís", "se sienten"], perfecto: ["me he sentido", "te has sentido", "se ha sentido", "nos hemos sentido", "os habéis sentido", "se han sentido"], indefinido: ["me sentí", "te sentiste", "se sintió", "nos sentimos", "os sentisteis", "se sintieron"] },
-
-  { infinitive: "Preguntar", translation: "To ask", presente: ["pregunto", "preguntas", "pregunta", "preguntamos", "preguntáis", "preguntan"], perfecto: ["he preguntado", "has preguntado", "ha preguntado", "hemos preguntado", "habéis preguntado", "han preguntado"], indefinido: ["pregunté", "preguntaste", "preguntó", "preguntamos", "preguntasteis", "preguntaron"] },
-
-  { infinitive: "Recordar", translation: "To remember", presente: ["recuerdo", "recuerdas", "recuerda", "recordamos", "recordáis", "recuerdan"], perfecto: ["he recordado", "has recordado", "ha recordado", "hemos recordado", "habéis recordado", "han recordado"], indefinido: ["recordé", "recordaste", "recordó", "recordamos", "recordasteis", "recordaron"] },
-
-  { infinitive: "Darse cuenta (de)", translation: "To realize", presente: ["me doy cuenta", "te das cuenta", "se da cuenta", "nos damos cuenta", "os dais cuenta", "se dan cuenta"], perfecto: ["me he dado cuenta", "te has dado cuenta", "se ha dado cuenta", "nos hemos dado cuenta", "os habéis dado cuenta", "se han dado cuenta"], indefinido: ["me di cuenta", "te diste cuenta", "se dio cuenta", "nos dimos cuenta", "os disteis cuenta", "se dieron cuenta"] }
-
+        // ! IMPORTANT: PASTE YOUR UPDATED ARRAY WITH 'imperfecto' HERE !
+        const verbsData = [
+             { infinitive: "Ser", translation: "To be (perm)", presente: ["soy", "eres", "es", "somos", "sois", "son"], imperfecto: ["era", "eras", "era", "éramos", "erais", "eran"], perfecto: ["he sido", "has sido", "ha sido", "hemos sido", "habéis sido", "han sido"], indefinido: ["fui", "fuiste", "fue", "fuimos", "fuisteis", "fueron"] },
+{ infinitive: "Estar", translation: "To be (temp)", presente: ["estoy", "estás", "está", "estamos", "estáis", "están"], imperfecto: ["estaba", "estabas", "estaba", "estábamos", "estabais", "estaban"], perfecto: ["he estado", "has estado", "ha estado", "hemos estado", "habéis estado", "han estado"], indefinido: ["estuve", "estuviste", "estuvo", "estuvimos", "estuvisteis", "estuvieron"] },
+{ infinitive: "Tener", translation: "To have", presente: ["tengo", "tienes", "tiene", "tenemos", "tenéis", "tienen"], imperfecto: ["tenía", "tenías", "tenía", "teníamos", "teníais", "tenían"], perfecto: ["he tenido", "has tenido", "ha tenido", "hemos tenido", "habéis tenido", "han tenido"], indefinido: ["tuve", "tuviste", "tuvo", "tuvimos", "tuvisteis", "tuvieron"] },
+{ infinitive: "Ir", translation: "To go", presente: ["voy", "vas", "va", "vamos", "vais", "van"], imperfecto: ["iba", "ibas", "iba", "íbamos", "ibais", "iban"], perfecto: ["he ido", "has ido", "ha ido", "hemos ido", "habéis ido", "han ido"], indefinido: ["fui", "fuiste", "fue", "fuimos", "fuisteis", "fueron"] },
+{ infinitive: "Hacer", translation: "To do/make", presente: ["hago", "haces", "hace", "hacemos", "hacéis", "hacen"], imperfecto: ["hacía", "hacías", "hacía", "hacíamos", "hacíais", "hacían"], perfecto: ["he hecho", "has hecho", "ha hecho", "hemos hecho", "habéis hecho", "han hecho"], indefinido: ["hice", "hiciste", "hizo", "hicimos", "hicisteis", "hicieron"] },
+{ infinitive: "Poder", translation: "To can", presente: ["puedo", "puedes", "puede", "podemos", "podéis", "pueden"], imperfecto: ["podía", "podías", "podía", "podíamos", "podíais", "podían"], perfecto: ["he podido", "has podido", "ha podido", "hemos podido", "habéis podido", "han podido"], indefinido: ["pude", "pudiste", "pudo", "pudimos", "pudisteis", "pudieron"] },
+{ infinitive: "Decir", translation: "To say", presente: ["digo", "dices", "dice", "decimos", "decís", "dicen"], imperfecto: ["decía", "decías", "decía", "decíamos", "decíais", "decían"], perfecto: ["he dicho", "has dicho", "ha dicho", "hemos dicho", "habéis dicho", "han dicho"], indefinido: ["dije", "dijiste", "dijo", "dijimos", "dijisteis", "dijeron"] },
+{ infinitive: "Ver", translation: "To see", presente: ["veo", "ves", "ve", "vemos", "veis", "ven"], imperfecto: ["veía", "veías", "veía", "veíamos", "veíais", "veían"], perfecto: ["he visto", "has visto", "ha visto", "hemos visto", "habéis visto", "han visto"], indefinido: ["vi", "viste", "vio", "vimos", "visteis", "vieron"] },
+{ infinitive: "Comer", translation: "To eat", presente: ["como", "comes", "come", "comemos", "coméis", "comen"], imperfecto: ["comía", "comías", "comía", "comíamos", "comíais", "comían"], perfecto: ["he comido", "has comido", "ha comido", "hemos comido", "habéis comido", "han comido"], indefinido: ["comí", "comiste", "comió", "comimos", "comisteis", "comieron"] },
+{ infinitive: "Tomar", translation: "To take/drink", presente: ["tomo", "tomas", "toma", "tomamos", "tomáis", "toman"], imperfecto: ["tomaba", "tomabas", "tomaba", "tomábamos", "tomabais", "tomaban"], perfecto: ["he tomado", "has tomado", "ha tomado", "hemos tomado", "habéis tomado", "han tomado"], indefinido: ["tomé", "tomaste", "tomó", "tomamos", "tomasteis", "tomaron"] },
+{ infinitive: "Querer", translation: "To want", presente: ["quiero", "quieres", "quiere", "queremos", "queréis", "quieren"], imperfecto: ["quería", "querías", "quería", "queríamos", "queríais", "querían"], perfecto: ["he querido", "has querido", "ha querido", "hemos querido", "habéis querido", "han querido"], indefinido: ["quise", "quisiste", "quiso", "quisimos", "quisisteis", "quisieron"] },
+{ infinitive: "Saber", translation: "To know (info)", presente: ["sé", "sabes", "sabe", "sabemos", "sabéis", "saben"], imperfecto: ["sabía", "sabías", "sabía", "sabíamos", "sabíais", "sabían"], perfecto: ["he sabido", "has sabido", "ha sabido", "hemos sabido", "habéis sabido", "han sabido"], indefinido: ["supe", "supiste", "supo", "supimos", "supisteis", "supieron"] },
+{ infinitive: "Venir", translation: "To come", presente: ["vengo", "vienes", "viene", "venimos", "venís", "vienen"], imperfecto: ["venía", "venías", "venía", "veníamos", "veníais", "venían"], perfecto: ["he venido", "has venido", "ha venido", "hemos venido", "habéis venido", "han venido"], indefinido: ["vine", "viniste", "vino", "vinimos", "vinisteis", "vinieron"] },
+{ infinitive: "Poner", translation: "To put", presente: ["pongo", "pones", "pone", "ponemos", "ponéis", "ponen"], imperfecto: ["ponía", "ponías", "ponía", "poníamos", "poníais", "ponían"], perfecto: ["he puesto", "has puesto", "ha puesto", "hemos puesto", "habéis puesto", "han puesto"], indefinido: ["puse", "pusiste", "puso", "pusimos", "pusisteis", "pusieron"] },
+{ infinitive: "Dar", translation: "To give", presente: ["doy", "das", "da", "damos", "dais", "dan"], imperfecto: ["daba", "dabas", "daba", "dábamos", "dabais", "daban"], perfecto: ["he dado", "has dado", "ha dado", "hemos dado", "habéis dado", "han dado"], indefinido: ["di", "diste", "dio", "dimos", "disteis", "dieron"] },
+{ infinitive: "Llegar", translation: "To arrive", presente: ["llego", "llegas", "llega", "llegamos", "llegáis", "llegan"], imperfecto: ["llegaba", "llegabas", "llegaba", "llegábamos", "llegabais", "llegaban"], perfecto: ["he llegado", "has llegado", "ha llegado", "hemos llegado", "habéis llegado", "han llegado"], indefinido: ["llegué", "llegaste", "llegó", "llegamos", "llegasteis", "llegaron"] },
+{ infinitive: "Pasar", translation: "To pass/happen", presente: ["paso", "pasas", "pasa", "pasamos", "pasáis", "pasan"], imperfecto: ["pasaba", "pasabas", "pasaba", "pasábamos", "pasabais", "pasaban"], perfecto: ["he pasado", "has pasado", "ha pasado", "hemos pasado", "habéis pasado", "han pasado"], indefinido: ["pasé", "pasaste", "pasó", "pasamos", "pasasteis", "pasaron"] },
+{ infinitive: "Deber", translation: "To must/owe", presente: ["debo", "debes", "debe", "debemos", "debéis", "deben"], imperfecto: ["debía", "debías", "debía", "debíamos", "debíais", "debían"], perfecto: ["he debido", "has debido", "ha debido", "hemos debido", "habéis debido", "han debido"], indefinido: ["debí", "debiste", "debió", "debimos", "debisteis", "debieron"] },
+{ infinitive: "Quedar", translation: "To stay/meet", presente: ["quedo", "quedas", "queda", "quedamos", "quedáis", "quedan"], imperfecto: ["quedaba", "quedabas", "quedaba", "quedábamos", "quedabais", "quedaban"], perfecto: ["he quedado", "has quedado", "ha quedado", "hemos quedado", "habéis quedado", "han quedado"], indefinido: ["quedé", "quedaste", "quedó", "quedamos", "quedasteis", "quedaron"] },
+{ infinitive: "Creer", translation: "To believe", presente: ["creo", "crees", "cree", "creemos", "creéis", "creen"], imperfecto: ["creía", "creías", "creía", "creíamos", "creíais", "creían"], perfecto: ["he creído", "has creído", "ha creído", "hemos creído", "habéis creído", "han creído"], indefinido: ["creí", "creíste", "creyó", "creímos", "creísteis", "creyeron"] },
+{ infinitive: "Hablar", translation: "To speak", presente: ["hablo", "hablas", "habla", "hablamos", "habláis", "hablan"], imperfecto: ["hablaba", "hablabas", "hablaba", "hablábamos", "hablabais", "hablaban"], perfecto: ["he hablado", "has hablado", "ha hablado", "hemos hablado", "habéis hablado", "han hablado"], indefinido: ["hablé", "hablaste", "habló", "hablamos", "hablasteis", "hablaron"] },
+{ infinitive: "Llevar", translation: "To carry/wear", presente: ["llevo", "llevas", "lleva", "llevamos", "lleváis", "llevan"], imperfecto: ["llevaba", "llevabas", "llevaba", "llevábamos", "llevabais", "llevaban"], perfecto: ["he llevado", "has llevado", "ha llevado", "hemos llevado", "habéis llevado", "han llevado"], indefinido: ["llevé", "llevaste", "llevó", "llevamos", "llevasteis", "llevaron"] },
+{ infinitive: "Dejar", translation: "To leave/let", presente: ["dejo", "dejas", "deja", "dejamos", "dejáis", "dejan"], imperfecto: ["dejaba", "dejabas", "dejaba", "dejábamos", "dejabais", "dejaban"], perfecto: ["he dejado", "has dejado", "ha dejado", "hemos dejado", "habéis dejado", "han dejado"], indefinido: ["dejé", "dejaste", "dejó", "dejamos", "dejasteis", "dejaron"] },
+{ infinitive: "Seguir", translation: "To follow", presente: ["sigo", "sigues", "sigue", "seguimos", "seguís", "siguen"], imperfecto: ["seguía", "seguías", "seguía", "seguíamos", "seguíais", "seguían"], perfecto: ["he seguido", "has seguido", "ha seguido", "hemos seguido", "habéis seguido", "han seguido"], indefinido: ["seguí", "seguiste", "siguió", "seguimos", "seguisteis", "siguieron"] },
+{ infinitive: "Encontrar", translation: "To find", presente: ["encuentro", "encuentras", "encuentra", "encontramos", "encontráis", "encuentran"], imperfecto: ["encontraba", "encontrabas", "encontraba", "encontrábamos", "encontrabais", "encontraban"], perfecto: ["he encontrado", "has encontrado", "ha encontrado", "hemos encontrado", "habéis encontrado", "han encontrado"], indefinido: ["encontré", "encontraste", "encontró", "encontramos", "encontrasteis", "encontraron"] },
+{ infinitive: "Llamar", translation: "To call", presente: ["llamo", "llamas", "llama", "llamamos", "llamáis", "llaman"], imperfecto: ["llamaba", "llamabas", "llamaba", "llamábamos", "llamabais", "llamaban"], perfecto: ["he llamado", "has llamado", "ha llamado", "hemos llamado", "habéis llamado", "han llamado"], indefinido: ["llamé", "llamaste", "llamó", "llamamos", "llamasteis", "llamaron"] },
+{ infinitive: "Vivir", translation: "To live", presente: ["vivo", "vives", "vive", "vivimos", "vivís", "viven"], imperfecto: ["vivía", "vivías", "vivía", "vivíamos", "vivíais", "vivían"], perfecto: ["he vivido", "has vivido", "ha vivido", "hemos vivido", "habéis vivido", "han vivido"], indefinido: ["viví", "viviste", "vivió", "vivimos", "vivisteis", "vivieron"] },
+{ infinitive: "Escuchar", translation: "To listen", presente: ["escucho", "escuchas", "escucha", "escuchamos", "escucháis", "escuchan"], imperfecto: ["escuchaba", "escuchabas", "escuchaba", "escuchábamos", "escuchabais", "escuchaban"], perfecto: ["he escuchado", "has escuchado", "ha escuchado", "hemos escuchado", "habéis escuchado", "han escuchado"], indefinido: ["escuché", "escuchaste", "escuchó", "escuchamos", "escuchasteis", "escucharon"] },
+{ infinitive: "Mirar", translation: "To look", presente: ["miro", "miras", "mira", "miramos", "miráis", "miran"], imperfecto: ["miraba", "mirabas", "miraba", "mirábamos", "mirabais", "miraban"], perfecto: ["he mirado", "has mirado", "ha mirado", "hemos mirado", "habéis mirado", "han mirado"], indefinido: ["miré", "miraste", "miró", "miramos", "mirasteis", "miraron"] },
+{ infinitive: "Jugar", translation: "To play", presente: ["juego", "juegas", "juega", "jugamos", "jugáis", "juegan"], imperfecto: ["jugaba", "jugabas", "jugaba", "jugábamos", "jugabais", "jugaban"], perfecto: ["he jugado", "has jugado", "ha jugado", "hemos jugado", "habéis jugado", "han jugado"], indefinido: ["jugué", "jugaste", "jugó", "jugamos", "jugasteis", "jugaron"] },
+{ infinitive: "Empezar", translation: "To start", presente: ["empiezo", "empiezas", "empieza", "empezamos", "empezáis", "empiezan"], imperfecto: ["empezaba", "empezabas", "empezaba", "empezábamos", "empezabais", "empezaban"], perfecto: ["he empezado", "has empezado", "ha empezado", "hemos empezado", "habéis empezado", "han empezado"], indefinido: ["empecé", "empezaste", "empezó", "empezamos", "empezasteis", "empezaron"] },
+{ infinitive: "Buscar", translation: "To search", presente: ["busco", "buscas", "busca", "buscamos", "buscáis", "buscan"], imperfecto: ["buscaba", "buscabas", "buscaba", "buscábamos", "buscabais", "buscaban"], perfecto: ["he buscado", "has buscado", "ha buscado", "hemos buscado", "habéis buscado", "han buscado"], indefinido: ["busqué", "buscaste", "buscó", "buscamos", "buscasteis", "buscaron"] },
+{ infinitive: "Escribir", translation: "To write", presente: ["escribo", "escribes", "escribe", "escribimos", "escribís", "escriben"], imperfecto: ["escribía", "escribías", "escribía", "escribíamos", "escribíais", "escribían"], perfecto: ["he escrito", "has escrito", "ha escrito", "hemos escrito", "habéis escrito", "han escrito"], indefinido: ["escribí", "escribiste", "escribió", "escribimos", "escribisteis", "escribieron"] },
+{ infinitive: "Leer", translation: "To read", presente: ["leo", "lees", "lee", "leemos", "leéis", "leen"], imperfecto: ["leía", "leías", "leía", "leíamos", "leíais", "leían"], perfecto: ["he leído", "has leído", "ha leído", "hemos leído", "habéis leído", "han leído"], indefinido: ["leí", "leíste", "leyó", "leímos", "leísteis", "leyeron"] },
+{ infinitive: "Caer", translation: "To fall", presente: ["caigo", "caes", "cae", "caemos", "caéis", "caen"], imperfecto: ["caía", "caías", "caía", "caíamos", "caíais", "caían"], perfecto: ["he caído", "has caído", "ha caído", "hemos caído", "habéis caído", "han caído"], indefinido: ["caí", "caíste", "cayó", "caímos", "caísteis", "cayeron"] },
+{ infinitive: "Dormir", translation: "To sleep", presente: ["duermo", "duermes", "duerme", "dormimos", "dormís", "duermen"], imperfecto: ["dormía", "dormías", "dormía", "dormíamos", "dormíais", "dormían"], perfecto: ["he dormido", "has dormido", "ha dormido", "hemos dormido", "habéis dormido", "han dormido"], indefinido: ["dormí", "dormiste", "durmió", "dormimos", "dormisteis", "durmieron"] },
+{ infinitive: "Entender", translation: "To understand", presente: ["entiendo", "entiendes", "entiende", "entendemos", "entendéis", "entienden"], imperfecto: ["entendía", "entendías", "entendía", "entendíamos", "entendíais", "entendían"], perfecto: ["he entendido", "has entendido", "ha entendido", "hemos entendido", "habéis entendido", "han entendido"], indefinido: ["entendí", "entendiste", "entendió", "entendimos", "entendisteis", "entendieron"] },
+{ infinitive: "Pedir", translation: "To ask for", presente: ["pido", "pides", "pide", "pedimos", "pedís", "piden"], imperfecto: ["pedía", "pedías", "pedía", "pedíamos", "pedíais", "pedían"], perfecto: ["he pedido", "has pedido", "ha pedido", "hemos pedido", "habéis pedido", "han pedido"], indefinido: ["pedí", "pediste", "pidió", "pedimos", "pedisteis", "pidieron"] },
+{ infinitive: "Pensar", translation: "To think", presente: ["pienso", "piensas", "piensa", "pensamos", "pensáis", "piensan"], imperfecto: ["pensaba", "pensabas", "pensaba", "pensábamos", "pensabais", "pensaban"], perfecto: ["he pensado", "has pensado", "ha pensado", "hemos pensado", "habéis pensado", "han pensado"], indefinido: ["pensé", "pensaste", "pensó", "pensamos", "pensasteis", "pensaron"] },
+{ infinitive: "Perder", translation: "To lose", presente: ["pierdo", "pierdes", "pierde", "perdemos", "perdéis", "pierden"], imperfecto: ["perdía", "perdías", "perdía", "perdíamos", "perdíais", "perdían"], perfecto: ["he perdido", "has perdido", "ha perdido", "hemos perdido", "habéis perdido", "han perdido"], indefinido: ["perdí", "perdiste", "perdió", "perdimos", "perdisteis", "perdieron"] },
+{ infinitive: "Preferir", translation: "To prefer", presente: ["prefiero", "prefieres", "prefiere", "preferimos", "preferís", "prefieren"], imperfecto: ["prefería", "preferías", "prefería", "preferíamos", "preferíais", "preferían"], perfecto: ["he preferido", "has preferido", "ha preferido", "hemos preferido", "habéis preferido", "han preferido"], indefinido: ["preferí", "preferiste", "prefirió", "preferimos", "preferisteis", "prefirieron"] },
+{ infinitive: "Sentir", translation: "To feel", presente: ["siento", "sientes", "siente", "sentimos", "sentís", "sienten"], imperfecto: ["sentía", "sentías", "sentía", "sentíamos", "sentíais", "sentían"], perfecto: ["he sentido", "has sentido", "ha sentido", "hemos sentido", "habéis sentido", "han sentido"], indefinido: ["sentí", "sentiste", "sintió", "sentimos", "sentisteis", "sintieron"] },
+{ infinitive: "Traer", translation: "To bring", presente: ["traigo", "traes", "trae", "traemos", "traéis", "traen"], imperfecto: ["traía", "traías", "traía", "traíamos", "traíais", "traían"], perfecto: ["he traído", "has traído", "ha traído", "hemos traído", "habéis traído", "han traído"], indefinido: ["traje", "trajiste", "trajo", "trajimos", "trajisteis", "trajeron"] },
+{ infinitive: "Volver", translation: "To return", presente: ["vuelvo", "vuelves", "vuelve", "volvemos", "volvéis", "vuelven"], imperfecto: ["volvía", "volvías", "volvía", "volvíamos", "volvíais", "volvían"], perfecto: ["he vuelto", "has vuelto", "ha vuelto", "hemos vuelto", "habéis vuelto", "han vuelto"], indefinido: ["volví", "volviste", "volvió", "volvimos", "volvisteis", "volvieron"] },
+{ infinitive: "Conocer", translation: "To know (people)", presente: ["conozco", "conoces", "conoce", "conocemos", "conocéis", "conocen"], imperfecto: ["conocía", "conocías", "conocía", "conocíamos", "conocíais", "conocían"], perfecto: ["he conocido", "has conocido", "ha conocido", "hemos conocido", "habéis conocido", "han conocido"], indefinido: ["conocí", "conociste", "conoció", "conocimos", "conocisteis", "conocieron"] },
+{ infinitive: "Salir", translation: "To go out", presente: ["salgo", "sales", "sale", "salimos", "salís", "salen"], imperfecto: ["salía", "salías", "salía", "salíamos", "salíais", "salían"], perfecto: ["he salido", "has salido", "ha salido", "hemos salido", "habéis salido", "han salido"], indefinido: ["salí", "saliste", "salió", "salimos", "salisteis", "salieron"] },
+{ infinitive: "Abrir", translation: "To open", presente: ["abro", "abres", "abre", "abrimos", "abrís", "abren"], imperfecto: ["abría", "abrías", "abría", "abríamos", "abríais", "abrían"], perfecto: ["he abierto", "has abierto", "ha abierto", "hemos abierto", "habéis abierto", "han abierto"], indefinido: ["abrí", "abriste", "abrió", "abrimos", "abristeis", "abrieron"] },
+{ infinitive: "Cerrar", translation: "To close", presente: ["cierro", "cierras", "cierra", "cerramos", "cerráis", "cierran"], imperfecto: ["cerraba", "cerrabas", "cerraba", "cerrábamos", "cerrabais", "cerraban"], perfecto: ["he cerrado", "has cerrado", "ha cerrado", "hemos cerrado", "habéis cerrado", "han cerrado"], indefinido: ["cerré", "cerraste", "cerró", "cerramos", "cerrasteis", "cerraron"] },
+{ infinitive: "Comprar", translation: "To buy", presente: ["compro", "compras", "compra", "compramos", "compráis", "compran"], imperfecto: ["compraba", "comprabas", "compraba", "comprábamos", "comprabais", "compraban"], perfecto: ["he comprado", "has comprado", "ha comprado", "hemos comprado", "habéis comprado", "han comprado"], indefinido: ["compré", "compraste", "compró", "compramos", "comprasteis", "compraron"] },
+{ infinitive: "Viajar", translation: "To travel", presente: ["viajo", "viajas", "viaja", "viajamos", "viajáis", "viajan"], imperfecto: ["viajaba", "viajabas", "viajaba", "viajábamos", "viajabais", "viajaban"], perfecto: ["he viajado", "has viajado", "ha viajado", "hemos viajado", "habéis viajado", "han viajado"], indefinido: ["viajé", "viajaste", "viajó", "viajamos", "viajasteis", "viajaron"] },
+{ infinitive: "Beber", translation: "To drink", presente: ["bebo", "bebes", "bebe", "bebemos", "bebéis", "beben"], imperfecto: ["bebía", "bebías", "bebía", "bebíamos", "bebíais", "bebían"], perfecto: ["he bebido", "has bebido", "ha bebido", "hemos bebido", "habéis bebido", "han bebido"], indefinido: ["bebí", "bebiste", "bebió", "bebimos", "bebisteis", "bebieron"] },
+{ infinitive: "Caminar", translation: "To walk", presente: ["camino", "caminas", "camina", "caminamos", "camináis", "caminan"], imperfecto: ["caminaba", "caminabas", "caminaba", "caminábamos", "caminabais", "caminaban"], perfecto: ["he caminado", "has caminado", "ha caminado", "hemos caminado", "habéis caminado", "han caminado"], indefinido: ["caminé", "caminaste", "caminó", "caminamos", "caminasteis", "caminaron"] },
+{ infinitive: "Cocinar", translation: "To cook", presente: ["cocino", "cocinas", "cocina", "cocinamos", "cocináis", "cocinan"], imperfecto: ["cocinaba", "cocinabas", "cocinaba", "cocinábamos", "cocinabais", "cocinaban"], perfecto: ["he cocinado", "has cocinado", "ha cocinado", "hemos cocinado", "habéis cocinado", "han cocinado"], indefinido: ["cociné", "cocinaste", "cocinó", "cocinamos", "cocinasteis", "cocinaron"] },
+{ infinitive: "Usar", translation: "To use", presente: ["uso", "usas", "usa", "usamos", "usáis", "usan"], imperfecto: ["usaba", "usabas", "usaba", "usábamos", "usabais", "usaban"], perfecto: ["he usado", "has usado", "ha usado", "hemos usado", "habéis usado", "han usado"], indefinido: ["usé", "usaste", "usó", "usamos", "usasteis", "usaron"] },
+{ infinitive: "Gustar", translation: "To like", presente: ["Me gusta", "Te gusta", "Le gusta", "Nos gusta", "Os gusta", "Les gusta"], imperfecto: ["Me gustaba", "Te gustaba", "Le gustaba", "Nos gustaba", "Os gustaba", "Les gustaba"], perfecto: ["Me ha gustado", "Te ha gustado", "Le ha gustado", "Nos ha gustado", "Os ha gustado", "Les han gustado"], indefinido: ["Me gustó", "Te gustó", "Le gustó", "Nos gustó", "Os gustó", "Les gustó"] },
+{ infinitive: "Haber", translation: "To have / To exist", presente: ["he", "has", "ha", "hemos", "habéis", "han"], imperfecto: ["había", "habías", "había", "habíamos", "habíais", "habían"], perfecto: ["he habido", "has habido", "ha habido", "hemos habido", "habéis habido", "han habido"], indefinido: ["hube", "hubiste", "hubo", "hubimos", "hubisteis", "hubieron"] },
+{ infinitive: "Parecer", translation: "To seem", presente: ["parezco", "pareces", "parece", "parecemos", "parecéis", "parecen"], imperfecto: ["parecía", "parecías", "parecía", "parecíamos", "parecíais", "parecían"], perfecto: ["he parecido", "has parecido", "ha parecido", "hemos parecido", "habéis parecido", "han parecido"], indefinido: ["parecí", "pareciste", "pareció", "parecimos", "parecisteis", "parecieron"] },
+{ infinitive: "Soler", translation: "To usually do / To tend to", presente: ["suelo", "sueles", "suele", "solemos", "soléis", "suelen"], imperfecto: ["solía", "solías", "solía", "solíamos", "solíais", "solían"], perfecto: ["he solido", "has solido", "ha solido", "hemos solido", "habéis solido", "han solido"], indefinido: ["solí", "soliste", "solió", "solimos", "solisteis", "solieron"] },
+{ infinitive: "Traducir", translation: "To translate", presente: ["traduzco", "traduces", "traduce", "traducimos", "traducís", "traducen"], imperfecto: ["traducía", "traducías", "traducía", "traducíamos", "traducíais", "traducían"], perfecto: ["he traducido", "has traducido", "ha traducido", "hemos traducido", "habéis traducido", "han traducido"], indefinido: ["traduje", "tradujiste", "tradujo", "tradujimos", "tradujisteis", "tradujeron"] },
+{ infinitive: "Producir", translation: "To produce", presente: ["produzco", "produces", "produce", "producimos", "producís", "producen"], imperfecto: ["producía", "producías", "producía", "producíamos", "producíais", "producían"], perfecto: ["he producido", "has producido", "ha producido", "hemos producido", "habéis producido", "han producido"], indefinido: ["produje", "produjiste", "produjo", "produjimos", "produjisteis", "produjeron"] },
+{ infinitive: "Conducir", translation: "To drive / To lead", presente: ["conduzco", "conduces", "conduce", "conducimos", "conducís", "conducen"], imperfecto: ["conducía", "conducías", "conducía", "conducíamos", "conducíais", "conducían"], perfecto: ["he conducido", "has conducido", "ha conducido", "hemos conducido", "habéis conducido", "han conducido"], indefinido: ["conduje", "condujiste", "condujo", "condujimos", "condujisteis", "condujeron"] },
+{ infinitive: "Oír", translation: "To hear", presente: ["oigo", "oyes", "oye", "oímos", "oís", "oyen"], imperfecto: ["oía", "oías", "oía", "oíamos", "oíais", "oían"], perfecto: ["he oído", "has oído", "ha oído", "hemos oído", "habéis oído", "han oído"], indefinido: ["oí", "oíste", "oyó", "oímos", "oísteis", "oyeron"] },
+{ infinitive: "Morir", translation: "To die", presente: ["muero", "mueres", "muere", "morimos", "morís", "mueren"], imperfecto: ["moría", "morías", "moría", "moríamos", "moríais", "morían"], perfecto: ["he muerto", "has muerto", "ha muerto", "hemos muerto", "habéis muerto", "han muerto"], indefinido: ["morí", "moriste", "murió", "morimos", "moristeis", "murieron"] },
+{ infinitive: "Costar", translation: "To cost", presente: ["cuesto", "cuestas", "cuesta", "costamos", "costáis", "cuestan"], imperfecto: ["costaba", "costabas", "costaba", "costábamos", "costabais", "costaban"], perfecto: ["he costado", "has costado", "ha costado", "hemos costado", "habéis costado", "han costado"], indefinido: ["costé", "costaste", "costó", "costamos", "costasteis", "costaron"] },
+{ infinitive: "Sentirse", translation: "To feel", presente: ["me siento", "te sientes", "se siente", "nos sentimos", "os sentís", "se sienten"], imperfecto: ["me sentía", "te sentías", "se sentía", "nos sentíamos", "os sentíais", "se sentían"], perfecto: ["me he sentido", "te has sentido", "se ha sentido", "nos hemos sentido", "os habéis sentido", "se han sentido"], indefinido: ["me sentí", "te sentiste", "se sintió", "nos sentimos", "os sentisteis", "se sintieron"] },
+{ infinitive: "Preguntar", translation: "To ask", presente: ["pregunto", "preguntas", "pregunta", "preguntamos", "preguntáis", "preguntan"], imperfecto: ["preguntaba", "preguntabas", "preguntaba", "preguntábamos", "preguntabais", "preguntaban"], perfecto: ["he preguntado", "has preguntado", "ha preguntado", "hemos preguntado", "habéis preguntado", "han preguntado"], indefinido: ["pregunté", "preguntaste", "preguntó", "preguntamos", "preguntasteis", "preguntaron"] },
+{ infinitive: "Recordar", translation: "To remember", presente: ["recuerdo", "recuerdas", "recuerda", "recordamos", "recordáis", "recuerdan"], imperfecto: ["recordaba", "recordabas", "recordaba", "recordábamos", "recordabais", "recordaban"], perfecto: ["he recordado", "has recordado", "ha recordado", "hemos recordado", "habéis recordado", "han recordado"], indefinido: ["recordé", "recordaste", "recordó", "recordamos", "recordasteis", "recordaron"] },
+{ infinitive: "Darse cuenta (de)", translation: "To realize", presente: ["me doy cuenta", "te das cuenta", "se da cuenta", "nos damos cuenta", "os dais cuenta", "se dan cuenta"], imperfecto: ["me daba cuenta", "te dabas cuenta", "se daba cuenta", "nos dábamos cuenta", "os dabais cuenta", "se daban cuenta"], perfecto: ["me he dado cuenta", "te has dado cuenta", "se ha dado cuenta", "nos hemos dado cuenta", "os habéis dado cuenta", "se han dado cuenta"], indefinido: ["me di cuenta", "te diste cuenta", "se dio cuenta", "nos dimos cuenta", "os disteis cuenta", "se dieron cuenta"] },
         ];
 
         // --- AUTH ---
-        // Check local storage immediately
         if(localStorage.getItem('nexo_auth_token') === 'valid') {
             document.getElementById('auth-overlay').style.display = 'none';
         }
@@ -462,7 +441,7 @@
             const pass = document.getElementById('auth-pass').value;
             if(pass === '07:10') {
                 document.getElementById('auth-overlay').style.display = 'none';
-                localStorage.setItem('nexo_auth_token', 'valid'); // Save to local storage
+                localStorage.setItem('nexo_auth_token', 'valid'); 
             } else {
                 document.getElementById('auth-error').style.display = 'block';
             }
@@ -500,11 +479,9 @@
 
         function toggleFilter(tense) {
             if (activeTenseFilter === tense) {
-                // Deactivate
                 activeTenseFilter = null;
                 document.getElementById(`filter-${tense}`).classList.remove('active');
             } else {
-                // Activate new, remove old
                 activeTenseFilter = tense;
                 document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
                 document.getElementById(`filter-${tense}`).classList.add('active');
@@ -521,7 +498,11 @@
 
             filtered.forEach((verb, index) => {
                 const uid = `card-${index}`;
+                // Fallback for missing imperfecto in case data is partial
+                if(!verb.imperfecto) verb.imperfecto = ["-", "-", "-", "-", "-", "-"];
+
                 const generateList = (tenseArr) => {
+                    if(!tenseArr) return '';
                     return tenseArr.map((conj, i) => `
                         <li>
                             <span class="pronoun">${pronouns[i]}</span>
@@ -533,11 +514,15 @@
                 // Logic to set active tab based on filter
                 const defaultTense = activeTenseFilter ? activeTenseFilter : 'presente';
                 
+                // Tabs Status
                 const isPresActive = defaultTense === 'presente' ? 'active' : '';
+                const isImpActive = defaultTense === 'imperfecto' ? 'active' : ''; // New
                 const isPerfActive = defaultTense === 'perfecto' ? 'active' : '';
                 const isIndefActive = defaultTense === 'indefinido' ? 'active' : '';
 
+                // List Status
                 const showPres = defaultTense === 'presente' ? 'active' : '';
+                const showImp = defaultTense === 'imperfecto' ? 'active' : ''; // New
                 const showPerf = defaultTense === 'perfecto' ? 'active' : '';
                 const showIndef = defaultTense === 'indefinido' ? 'active' : '';
 
@@ -550,11 +535,13 @@
                         
                         <div class="card-tabs">
                             <button class="tab-btn ${isPresActive}" onclick="switchCardTab('${uid}', 'presente', this)">Presente</button>
+                            <button class="tab-btn ${isImpActive}" onclick="switchCardTab('${uid}', 'imperfecto', this)">Imperfecto</button>
                             <button class="tab-btn ${isPerfActive}" onclick="switchCardTab('${uid}', 'perfecto', this)">Perfecto</button>
                             <button class="tab-btn ${isIndefActive}" onclick="switchCardTab('${uid}', 'indefinido', this)">Indefinido</button>
                         </div>
 
                         <ul id="${uid}-presente" class="conjugation-list ${showPres}">${generateList(verb.presente)}</ul>
+                        <ul id="${uid}-imperfecto" class="conjugation-list ${showImp}">${generateList(verb.imperfecto)}</ul>
                         <ul id="${uid}-perfecto" class="conjugation-list ${showPerf}">${generateList(verb.perfecto)}</ul>
                         <ul id="${uid}-indefinido" class="conjugation-list ${showIndef}">${generateList(verb.indefinido)}</ul>
                     </div>
@@ -575,7 +562,8 @@
         function openAddModal() {
             const container = document.getElementById('conjugation-forms');
             container.innerHTML = '';
-            const tenses = ['presente', 'perfecto', 'indefinido'];
+            // Added 'imperfecto' to the array
+            const tenses = ['presente', 'imperfecto', 'perfecto', 'indefinido'];
             tenses.forEach(tense => {
                 let html = `<div style="font-weight:bold; color:var(--accent); margin:10px 0">${tense.toUpperCase()}</div><div class="form-grid-6">`;
                 pronouns.forEach(p => {
@@ -592,7 +580,7 @@
             const trans = document.getElementById('new-trans').value.trim();
             if(!inf || !trans) return alert("Faltan datos");
             
-            let newVerb = { infinitive: inf, translation: trans, presente: [], perfecto: [], indefinido: [] };
+            let newVerb = { infinitive: inf, translation: trans, presente: [], imperfecto: [], perfecto: [], indefinido: [] };
             document.querySelectorAll('.new-verb-input').forEach(inp => {
                 newVerb[inp.getAttribute('data-tense')].push(inp.value.trim() || "---");
             });
@@ -602,7 +590,7 @@
             renderCards();
         }
 
-        // --- GAME LOGIC (STRICT NO-REPEAT) ---
+        // --- GAME LOGIC ---
         let gameState = {
             tense: null,
             score: 0,
@@ -619,7 +607,6 @@
             document.getElementById('score').innerText = "0";
             document.getElementById('game-mode-title').innerText = tense;
             
-            // Reset Verb Queue when starting a new game session
             refillVerbQueue();
             updateGameCounter();
 
@@ -636,17 +623,21 @@
 
         function refillVerbQueue() {
             gameState.verbQueue = Array.from({length: verbsData.length}, (_, i) => i);
-            // Shuffle array
             gameState.verbQueue.sort(() => Math.random() - 0.5);
         }
 
-        // NEW: Update Remaining Verbs Counter
         function updateGameCounter() {
             document.getElementById('verbs-remaining').innerText = gameState.verbQueue.length;
         }
 
+        // NEW: SKIP FUNCTION
+        function skipVerb() {
+            showToast("Verbo saltado", false);
+            // Move to next without score update
+            setTimeout(loadNewVerb, 300);
+        }
+
         function loadNewVerb() {
-            // Check if queue is empty, if so, refill it (infinite play, but no repeats until full cycle)
             if (gameState.verbQueue.length === 0) {
                 refillVerbQueue();
                 showToast("¡Ronda completada! Reiniciando...", true);
@@ -654,18 +645,15 @@
             
             updateGameCounter();
 
-            // Get next verb index from the shuffled queue
             const nextIndex = gameState.verbQueue.pop();
             gameState.currentVerb = verbsData[nextIndex];
             
-            // Get Context
             const inf = gameState.currentVerb.infinitive;
             gameState.currentContext = verbContexts[inf] || "ahora mismo.";
             
-            // Shuffle Pronouns [0,1,2,3,4,5]
+            // Shuffle Pronouns
             gameState.pronounQueue = [0, 1, 2, 3, 4, 5].sort(() => Math.random() - 0.5);
             
-            // Reset UI
             document.getElementById('prev-sentence').style.display = 'none';
             const dots = document.getElementById('progress-dots');
             dots.innerHTML = '';
@@ -691,7 +679,6 @@
             input.value = '';
             input.focus();
 
-            // Update dots
             const step = 5 - gameState.pronounQueue.length;
             document.querySelectorAll('.dot').forEach(d => d.classList.remove('active'));
             document.getElementById(`dot-${step}`).classList.add('active');
@@ -700,6 +687,8 @@
         function checkAnswer() {
             const input = document.getElementById('game-input');
             const val = input.value.trim().toLowerCase();
+            
+            // Access logic respects 'imperfecto' key
             const correct = gameState.currentVerb[gameState.tense][gameState.targetIndex].toLowerCase();
 
             if(val === correct) {
@@ -707,12 +696,10 @@
                 document.getElementById('score').innerText = gameState.score;
                 showToast("¡Correcto!", true);
                 
-                // Show previous
                 const pName = pronouns[gameState.targetIndex];
                 document.getElementById('prev-sentence').innerHTML = `Anterior: <b>${pName} ${input.value}</b> ${gameState.currentContext}`;
                 document.getElementById('prev-sentence').style.display = 'block';
 
-                // Mark dot done
                 const step = 5 - gameState.pronounQueue.length;
                 document.getElementById(`dot-${step}`).classList.remove('active');
                 document.getElementById(`dot-${step}`).classList.add('done');
