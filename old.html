@@ -41,11 +41,10 @@
   --bg-4:     #2B1055;  
   --border:   rgba(255, 224, 116, 0.1);  
   --border-2: rgba(255, 224, 116, 0.15);
-  --text:     #fcf8f0;
+  --text:     #fcf8f0; 
   --text-2:   #d8cce6;
   --text-3:   #a58ec2;  
   --shadow:   0 8px 40px rgba(18, 6, 33, 0.8);
-  --active-verb-color: var(--t4);
 }
 
  
@@ -238,7 +237,7 @@ header {
   color: var(--text);
   transition: color 0.2s;
 }
-.verb-item.active .verb-name { color: var(--active-verb-color, var(--accent)); font-weight: 600; }
+.verb-item.active .verb-name { color: var(--accent); font-weight: 600; }
 .verb-sub {
   font-size: 10px;
   color: var(--text-3);
@@ -631,67 +630,6 @@ header {
   from { opacity: 0; transform: translateY(5px); }
   to   { opacity: 1; transform: translateY(0); }
 }
-
-/* ══════════════════════════════════════════════
-   RESPONSIVE DESIGN (MÓVIL & TABLET)
-══════════════════════════════════════════════ */
-
-.menu-btn {
-  display: none;
-}
-
-@media (max-width: 768px) {
-  .app {
-    grid-template-columns: 1fr;  
-  }
-
-  .menu-btn {
-    display: flex; 
-  }
-
-  .sidebar {
-    position: fixed;
-    top: 52px;
-    left: -100%;  
-    width: 260px;
-    height: calc(100vh - 52px);
-    z-index: 100;
-    transition: left 0.3s ease;
-    box-shadow: 4px 0 24px rgba(0,0,0,0.1);
-  }
-  .sidebar.open {
-    left: 0;  
-  }
-
-   .chroma-strip {
-    overflow-x: auto;
-    justify-content: flex-start;
-    padding: 10px;
-  }
-  .tense-seg {
-    min-width: 70px;  
-    flex: 0 0 auto;
-  }
-
-  
-  .search-box { max-width: 130px; }
-  .search-box input { font-size: 11px; padding: 6px 10px 6px 30px; }
-  .verb-hero { font-size: 38px; }
-  .view-single { padding: 15px 15px 12px; }
-  
-  .conj-row { grid-template-columns: 90px 1fr; }  
-  .conj-pronoun { padding: 12px 10px; font-size: 11px; }
-  .conj-form { padding: 12px 15px; font-size: 15px; }
-
-   .kbd { display: none; }
-  .nav-bar { padding: 10px 15px; }
-  
- 
-  @media (max-width: 480px) {
-    .badge { display: none; }
-    .logo { font-size: 15px; }
-  }
-}
 </style>
 </head>
 <body>
@@ -700,21 +638,19 @@ header {
 
   <!-- ── HEADER ── -->
   <header>
-    <button class="btn-icon menu-btn" id="menuBtn" title="Menú">☰</button>
-    
     <div class="logo">Nexo</div>
 
     <div class="search-box">
       <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
         <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
       </svg>
-      <input type="text" id="searchInput" placeholder="Buscar verbo…" autocomplete="off">
+      <input type="text" id="searchInput" placeholder="Buscar verbo …" autocomplete="off">
     </div>
 
     <div class="hdr-actions">
-      <span class="badge" id="countBadge"></span>
+      <span class="badge" id="countBadge">68 verbos</span>
       <button class="btn-icon" id="panoramaBtn" title="Vista panorama (P)">⊞</button>
-      <button class="btn-icon" id="themeBtn" title="Cambiar tema (T)">☀️</button>
+      <button class="btn-icon" id="themeBtn" title="Cambiar tema (T)">🌙</button>
     </div>
   </header>
 
@@ -1918,9 +1854,7 @@ function selectVerb(i) {
   S.verbIdx = i;
   setAccent(TENSES[S.tenseIdx].color);
   render();
-  
-  document.querySelector('.sidebar').classList.remove('open');
-  
+  // scroll sidebar item into view
   requestAnimationFrame(() => {
     document.querySelector(`[data-i="${i}"]`)
       ?.scrollIntoView({ block:'nearest', behavior:'smooth' });
@@ -1982,10 +1916,6 @@ document.addEventListener('keydown', e => {
   if (k === 'ArrowLeft')  { e.preventDefault(); selectTense((S.tenseIdx + 10) % 11); }
   if (k === 'p' || k === 'P') togglePanorama();
   if (k === 't' || k === 'T') toggleTheme();
-});
-
-document.getElementById('menuBtn').addEventListener('click', () => {
-  document.querySelector('.sidebar').classList.toggle('open');
 });
 
 /* ════════════════════════════════════════════
