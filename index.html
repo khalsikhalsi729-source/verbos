@@ -1,730 +1,1928 @@
 <!DOCTYPE html>
-<html lang="es" dir="ltr">
+<html lang="es" data-theme="light">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Nexo</title>
-    <style>
-    :root {
-        /* --- Colors & Vars --- */
-        --bg-body: #f9f9f9;
-        --card-bg: #ffffff;
-        --text-main: #1d1d1f;
-        --text-sec: #86868b;
-        --accent: #0071e3;
-        --accent-soft: #e3f0ff;
-        --input-bg: #f2f2f7;
-        --border-color: rgba(0,0,0,0.08);
-        --shadow-soft: 0 4px 20px rgba(0,0,0,0.06);
-        --shadow-hover: 0 10px 30px rgba(0,0,0,0.1);
-        --font-main: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, sans-serif;
-    }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nexo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,400&family=JetBrains+Mono:wght@400;600&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+/* ══════════════════════════════════════════════
+   RESET + TOKENS
+══════════════════════════════════════════════ */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-    /* Dark Mode */
-    body.dark-mode {
-        --bg-body: #000000;
-        --card-bg: #1c1c1e;
-        --text-main: #ffffff;
-        --text-sec: #98989d;
-        --accent: #0a84ff;
-        --accent-soft: #0040dd;
-        --input-bg: #2c2c2e;
-        --border-color: rgba(255,255,255,0.15);
-        --shadow-soft: 0 4px 20px rgba(0,0,0,0.4);
-    }
+:root {
+  /* 11-tense chromatography palette */
+  --t0:  #2B1055;
+  --t1:  #451E5D;
+  --t2:  #6B2366;
+  --t3:  #912A67;
+  --t4:  #B73260;
+  --t5:  #D5414C;
+  --t6:  #E65A35;
+  --t7:  #F27A2B;
+  --t8:  #FA9B36;
+  --t9:  #FDBA4E;
+  --t10: #FFE074;
 
-    /* Universal Transition */
-    * {
-        transition: background-color 0.3s ease, 
-                    color 0.3s ease, 
-                    border-color 0.3s ease, 
-                    fill 0.3s ease, 
-                    box-shadow 0.3s ease;
-        box-sizing: border-box; 
-        margin: 0; 
-        padding: 0; 
-        outline: none; 
-        -webkit-tap-highlight-color: transparent;
-    }
+  --accent: var(--t0);
+  --accent-glow: #2B105522; 
 
-    body {
-        font-family: var(--font-main);
-        background-color: var(--bg-body);
-        color: var(--text-main);
-        display: flex; flex-direction: column; align-items: center;
-        min-height: 100vh; padding: 20px;
-    }
+  --font-display: 'Playfair Display', Georgia, serif;
+  --font-ui: 'Outfit', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', 'Courier New', monospace;
+}
 
-    /* --- Header --- */
-    header { width: 100%; max-width: 1000px; text-align: center; margin-bottom: 25px; position: relative; z-index: 10; }
-    
-    h1 { 
-        font-weight: 800; font-size: 2.2rem; margin-bottom: 20px; 
-        color: var(--text-main);
-    }
+[data-theme="dark"] {
+  --bg:       #120621;  
+  --bg-2:     #1b0a30;
+  --bg-3:     #240e40;
+  --bg-4:     #2B1055;  
+  --border:   rgba(255, 224, 116, 0.1);  
+  --border-2: rgba(255, 224, 116, 0.15);
+  --text:     #fcf8f0; 
+  --text-2:   #d8cce6;
+  --text-3:   #a58ec2;  
+  --shadow:   0 8px 40px rgba(18, 6, 33, 0.8);
+}
 
-    .header-controls {
-        position: absolute; top: 0; right: 0;
-        display: flex; gap: 10px;
-    }
+ 
+[data-theme="light"] {
+  --bg:       #fcfbfe;  
+  --bg-2:     #ffffff;
+  --bg-3:     #f4f1f8;
+  --bg-4:     #ebe6f2;
+  --border:   rgba(43, 16, 85, 0.08);
+  --border-2: rgba(43, 16, 85, 0.12);
+  --text:     #1A0833; 
+  --text-2:   #451E5D;  
+  --text-3:   #7d6799;  
+  --shadow:   0 4px 24px rgba(43, 16, 85, 0.08);
+}
 
-    .icon-btn {
-        background: var(--card-bg); border: 1px solid var(--border-color);
-        width: 44px; height: 44px; border-radius: 50%;
-        display: flex; align-items: center; justify-content: center;
-        cursor: pointer; box-shadow: var(--shadow-soft); color: var(--text-main);
-    }
-    .icon-btn svg { width: 22px; height: 22px; }
+html, body {
+  height: 100%;
+  overflow: hidden;
+  font-family: var(--font-ui);
+  background: var(--bg);
+  color: var(--text);
+  transition: background 0.35s, color 0.35s;
+}
 
-    .nav-pills { display: inline-flex; justify-content: center; gap: 8px; background: var(--card-bg); padding: 6px; border-radius: 50px; box-shadow: var(--shadow-soft); border: 1px solid var(--border-color); }
-    .nav-btn { border: none; background: transparent; padding: 10px 24px; border-radius: 40px; font-weight: 600; font-size: 0.95rem; color: var(--text-sec); cursor: pointer; }
-    .nav-btn.active { background: var(--text-main); color: var(--bg-body); }
+/* ══════════════════════════════════════════════
+   LAYOUT SKELETON
+══════════════════════════════════════════════ */
+.app {
+  display: grid;
+  grid-template-rows: 52px 1fr;
+  grid-template-columns: 210px 1fr;
+  height: 100vh;
+}
 
-    /* --- Sections --- */
-    main { width: 100%; max-width: 1000px; flex: 1; }
-    .section { display: none; opacity: 0; transform: translateY(10px); }
-    .section.active { display: block; opacity: 1; transform: translateY(0); transition: opacity 0.4s ease, transform 0.4s ease; }
+/* ══════════════════════════════════════════════
+   HEADER
+══════════════════════════════════════════════ */
+header {
+  grid-column: 1 / -1;
+  background: var(--bg-2);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  padding: 0 18px;
+  gap: 14px;
+  z-index: 20;
+}
 
-    /* --- STUDY CARDS UI --- */
-    /* Filters */
-    .filter-chips {
-        display: flex; gap: 10px; overflow-x: auto; padding-bottom: 5px; margin-bottom: 20px;
-        -ms-overflow-style: none; scrollbar-width: none;
-    }
-    .filter-chips::-webkit-scrollbar { display: none; }
-    
-    .filter-btn {
-        background: var(--card-bg); border: 1px solid var(--border-color);
-        padding: 8px 16px; border-radius: 20px; font-size: 0.9rem; font-weight: 600;
-        color: var(--text-sec); cursor: pointer; white-space: nowrap;
-    }
-    .filter-btn.active {
-        background: var(--accent); color: white; border-color: var(--accent);
-        box-shadow: 0 4px 10px rgba(0, 113, 227, 0.3);
-    }
+.logo {
+  font-family: var(--font-display);
+  font-size: 30px;
+  font-weight: 60px;
+  letter-spacing: -0.5px;
+  background: linear-gradient(100deg, var(--t0) 0%, var(--t4) 50%, var(--t8) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
 
-    .cards-grid { 
-        display: grid; 
-        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); 
-        gap: 20px; 
-        padding-bottom: 40px; 
-    }
-    
-    .verb-card { background: var(--card-bg); border-radius: 20px; padding: 20px; box-shadow: var(--shadow-soft); border: 1px solid var(--border-color); display: flex; flex-direction: column; }
-    
-    .card-header { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 15px; border-bottom: 1px solid var(--border-color); padding-bottom: 10px; }
-    .card-header h3 { color: var(--accent); font-size: 1.6rem; }
-    .card-header span { color: var(--text-sec); font-size: 0.9rem; font-style: italic; }
+.search-box {
+  position: relative;
+  flex: 1;
+  max-width: 300px;
+}
+.search-box svg {
+  position: absolute;
+  left: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--text-3);
+  pointer-events: none;
+}
+.search-box input {
+  width: 100%;
+  padding: 7px 12px 7px 34px;
+  border-radius: 8px;
+  border: 1px solid var(--border-2);
+  background: var(--bg-3);
+  color: var(--text);
+  font-family: var(--font-ui);
+  font-size: 13px;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.search-box input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-glow);
+}
+.search-box input::placeholder { color: var(--text-3); }
 
-    .card-tabs { display: flex; gap: 5px; margin-bottom: 10px; background: var(--input-bg); padding: 4px; border-radius: 10px; overflow-x: auto; }
-    .tab-btn { flex: 1; border: none; background: transparent; padding: 6px; font-size: 0.8rem; font-weight: 600; color: var(--text-sec); border-radius: 8px; cursor: pointer; white-space: nowrap; }
-    .tab-btn.active { background: var(--card-bg); color: var(--text-main); box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+.hdr-actions { display: flex; align-items: center; gap: 8px; margin-left: auto; }
 
-    .conjugation-list { list-style: none; display: none; }
-    .conjugation-list.active { display: block; animation: fadeIn 0.3s; }
-    .conjugation-list li { display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px dashed var(--border-color); font-size: 0.95rem; }
-    .conjugation-list li:last-child { border-bottom: none; }
-    .pronoun { color: var(--text-sec); font-size: 0.85em; width: 70px; }
+.badge {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 3px 9px;
+  border-radius: 20px;
+  border: 1px solid var(--border-2);
+  background: var(--bg-3);
+  color: var(--text-3);
+  white-space: nowrap;
+}
 
-    /* --- GAME AREA STYLES --- */
-    .tense-menu { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 15px; margin-top: 20px; }
-    .tense-btn {
-        background: var(--card-bg); border: 2px solid var(--border-color);
-        border-radius: 20px; padding: 30px; text-align: center; cursor: pointer;
-        box-shadow: var(--shadow-soft); font-size: 1.1rem; font-weight: 800;
-        color: var(--text-main);
-    }
-    .tense-btn:hover { border-color: var(--accent); transform: translateY(-3px); }
+.btn-icon {
+  width: 34px; height: 34px;
+  border-radius: 8px;
+  border: 1px solid var(--border-2);
+  background: var(--bg-3);
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 15px;
+  color: var(--text-2);
+  transition: all 0.2s;
+}
+.btn-icon:hover { background: var(--bg-4); color: var(--text); }
+.btn-icon.active { background: var(--accent-glow); color: var(--accent); border-color: var(--accent); }
 
-    .game-viewport {
-        background: var(--card-bg); border-radius: 24px; box-shadow: var(--shadow-soft);
-        border: 1px solid var(--border-color); min-height: 450px;
-        display: flex; flex-direction: column; overflow: hidden;
-    }
-    .game-header {
-        padding: 15px 20px; border-bottom: 1px solid var(--border-color);
-        display: flex; justify-content: space-between; align-items: center; background: var(--input-bg);
-        font-size: 0.9rem;
-    }
-    .game-header-left { display: flex; gap: 10px; align-items: center; }
-    .back-btn { background: none; border: none; font-weight: 600; cursor: pointer; color: var(--text-main); }
-    .skip-btn { background: var(--text-sec); color: #fff; border: none; font-weight: 600; cursor: pointer; font-size: 0.75rem; padding: 4px 10px; border-radius: 12px; opacity: 0.8; }
-    
-    .score-board { display: flex; gap: 15px; }
+/* ══════════════════════════════════════════════
+   SIDEBAR
+══════════════════════════════════════════════ */
+.sidebar {
+  background: var(--bg-2);
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
 
-    .game-content {
-        flex: 1; padding: 30px 20px; 
-        display: flex; flex-direction: column; align-items: center; justify-content: center;
-        text-align: center;
-    }
+.sidebar-title {
+  padding: 12px 14px 6px;
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 1.4px;
+  text-transform: uppercase;
+  color: var(--text-3);
+}
 
-    .prev-sentence {
-        font-size: 1rem; color: var(--text-sec); margin-bottom: 30px;
-        background: var(--input-bg); padding: 10px 20px; border-radius: 12px;
-        font-style: italic; opacity: 0.8; width: 100%; max-width: 500px;
-    }
+.legend {
+  display: flex;
+  gap: 10px;
+  padding: 4px 14px 10px;
+  border-bottom: 1px solid var(--border);
+}
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 10px;
+  color: var(--text-3);
+}
+.dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+}
+.dot-r { background: #10b981; }
+.dot-i { background: #f97316; }
+.dot-x { background: #a855f7; }
 
-    .sentence-builder {
-        font-size: 1.4rem; font-weight: 500; color: var(--text-main);
-        display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 10px;
-        line-height: 1.6; width: 100%;
-    }
+.verb-list {
+  flex: 1;
+  overflow-y: auto;
+  padding: 6px 8px;
+  scrollbar-width: thin;
+  scrollbar-color: var(--border) transparent;
+}
 
-    .target-pronoun { font-weight: 900; color: var(--accent); text-transform: uppercase; }
-    
-    .verb-hint {
-        color: var(--text-sec); font-weight: normal; font-style: italic; font-size: 1.1rem;
-    }
+.verb-item {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 7px 10px;
+  border-radius: 7px;
+  cursor: pointer;
+  transition: background 0.15s;
+  margin-bottom: 1px;
+}
+.verb-item:hover { background: var(--bg-4); }
+.verb-item.active { background: var(--accent-glow); }
+.verb-item.hidden { display: none; }
 
-    .game-input { 
-        background: var(--input-bg); border: none; border-bottom: 3px solid var(--border-color);
-        font-size: 1.4rem; text-align: center; color: var(--text-main);
-        width: 180px; padding: 5px; border-radius: 4px; font-weight: 600;
-    }
-    .game-input:focus { border-color: var(--accent); }
+.verb-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
 
-    .btn-submit { 
-        width: 100%; padding: 18px; background: var(--text-main); color: var(--bg-body); 
-        border: none; margin-top: auto; font-weight: 700; cursor: pointer; font-size: 1.1rem; 
-    }
+.verb-texts { min-width: 0; }
+.verb-name {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text);
+  transition: color 0.2s;
+}
+.verb-item.active .verb-name { color: var(--accent); font-weight: 600; }
+.verb-sub {
+  font-size: 10px;
+  color: var(--text-3);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
 
-    /* Progress Dots */
-    .progress-dots { display: flex; gap: 8px; margin-bottom: 25px; }
-    .dot { width: 10px; height: 10px; border-radius: 50%; background: var(--border-color); transition: 0.3s; }
-    .dot.active { background: var(--accent); transform: scale(1.3); }
-    .dot.done { background: #34c759; }
+/* ══════════════════════════════════════════════
+   MAIN PANEL
+══════════════════════════════════════════════ */
+.main {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  position: relative;
+}
 
-    /* AUTH OVERLAY */
-    #auth-overlay {
-        position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-        background: var(--bg-body); z-index: 9999;
-        display: flex; flex-direction: column; align-items: center; justify-content: center;
-        padding: 20px;
-    }
-    .auth-box {
-        background: var(--card-bg); padding: 30px; border-radius: 20px;
-        box-shadow: var(--shadow-hover); border: 1px solid var(--border-color);
-        width: 100%; max-width: 320px; text-align: center;
-    }
+/* Subtle color wash background */
+.main::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse 60% 50% at 70% 30%, var(--accent-glow), transparent);
+  pointer-events: none;
+  transition: background 0.6s;
+  z-index: 0;
+}
 
-    /* ADD VERB MODAL */
-    #add-verb-modal {
-        position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-        background: rgba(0,0,0,0.5); z-index: 2000;
-        backdrop-filter: blur(5px);
-        display: none; align-items: center; justify-content: center;
-        padding: 20px;
-    }
-    .modal-content {
-        background: var(--card-bg); width: 100%; max-width: 600px;
-        max-height: 90vh; overflow-y: auto;
-        border-radius: 24px; padding: 25px;
-        box-shadow: var(--shadow-hover);
-        border: 1px solid var(--border-color);
-    }
-    .form-grid-6 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 15px; }
-    .form-input { width: 100%; padding: 10px; border-radius: 10px; border: 1px solid var(--border-color); background: var(--input-bg); color: var(--text-main); margin-bottom: 10px; }
+/* ══════════════════════════════════════════════
+   CHROMATOGRAPHY BAR
+══════════════════════════════════════════════ */
+.chroma-strip {
+  height: 80px;
+  background: var(--bg-2);
+  border-bottom: 1px solid var(--border);
+  padding: 10px 20px;
+  display: flex;
+  align-items: stretch;
+  gap: 4px;
+  flex-shrink: 0;
+  position: relative;
+  z-index: 5;
+  overflow: hidden;
+}
 
-    /* Toast */
-    .toast { position: fixed; top: 20px; left: 50%; transform: translateX(-50%) translateY(-100px); background: #34c759; color: white; padding: 12px 30px; border-radius: 50px; font-weight: bold; transition: 0.4s; z-index: 100; }
-    .toast.show { transform: translateX(-50%) translateY(0); }
-    .toast.error { background: #ff3b30; }
+/* Faint full-spectrum wash behind the bar */
+.chroma-strip::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg,
+    #2B1055, #451E5D, #6B2366, #912A67, #B73260,
+    #D5414C, #E65A35, #F27A2B, #FA9B36, #FDBA4E, #FFE074
+  );
+  opacity: 0.06;
+  pointer-events: none;
+}
 
-    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-    </style>
+.tense-seg {
+  flex: 1;
+  border-radius: 8px;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: 8.5px;
+  font-weight: 600;
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+  line-height: 1.3;
+  text-align: center;
+  transition: all 0.22s cubic-bezier(.4,0,.2,1);
+   
+  color: var(--text);  
+  opacity: 0.6;  
+  position: relative;
+  padding: 5px 3px;
+  border: 1.5px solid transparent;
+  border-bottom: 3px solid transparent;  
+  user-select: none;
+}
+
+.tense-seg:hover {
+  opacity: 0.9;
+  transform: translateY(-2px);
+}
+
+.tense-seg.active {
+  opacity: 1;
+  transform: translateY(-2px) scaleY(1.02);
+  border-color: transparent;
+  border-bottom-color: var(--chroma-color);  
+  box-shadow: 0 10px 20px -8px var(--chroma-color);
+} 
+
+.tense-seg::after {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  border-radius: 10px;
+  background: var(--chroma-color);
+  opacity: 0;
+  filter: blur(8px);
+  transition: opacity 0.3s;
+  z-index: -1;
+}
+.tense-seg.active::after { opacity: 0.25; }
+.tense-seg:hover::after { opacity: 0.1; }
+
+.seg-main { font-size: 8px; opacity: 0.9; }
+.seg-sub  { font-size: 9px; font-weight: 700; }
+
+/* ══════════════════════════════════════════════
+   CONTENT AREA
+══════════════════════════════════════════════ */
+.content {
+  flex: 1;
+  overflow: hidden;
+  position: relative;
+  z-index: 1;
+}
+
+/* ─── SINGLE VIEW ─── */
+.view-single {
+  height: 100%;
+  overflow-y: auto;
+  padding: 28px 36px 12px;
+  scrollbar-width: thin;
+  scrollbar-color: var(--border) transparent;
+}
+
+.conj-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 20px;
+  animation: slideUp 0.28s ease both;
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0);    }
+}
+
+.verb-hero {
+  font-family: var(--font-display);
+  font-size: 52px;
+  font-weight: 900;
+  letter-spacing: -2px;
+  color: var(--accent);
+  line-height: 1;
+  transition: color 0.35s;
+}
+
+.verb-hero-sub {
+  font-size: 14px;
+  color: var(--text-3);
+  margin-top: 6px;
+  font-style: italic;
+}
+
+.tense-label-box { text-align: right; }
+.tense-label-main {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--accent);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  transition: color 0.35s;
+}
+.tense-label-sub {
+  font-size: 12px;
+  color: var(--text-3);
+  margin-top: 2px;
+}
+
+/* ─── CONJUGATION TABLE ─── */
+.conj-table {
+  background: var(--bg-2);
+  border: 1px solid var(--border-2);
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow: var(--shadow);
+  animation: slideUp 0.3s ease 0.05s both;
+}
+
+.conj-row {
+  display: grid;
+  grid-template-columns: 140px 1fr;
+  border-bottom: 1px solid var(--border);
+  transition: background 0.15s;
+  animation: rowFade 0.3s ease both;
+}
+@keyframes rowFade {
+  from { opacity: 0; transform: translateX(-6px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+.conj-row:last-child { border-bottom: none; }
+.conj-row:hover { background: var(--accent-glow); }
+
+.conj-pronoun {
+  padding: 14px 18px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-3);
+  border-right: 2px solid var(--accent);
+  display: flex;
+  align-items: center;
+  transition: border-color 0.35s;
+  opacity: 0.85;
+}
+
+.conj-form {
+  padding: 14px 22px;
+  font-family: var(--font-mono);
+  font-size: 17px;
+  font-weight: 600;
+  color: var(--text);
+  display: flex;
+  align-items: center;
+  letter-spacing: -0.3px;
+}
+
+.form-stem { color: var(--text-2); }
+.form-end  { color: var(--accent); font-weight: 700; transition: color 0.35s; }
+
+/* ─── PANORAMA VIEW ─── */
+.view-panorama {
+  height: 100%;
+  overflow: hidden;
+  display: none;
+  flex-direction: column;
+}
+.view-panorama.active { display: flex; }
+.view-single.hidden   { display: none; }
+
+.panorama-scroll {
+  flex: 1;
+  overflow-x: auto;
+  overflow-y: hidden;
+  display: flex;
+  align-items: stretch;
+  gap: 0;
+  padding: 16px 20px;
+  scrollbar-width: thin;
+  scrollbar-color: var(--border) transparent;
+}
+
+.pano-col {
+  flex-shrink: 0;
+  width: 190px;
+  display: flex;
+  flex-direction: column;
+  border-right: 1px solid var(--border);
+  padding-right: 0;
+  animation: slideUp 0.3s ease both;
+}
+.pano-col:last-child { border-right: none; }
+
+.pano-header {
+  padding: 8px 14px 10px;
+  border-bottom: 3px solid;
+  margin-bottom: 0;
+}
+.pano-tense-main {
+  font-size: 9px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  opacity: 0.7;
+}
+.pano-tense-sub {
+  font-size: 11px;
+  font-weight: 700;
+  margin-top: 1px;
+}
+
+.pano-rows { flex: 1; }
+.pano-row {
+  display: flex;
+  flex-direction: column;
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--border);
+  transition: background 0.15s;
+}
+.pano-row:hover { background: var(--bg-4); }
+.pano-row:last-child { border-bottom: none; }
+
+.pano-pronoun {
+  font-size: 9px;
+  color: var(--text-3);
+  text-transform: lowercase;
+  margin-bottom: 2px;
+}
+.pano-form {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ─── EMPTY STATE ─── */
+.empty {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  color: var(--text-3);
+}
+.empty-glyph {
+  font-family: var(--font-display);
+  font-size: 80px;
+  font-style: italic;
+  opacity: 0.08;
+  line-height: 1;
+}
+.empty-msg { font-size: 13px; }
+
+/* ══════════════════════════════════════════════
+   NAV BAR
+══════════════════════════════════════════════ */
+.nav-bar {
+  background: var(--bg-2);
+  border-top: 1px solid var(--border);
+  padding: 10px 28px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-shrink: 0;
+  z-index: 5;
+}
+
+.nav-btn {
+  padding: 7px 16px;
+  border-radius: 8px;
+  border: 1px solid var(--border-2);
+  background: var(--bg-3);
+  color: var(--text-2);
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 500;
+  font-family: var(--font-ui);
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  transition: all 0.2s;
+}
+.nav-btn:hover:not(:disabled) {
+  background: var(--accent-glow);
+  color: var(--accent);
+  border-color: var(--accent);
+}
+.nav-btn:disabled { opacity: 0.25; cursor: not-allowed; }
+
+.nav-center {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.nav-progress { font-size: 12px; color: var(--text-3); }
+.kbd {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--text-3);
+  padding: 2px 6px;
+  border-radius: 4px;
+  border: 1px solid var(--border-2);
+  background: var(--bg-4);
+}
+
+/* ══════════════════════════════════════════════
+   SCROLLBARS
+══════════════════════════════════════════════ */
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border-2); border-radius: 3px; }
+
+/* ══════════════════════════════════════════════
+   TRANSITIONS
+══════════════════════════════════════════════ */
+.fade-enter { animation: fadeIn 0.25s ease; }
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(5px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+</style>
 </head>
 <body>
 
-    <div id="auth-overlay">
-        <div class="auth-box">
-            <h2 style="margin-bottom:20px">🔐 Acceso</h2>
-            <input type="password" id="auth-pass" class="game-input" placeholder="Passcode" style="margin-bottom:15px; width:100%">
-            <button class="btn-submit" onclick="checkAuth()" style="border-radius:12px; padding:12px">Entrar</button>
-            <p id="auth-error" style="color:red; font-size:0.9rem; margin-top:10px; display:none">Código incorrecto</p>
-        </div>
+<div class="app">
+
+  <!-- ── HEADER ── -->
+  <header>
+    <div class="logo">Nexo</div>
+
+    <div class="search-box">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+        <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+      </svg>
+      <input type="text" id="searchInput" placeholder="Buscar verbo …" autocomplete="off">
     </div>
 
-    <div id="add-verb-modal">
-        <div class="modal-content">
-            <div style="display:flex; justify-content:space-between; margin-bottom:20px">
-                <h3>Añadir Nuevo Verbo</h3>
-                <button onclick="closeAddModal()" style="background:none; border:none; font-size:1.5rem; cursor:pointer; color:var(--text-sec)">×</button>
-            </div>
-            <input type="text" id="new-infinitive" class="form-input" placeholder="Infinitivo (ej. Cantar)">
-            <input type="text" id="new-trans" class="form-input" placeholder="Traducción (ej. To sing)">
-            <div id="conjugation-forms"></div>
-            <button class="btn-submit" onclick="saveNewVerb()" style="border-radius:12px; margin-top:15px">Guardar</button>
+    <div class="hdr-actions">
+      <span class="badge" id="countBadge">68 verbos</span>
+      <button class="btn-icon" id="panoramaBtn" title="Vista panorama (P)">⊞</button>
+      <button class="btn-icon" id="themeBtn" title="Cambiar tema (T)">🌙</button>
+    </div>
+  </header>
+
+   
+  <aside class="sidebar">
+    <div class="sidebar-title">Verbos</div>
+    <!-- <div class="legend">
+      <div class="legend-item"><div class="dot dot-r"></div>Regular</div>
+      <div class="legend-item"><div class="dot dot-i"></div>Irregular</div>
+      <div class="legend-item"><div class="dot dot-x"></div>Reflexivo</div>
+    </div> -->
+    <div class="verb-list" id="verbList"></div>
+  </aside>  
+
+  <!-- ── MAIN ── -->
+  <main class="main">
+
+    <!-- Chromatography tense strip -->
+    <div class="chroma-strip" id="chromaStrip"></div>
+
+    <!-- Content views -->
+    <div class="content">
+      <div class="view-single" id="viewSingle">
+        <div class="empty">
+          <div class="empty-glyph">V</div>
+          <div class="empty-msg">Selecciona un verbo para comenzar</div>
         </div>
+      </div>
+      <div class="view-panorama" id="viewPanorama"></div>
     </div>
 
-    <div id="toast" class="toast">¡Correcto!</div>
+    <!-- Nav bar -->
+    <div class="nav-bar">
+      <button class="nav-btn" id="btnPrevVerb">← Anterior</button>
+      <div class="nav-center">
+        <span class="nav-progress" id="navProgress"></span>
+        <span class="kbd">↑↓ verbos</span>
+        <span class="kbd">← → tiempos</span>
+        <span class="kbd">P panorama</span>
+      </div>
+      <button class="nav-btn" id="btnNextVerb">Siguiente →</button>
+    </div>
+  </main>
 
-    <header>
-        <div class="header-controls">
-            <button class="icon-btn" onclick="openAddModal()">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-            </button>
-            <button class="icon-btn" onclick="toggleTheme()">
-                <svg id="theme-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></svg>
-            </button>
+</div>
+
+<script>
+/* ════════════════════════════════════════════
+   DATA — 11 TENSES
+════════════════════════════════════════════ */
+const TENSES = [
+  { key:'presente',             name:'Presente',   sub:'Indicativo',       color:'#2B1055' },
+  { key:'indefinido',           name:'Pretérito',  sub:'Indefinido',       color:'#451E5D' },
+  { key:'imperfecto',           name:'Pretérito',  sub:'Imperfecto',       color:'#6B2366' },
+  { key:'perfecto',             name:'Pretérito',      sub:'Perfecto',         color:'#912A67' },
+  { key:'pluscuamperfecto',     name:'Pretérito',      sub:'Pluscuamperfecto', color:'#B73260' },
+  { key:'futuroSimple',         name:'Futuro',     sub:'Simple',           color:'#D5414C' },
+  { key:'futuroCompuesto',      name:'Futuro',     sub:'Compuesto',         color:'#E65A35' },
+  { key:'condicional',          name:'Condicional',      sub:'Simple',           color:'#F27A2B' },
+  { key:'presenteSubjuntivo',   name:'Subjuntivo', sub:'Presente',         color:'#FA9B36' },
+  { key:'imperativoAfirmativo', name:'Imperativo', sub:'Afirmativo',       color:'#FDBA4E' },
+  { key:'imperativoNegativo',   name:'Imperativo', sub:'Negativo',         color:'#FFE074' },
+];
+
+const PRONOUNS = [
+  'yo', 'tú', 'él / ella', 'nosotros', 'vosotros', 'ellos / ellas'
+];
+
+/* ════════════════════════════════════════════
+   VERB DATA (10 verbs — add yours here)
+   Structure: same object shape, just copy & fill
+════════════════════════════════════════════ */
+const VERBS = [
+  {
+    infinitive: "Ser", translation: "To be (perm)",
+    presente: ["soy", "eres", "es", "somos", "sois", "son"],
+    presenteSubjuntivo: ["sea", "seas", "sea", "seamos", "seáis", "sean"],
+    perfecto: ["he sido", "has sido", "ha sido", "hemos sido", "habéis sido", "han sido"],
+    indefinido: ["fui", "fuiste", "fue", "fuimos", "fuisteis", "fueron"],
+    imperfecto: ["era", "eras", "era", "éramos", "erais", "eran"],
+    pluscuamperfecto: ["había sido", "habías sido", "había sido", "habíamos sido", "habíais sido", "habían sido"],
+    futuroSimple: ["seré", "serás", "será", "seremos", "seréis", "serán"],
+    futuroCompuesto: ["habré sido", "habrás sido", "habrá sido", "habremos sido", "habréis sido", "habrán sido"],
+    condicional: ["sería", "serías", "sería", "seríamos", "seríais", "serían"],
+    imperativoAfirmativo: ["", "sé", "sea", "seamos", "sed", "sean"],
+    imperativoNegativo: ["", "no seas", "no sea", "no seamos", "no seáis", "no sean"]
+  },
+  {
+    infinitive: "Estar", translation: "To be (temp)",
+    presente: ["estoy", "estás", "está", "estamos", "estáis", "están"],
+    presenteSubjuntivo: ["esté", "estés", "esté", "estemos", "estéis", "estén"],
+    perfecto: ["he estado", "has estado", "ha estado", "hemos estado", "habéis estado", "han estado"],
+    indefinido: ["estuve", "estuviste", "estuvo", "estuvimos", "estuvisteis", "estuvieron"],
+    imperfecto: ["estaba", "estabas", "estaba", "estábamos", "estabais", "estaban"],
+    pluscuamperfecto: ["había estado", "habías estado", "había estado", "habíamos estado", "habíais estado", "habían estado"],
+    futuroSimple: ["estaré", "estarás", "estará", "estaremos", "estaréis", "estarán"],
+    futuroCompuesto: ["habré estado", "habrás estado", "habrá estado", "habremos estado", "habréis estado", "habrán estado"],
+    condicional: ["estaría", "estarías", "estaría", "estaríamos", "estaríais", "estarían"],
+    imperativoAfirmativo: ["", "está", "esté", "estemos", "estad", "estén"],
+    imperativoNegativo: ["", "no estés", "no esté", "no estemos", "no estéis", "no estén"]
+  },
+  {
+    infinitive: "Tener", translation: "To have",
+    presente: ["tengo", "tienes", "tiene", "tenemos", "tenéis", "tienen"],
+    presenteSubjuntivo: ["tenga", "tengas", "tenga", "tengamos", "tengáis", "tengan"],
+    perfecto: ["he tenido", "has tenido", "ha tenido", "hemos tenido", "habéis tenido", "han tenido"],
+    indefinido: ["tuve", "tuviste", "tuvo", "tuvimos", "tuvisteis", "tuvieron"],
+    imperfecto: ["tenía", "tenías", "tenía", "teníamos", "teníais", "tenían"],
+    pluscuamperfecto: ["había tenido", "habías tenido", "había tenido", "habíamos tenido", "habíais tenido", "habían tenido"],
+    futuroSimple: ["tendré", "tendrás", "tendrá", "tendremos", "tendréis", "tendrán"],
+    futuroCompuesto: ["habré tenido", "habrás tenido", "habrá tenido", "habremos tenido", "habréis tenido", "habrán tenido"],
+    condicional: ["tendría", "tendrías", "tendría", "tendríamos", "tendríais", "tendrían"],
+    imperativoAfirmativo: ["", "ten", "tenga", "tengamos", "tened", "tengan"],
+    imperativoNegativo: ["", "no tengas", "no tenga", "no tengamos", "no tengáis", "no tengan"]
+  },
+  {
+    infinitive: "Ir", translation: "To go",
+    presente: ["voy", "vas", "va", "vamos", "vais", "van"],
+    presenteSubjuntivo: ["vaya", "vayas", "vaya", "vayamos", "vayáis", "vayan"],
+    perfecto: ["he ido", "has ido", "ha ido", "hemos ido", "habéis ido", "han ido"],
+    indefinido: ["fui", "fuiste", "fue", "fuimos", "fuisteis", "fueron"],
+    imperfecto: ["iba", "ibas", "iba", "íbamos", "ibais", "iban"],
+    pluscuamperfecto: ["había ido", "habías ido", "había ido", "habíamos ido", "habíais ido", "habían ido"],
+    futuroSimple: ["iré", "irás", "irá", "iremos", "iréis", "irán"],
+    futuroCompuesto: ["habré ido", "habrás ido", "habrá ido", "habremos ido", "habréis ido", "habrán ido"],
+    condicional: ["iría", "irías", "iría", "iríamos", "iríais", "irían"],
+    imperativoAfirmativo: ["", "ve", "vaya", "vamos", "id", "vayan"],
+    imperativoNegativo: ["", "no vayas", "no vaya", "no vayamos", "no vayáis", "no vayan"]
+  },
+  {
+    infinitive: "Hacer", translation: "To do/make",
+    presente: ["hago", "haces", "hace", "hacemos", "hacéis", "hacen"],
+    presenteSubjuntivo: ["haga", "hagas", "haga", "hagamos", "hagáis", "hagan"],
+    perfecto: ["he hecho", "has hecho", "ha hecho", "hemos hecho", "habéis hecho", "han hecho"],
+    indefinido: ["hice", "hiciste", "hizo", "hicimos", "hicisteis", "hicieron"],
+    imperfecto: ["hacía", "hacías", "hacía", "hacíamos", "hacíais", "hacían"],
+    pluscuamperfecto: ["había hecho", "habías hecho", "había hecho", "habíamos hecho", "habíais hecho", "habían hecho"],
+    futuroSimple: ["haré", "harás", "hará", "haremos", "haréis", "harán"],
+    futuroCompuesto: ["habré hecho", "habrás hecho", "habrá hecho", "habremos hecho", "habréis hecho", "habrán hecho"],
+    condicional: ["haría", "harías", "haría", "haríamos", "haríais", "harían"],
+    imperativoAfirmativo: ["", "haz", "haga", "hagamos", "haced", "hagan"],
+    imperativoNegativo: ["", "no hagas", "no haga", "no hagamos", "no hagáis", "no hagan"]
+  },
+  {
+    infinitive: "Poder", translation: "To can",
+    presente: ["puedo", "puedes", "puede", "podemos", "podéis", "pueden"],
+    presenteSubjuntivo: ["pueda", "puedas", "pueda", "podamos", "podáis", "puedan"],
+    perfecto: ["he podido", "has podido", "ha podido", "hemos podido", "habéis podido", "han podido"],
+    indefinido: ["pude", "pudiste", "pudo", "pudimos", "pudisteis", "pudieron"],
+    imperfecto: ["podía", "podías", "podía", "podíamos", "podíais", "podían"],
+    pluscuamperfecto: ["había podido", "habías podido", "había podido", "habíamos podido", "habíais podido", "habían podido"],
+    futuroSimple: ["podré", "podrás", "podrá", "podremos", "podréis", "podrán"],
+    futuroCompuesto: ["habré podido", "habrás podido", "habrá podido", "habremos podido", "habréis podido", "habrán podido"],
+    condicional: ["podría", "podrías", "podría", "podríamos", "podríais", "podrían"],
+    imperativoAfirmativo: ["", "puede", "pueda", "podamos", "poded", "puedan"],
+    imperativoNegativo: ["", "no puedas", "no pueda", "no podamos", "no podáis", "no puedan"]
+  },
+  {
+    infinitive: "Decir", translation: "To say",
+    presente: ["digo", "dices", "dice", "decimos", "decís", "dicen"],
+    presenteSubjuntivo: ["diga", "digas", "diga", "digamos", "digáis", "digan"],
+    perfecto: ["he dicho", "has dicho", "ha dicho", "hemos dicho", "habéis dicho", "han dicho"],
+    indefinido: ["dije", "dijiste", "dijo", "dijimos", "dijisteis", "dijeron"],
+    imperfecto: ["decía", "decías", "decía", "decíamos", "decíais", "decían"],
+    pluscuamperfecto: ["había dicho", "habías dicho", "había dicho", "habíamos dicho", "habíais dicho", "habían dicho"],
+    futuroSimple: ["diré", "dirás", "dirá", "diremos", "diréis", "dirán"],
+    futuroCompuesto: ["habré dicho", "habrás dicho", "habrá dicho", "habremos dicho", "habréis dicho", "habrán dicho"],
+    condicional: ["diría", "dirías", "diría", "diríamos", "diríais", "dirían"],
+    imperativoAfirmativo: ["", "di", "diga", "digamos", "decid", "digan"],
+    imperativoNegativo: ["", "no digas", "no diga", "no digamos", "no digáis", "no digan"]
+  },
+  {
+    infinitive: "Ver", translation: "To see",
+    presente: ["veo", "ves", "ve", "vemos", "veis", "ven"],
+    presenteSubjuntivo: ["vea", "veas", "vea", "veamos", "veáis", "vean"],
+    perfecto: ["he visto", "has visto", "ha visto", "hemos visto", "habéis visto", "han visto"],
+    indefinido: ["vi", "viste", "vio", "vimos", "visteis", "vieron"],
+    imperfecto: ["veía", "veías", "veía", "veíamos", "veíais", "veían"],
+    pluscuamperfecto: ["había visto", "habías visto", "había visto", "habíamos visto", "habíais visto", "habían visto"],
+    futuroSimple: ["veré", "verás", "verá", "veremos", "veréis", "verán"],
+    futuroCompuesto: ["habré visto", "habrás visto", "habrá visto", "habremos visto", "habréis visto", "habrán visto"],
+    condicional: ["vería", "verías", "vería", "veríamos", "veríais", "verían"],
+    imperativoAfirmativo: ["", "ve", "vea", "veamos", "ved", "vean"],
+    imperativoNegativo: ["", "no veas", "no vea", "no veamos", "no veáis", "no vean"]
+  },
+  {
+    infinitive: "Comer", translation: "To eat",
+    presente: ["como", "comes", "come", "comemos", "coméis", "comen"],
+    presenteSubjuntivo: ["coma", "comas", "coma", "comamos", "comáis", "coman"],
+    perfecto: ["he comido", "has comido", "ha comido", "hemos comido", "habéis comido", "han comido"],
+    indefinido: ["comí", "comiste", "comió", "comimos", "comisteis", "comieron"],
+    imperfecto: ["comía", "comías", "comía", "comíamos", "comíais", "comían"],
+    pluscuamperfecto: ["había comido", "habías comido", "había comido", "habíamos comido", "habíais comido", "habían comido"],
+    futuroSimple: ["comeré", "comerás", "comerá", "comeremos", "comeréis", "comerán"],
+    futuroCompuesto: ["habré comido", "habrás comido", "habrá comido", "habremos comido", "habréis comido", "habrán comido"],
+    condicional: ["comería", "comerías", "comería", "comeríamos", "comeríais", "comerían"],
+    imperativoAfirmativo: ["", "come", "coma", "comamos", "comed", "coman"],
+    imperativoNegativo: ["", "no comas", "no coma", "no comamos", "no comáis", "no coman"]
+  },
+  {
+    infinitive: "Tomar", translation: "To take/drink",
+    presente: ["tomo", "tomas", "toma", "tomamos", "tomáis", "toman"],
+    presenteSubjuntivo: ["tome", "tomes", "tome", "tomemos", "toméis", "tomen"],
+    perfecto: ["he tomado", "has tomado", "ha tomado", "hemos tomado", "habéis tomado", "han tomado"],
+    indefinido: ["tomé", "tomaste", "tomó", "tomamos", "tomasteis", "tomaron"],
+    imperfecto: ["tomaba", "tomabas", "tomaba", "tomábamos", "tomabais", "tomaban"],
+    pluscuamperfecto: ["había tomado", "habías tomado", "había tomado", "habíamos tomado", "habíais tomado", "habían tomado"],
+    futuroSimple: ["tomaré", "tomarás", "tomará", "tomaremos", "tomaréis", "tomarán"],
+    futuroCompuesto: ["habré tomado", "habrás tomado", "habrá tomado", "habremos tomado", "habréis tomado", "habrán tomado"],
+    condicional: ["tomaría", "tomarías", "tomaría", "tomaríamos", "tomaríais", "tomarían"],
+    imperativoAfirmativo: ["", "toma", "tome", "tomemos", "tomad", "tomen"],
+    imperativoNegativo: ["", "no tomes", "no tome", "no tomemos", "no toméis", "no tomen"]
+  },
+  {
+    infinitive: "Querer", translation: "To want",
+    presente: ["quiero", "quieres", "quiere", "queremos", "queréis", "quieren"],
+    presenteSubjuntivo: ["quiera", "quieras", "quiera", "queramos", "queráis", "quieran"],
+    perfecto: ["he querido", "has querido", "ha querido", "hemos querido", "habéis querido", "han querido"],
+    indefinido: ["quise", "quisiste", "quiso", "quisimos", "quisisteis", "quisieron"],
+    imperfecto: ["quería", "querías", "quería", "queríamos", "queríais", "querían"],
+    pluscuamperfecto: ["había querido", "habías querido", "había querido", "habíamos querido", "habíais querido", "habían querido"],
+    futuroSimple: ["querré", "querrás", "querrá", "querremos", "querréis", "querrán"],
+    futuroCompuesto: ["habré querido", "habrás querido", "habrá querido", "habremos querido", "habréis querido", "habrán querido"],
+    condicional: ["querría", "querrías", "querría", "querríamos", "querríais", "querrían"],
+    imperativoAfirmativo: ["", "quiere", "quiera", "queramos", "quered", "quieran"],
+    imperativoNegativo: ["", "no quieras", "no quiera", "no queramos", "no queráis", "no quieran"]
+  },
+  {
+    infinitive: "Saber", translation: "To know (info)",
+    presente: ["sé", "sabes", "sabe", "sabemos", "sabéis", "saben"],
+    presenteSubjuntivo: ["sepa", "sepas", "sepa", "sepamos", "sepáis", "sepan"],
+    perfecto: ["he sabido", "has sabido", "ha sabido", "hemos sabido", "habéis sabido", "han sabido"],
+    indefinido: ["supe", "supiste", "supo", "supimos", "supisteis", "supieron"],
+    imperfecto: ["sabía", "sabías", "sabía", "sabíamos", "sabíais", "sabían"],
+    pluscuamperfecto: ["había sabido", "habías sabido", "había sabido", "habíamos sabido", "habíais sabido", "habían sabido"],
+    futuroSimple: ["sabré", "sabrás", "sabrá", "sabremos", "sabréis", "sabrán"],
+    futuroCompuesto: ["habré sabido", "habrás sabido", "habrá sabido", "habremos sabido", "habréis sabido", "habrán sabido"],
+    condicional: ["sabría", "sabrías", "sabría", "sabríamos", "sabríais", "sabrían"],
+    imperativoAfirmativo: ["", "sabe", "sepa", "sepamos", "sabed", "sepan"],
+    imperativoNegativo: ["", "no sepas", "no sepa", "no sepamos", "no sepáis", "no sepan"]
+  },
+  {
+    infinitive: "Venir", translation: "To come",
+    presente: ["vengo", "vienes", "viene", "venimos", "venís", "vienen"],
+    presenteSubjuntivo: ["venga", "vengas", "venga", "vengamos", "vengáis", "vengan"],
+    perfecto: ["he venido", "has venido", "ha venido", "hemos venido", "habéis venido", "han venido"],
+    indefinido: ["vine", "viniste", "vino", "vinimos", "vinisteis", "vinieron"],
+    imperfecto: ["venía", "venías", "venía", "veníamos", "veníais", "venían"],
+    pluscuamperfecto: ["había venido", "habías venido", "había venido", "habíamos venido", "habíais venido", "habían venido"],
+    futuroSimple: ["vendré", "vendrás", "vendrá", "vendremos", "vendréis", "vendrán"],
+    futuroCompuesto: ["habré venido", "habrás venido", "habrá venido", "habremos venido", "habréis venido", "habrán venido"],
+    condicional: ["vendría", "vendrías", "vendría", "vendríamos", "vendríais", "vendrían"],
+    imperativoAfirmativo: ["", "ven", "venga", "vengamos", "venid", "vengan"],
+    imperativoNegativo: ["", "no vengas", "no venga", "no vengamos", "no vengáis", "no vengan"]
+  },
+  {
+    infinitive: "Poner", translation: "To put",
+    presente: ["pongo", "pones", "pone", "ponemos", "ponéis", "ponen"],
+    presenteSubjuntivo: ["ponga", "pongas", "ponga", "pongamos", "pongáis", "pongan"],
+    perfecto: ["he puesto", "has puesto", "ha puesto", "hemos puesto", "habéis puesto", "han puesto"],
+    indefinido: ["puse", "pusiste", "puso", "pusimos", "pusisteis", "pusieron"],
+    imperfecto: ["ponía", "ponías", "ponía", "poníamos", "poníais", "ponían"],
+    pluscuamperfecto: ["había puesto", "habías puesto", "había puesto", "habíamos puesto", "habíais puesto", "habían puesto"],
+    futuroSimple: ["pondré", "pondrás", "pondrá", "pondremos", "pondréis", "pondrán"],
+    futuroCompuesto: ["habré puesto", "habrás puesto", "habrá puesto", "habremos puesto", "habréis puesto", "habrán puesto"],
+    condicional: ["pondría", "pondrías", "pondría", "pondríamos", "pondríais", "pondrían"],
+    imperativoAfirmativo: ["", "pon", "ponga", "pongamos", "poned", "pongan"],
+    imperativoNegativo: ["", "no pongas", "no ponga", "no pongamos", "no pongáis", "no pongan"]
+  },
+  {
+    infinitive: "Dar", translation: "To give",
+    presente: ["doy", "das", "da", "damos", "dais", "dan"],
+    presenteSubjuntivo: ["dé", "des", "dé", "demos", "deis", "den"],
+    perfecto: ["he dado", "has dado", "ha dado", "hemos dado", "habéis dado", "han dado"],
+    indefinido: ["di", "diste", "dio", "dimos", "disteis", "dieron"],
+    imperfecto: ["daba", "dabas", "daba", "dábamos", "dabais", "daban"],
+    pluscuamperfecto: ["había dado", "habías dado", "había dado", "habíamos dado", "habíais dado", "habían dado"],
+    futuroSimple: ["daré", "darás", "dará", "daremos", "daréis", "darán"],
+    futuroCompuesto: ["habré dado", "habrás dado", "habrá dado", "habremos dado", "habréis dado", "habrán dado"],
+    condicional: ["daría", "darías", "daría", "daríamos", "daríais", "darían"],
+    imperativoAfirmativo: ["", "da", "dé", "demos", "dad", "den"],
+    imperativoNegativo: ["", "no des", "no dé", "no demos", "no deis", "no den"]
+  },
+  {
+    infinitive: "Llegar", translation: "To arrive",
+    presente: ["llego", "llegas", "llega", "llegamos", "llegáis", "llegan"],
+    presenteSubjuntivo: ["llegue", "llegues", "llegue", "lleguemos", "lleguéis", "lleguen"],
+    perfecto: ["he llegado", "has llegado", "ha llegado", "hemos llegado", "habéis llegado", "han llegado"],
+    indefinido: ["llegué", "llegaste", "llegó", "llegamos", "llegasteis", "llegaron"],
+    imperfecto: ["llegaba", "llegabas", "llegaba", "llegábamos", "llegabais", "llegaban"],
+    pluscuamperfecto: ["había llegado", "habías llegado", "había llegado", "habíamos llegado", "habíais llegado", "habían llegado"],
+    futuroSimple: ["llegaré", "llegarás", "llegará", "llegaremos", "llegaréis", "llegarán"],
+    futuroCompuesto: ["habré llegado", "habrás llegado", "habrá llegado", "habremos llegado", "habréis llegado", "habrán llegado"],
+    condicional: ["llegaría", "llegarías", "llegaría", "llegaríamos", "llegaríais", "llegarían"],
+    imperativoAfirmativo: ["", "llega", "llegue", "lleguemos", "llegad", "lleguen"],
+    imperativoNegativo: ["", "no llegues", "no llegue", "no lleguemos", "no lleguéis", "no lleguen"]
+  },
+  {
+    infinitive: "Pasar", translation: "To pass/happen",
+    presente: ["paso", "pasas", "pasa", "pasamos", "pasáis", "pasan"],
+    presenteSubjuntivo: ["pase", "pases", "pase", "pasemos", "paséis", "pasen"],
+    perfecto: ["he pasado", "has pasado", "ha pasado", "hemos pasado", "habéis pasado", "han pasado"],
+    indefinido: ["pasé", "pasaste", "pasó", "pasamos", "pasasteis", "pasaron"],
+    imperfecto: ["pasaba", "pasabas", "pasaba", "pasábamos", "pasabais", "pasaban"],
+    pluscuamperfecto: ["había pasado", "habías pasado", "había pasado", "habíamos pasado", "habíais pasado", "habían pasado"],
+    futuroSimple: ["pasaré", "pasarás", "pasará", "pasaremos", "pasaréis", "pasarán"],
+    futuroCompuesto: ["habré pasado", "habrás pasado", "habrá pasado", "habremos pasado", "habréis pasado", "habrán pasado"],
+    condicional: ["pasaría", "pasarías", "pasaría", "pasaríamos", "pasaríais", "pasarían"],
+    imperativoAfirmativo: ["", "pasa", "pase", "pasemos", "pasad", "pasen"],
+    imperativoNegativo: ["", "no pases", "no pase", "no pasemos", "no paséis", "no pasen"]
+  },
+  {
+    infinitive: "Deber", translation: "To must/owe",
+    presente: ["debo", "debes", "debe", "debemos", "debéis", "deben"],
+    presenteSubjuntivo: ["deba", "debas", "deba", "debamos", "debáis", "deban"],
+    perfecto: ["he debido", "has debido", "ha debido", "hemos debido", "habéis debido", "han debido"],
+    indefinido: ["debí", "debiste", "debió", "debimos", "debisteis", "debieron"],
+    imperfecto: ["debía", "debías", "debía", "debíamos", "debíais", "debían"],
+    pluscuamperfecto: ["había debido", "habías debido", "había debido", "habíamos debido", "habíais debido", "habían debido"],
+    futuroSimple: ["deberé", "deberás", "deberá", "deberemos", "deberéis", "deberán"],
+    futuroCompuesto: ["habré debido", "habrás debido", "habrá debido", "habremos debido", "habréis debido", "habrán debido"],
+    condicional: ["debería", "deberías", "debería", "deberíamos", "deberíais", "deberían"],
+    imperativoAfirmativo: ["", "debe", "deba", "debamos", "debed", "deban"],
+    imperativoNegativo: ["", "no debas", "no deba", "no debamos", "no debáis", "no deban"]
+  },
+  {
+    infinitive: "Quedar", translation: "To stay/meet",
+    presente: ["quedo", "quedas", "queda", "quedamos", "quedáis", "quedan"],
+    presenteSubjuntivo: ["quede", "quedes", "quede", "quedemos", "quedéis", "queden"],
+    perfecto: ["he quedado", "has quedado", "ha quedado", "hemos quedado", "habéis quedado", "han quedado"],
+    indefinido: ["quedé", "quedaste", "quedó", "quedamos", "quedasteis", "quedaron"],
+    imperfecto: ["quedaba", "quedabas", "quedaba", "quedábamos", "quedabais", "quedaban"],
+    pluscuamperfecto: ["había quedado", "habías quedado", "había quedado", "habíamos quedado", "habíais quedado", "habían quedado"],
+    futuroSimple: ["quedaré", "quedarás", "quedará", "quedaremos", "quedaréis", "quedarán"],
+    futuroCompuesto: ["habré quedado", "habrás quedado", "habrá quedado", "habremos quedado", "habréis quedado", "habrán quedado"],
+    condicional: ["quedaría", "quedarías", "quedaría", "quedaríamos", "quedaríais", "quedarían"],
+    imperativoAfirmativo: ["", "queda", "quede", "quedemos", "quedad", "queden"],
+    imperativoNegativo: ["", "no quedes", "no quede", "no quedemos", "no quedéis", "no queden"]
+  },
+  {
+    infinitive: "Creer", translation: "To believe",
+    presente: ["creo", "crees", "cree", "creemos", "creéis", "creen"],
+    presenteSubjuntivo: ["crea", "creas", "crea", "creamos", "creáis", "crean"],
+    perfecto: ["he creído", "has creído", "ha creído", "hemos creído", "habéis creído", "han creído"],
+    indefinido: ["creí", "creíste", "creyó", "creímos", "creísteis", "creyeron"],
+    imperfecto: ["creía", "creías", "creía", "creíamos", "creíais", "creían"],
+    pluscuamperfecto: ["había creído", "habías creído", "había creído", "habíamos creído", "habíais creído", "habían creído"],
+    futuroSimple: ["creeré", "creerás", "creerá", "creeremos", "creeréis", "creerán"],
+    futuroCompuesto: ["habré creído", "habrás creído", "habrá creído", "habremos creído", "habréis creído", "habrán creído"],
+    condicional: ["creería", "creerías", "creería", "creeríamos", "creeríais", "creerían"],
+    imperativoAfirmativo: ["", "cree", "crea", "creamos", "creed", "crean"],
+    imperativoNegativo: ["", "no creas", "no crea", "no creamos", "no creáis", "no crean"]
+  },
+  {
+    infinitive: "Hablar", translation: "To speak",
+    presente: ["hablo", "hablas", "habla", "hablamos", "habláis", "hablan"],
+    presenteSubjuntivo: ["hable", "hables", "hable", "hablemos", "habléis", "hablen"],
+    perfecto: ["he hablado", "has hablado", "ha hablado", "hemos hablado", "habéis hablado", "han hablado"],
+    indefinido: ["hablé", "hablaste", "habló", "hablamos", "hablasteis", "hablaron"],
+    imperfecto: ["hablaba", "hablabas", "hablaba", "hablábamos", "hablabais", "hablaban"],
+    pluscuamperfecto: ["había hablado", "habías hablado", "había hablado", "habíamos hablado", "habíais hablado", "habían hablado"],
+    futuroSimple: ["hablaré", "hablarás", "hablará", "hablaremos", "hablaréis", "hablarán"],
+    futuroCompuesto: ["habré hablado", "habrás hablado", "habrá hablado", "habremos hablado", "habréis hablado", "habrán hablado"],
+    condicional: ["hablaría", "hablarías", "hablaría", "hablaríamos", "hablaríais", "hablarían"],
+    imperativoAfirmativo: ["", "habla", "hable", "hablemos", "hablad", "hablen"],
+    imperativoNegativo: ["", "no hables", "no hable", "no hablemos", "no habléis", "no hablen"]
+  },
+  {
+    infinitive: "Llevar", translation: "To carry/wear",
+    presente: ["llevo", "llevas", "lleva", "llevamos", "lleváis", "llevan"],
+    presenteSubjuntivo: ["lleve", "lleves", "lleve", "llevemos", "llevéis", "lleven"],
+    perfecto: ["he llevado", "has llevado", "ha llevado", "hemos llevado", "habéis llevado", "han llevado"],
+    indefinido: ["llevé", "llevaste", "llevó", "llevamos", "llevasteis", "llevaron"],
+    imperfecto: ["llevaba", "llevabas", "llevaba", "llevábamos", "llevabais", "llevaban"],
+    pluscuamperfecto: ["había llevado", "habías llevado", "había llevado", "habíamos llevado", "habíais llevado", "habían llevado"],
+    futuroSimple: ["llevaré", "llevarás", "llevará", "llevaremos", "llevaréis", "llevarán"],
+    futuroCompuesto: ["habré llevado", "habrás llevado", "habrá llevado", "habremos llevado", "habréis llevado", "habrán llevado"],
+    condicional: ["llevaría", "llevarías", "llevaría", "llevaríamos", "llevaríais", "llevarían"],
+    imperativoAfirmativo: ["", "lleva", "lleve", "llevemos", "llevad", "lleven"],
+    imperativoNegativo: ["", "no lleves", "no lleve", "no llevemos", "no llevéis", "no lleven"]
+  },
+  {
+    infinitive: "Dejar", translation: "To leave/let",
+    presente: ["dejo", "dejas", "deja", "dejamos", "dejáis", "dejan"],
+    presenteSubjuntivo: ["deje", "dejes", "deje", "dejemos", "dejéis", "dejen"],
+    perfecto: ["he dejado", "has dejado", "ha dejado", "hemos dejado", "habéis dejado", "han dejado"],
+    indefinido: ["dejé", "dejaste", "dejó", "dejamos", "dejasteis", "dejaron"],
+    imperfecto: ["dejaba", "dejabas", "dejaba", "dejábamos", "dejabais", "dejaban"],
+    pluscuamperfecto: ["había dejado", "habías dejado", "había dejado", "habíamos dejado", "habíais dejado", "habían dejado"],
+    futuroSimple: ["dejaré", "dejarás", "dejará", "dejaremos", "dejaréis", "dejarán"],
+    futuroCompuesto: ["habré dejado", "habrás dejado", "habrá dejado", "habremos dejado", "habréis dejado", "habrán dejado"],
+    condicional: ["dejaría", "dejarías", "dejaría", "dejaríamos", "dejaríais", "dejarían"],
+    imperativoAfirmativo: ["", "deja", "deje", "dejemos", "dejad", "dejen"],
+    imperativoNegativo: ["", "no dejes", "no deje", "no dejemos", "no dejéis", "no dejen"]
+  },
+  {
+    infinitive: "Seguir", translation: "To follow",
+    presente: ["sigo", "sigues", "sigue", "seguimos", "seguís", "siguen"],
+    presenteSubjuntivo: ["siga", "sigas", "siga", "sigamos", "sigáis", "sigan"],
+    perfecto: ["he seguido", "has seguido", "ha seguido", "hemos seguido", "habéis seguido", "han seguido"],
+    indefinido: ["seguí", "seguiste", "siguió", "seguimos", "seguisteis", "siguieron"],
+    imperfecto: ["seguía", "seguías", "seguía", "seguíamos", "seguíais", "seguían"],
+    pluscuamperfecto: ["había seguido", "habías seguido", "había seguido", "habíamos seguido", "habíais seguido", "habían seguido"],
+    futuroSimple: ["seguiré", "seguirás", "seguirá", "seguiremos", "seguiréis", "seguirán"],
+    futuroCompuesto: ["habré seguido", "habrás seguido", "habrá seguido", "habremos seguido", "habréis seguido", "habrán seguido"],
+    condicional: ["seguiría", "seguirías", "seguiría", "seguiríamos", "seguiríais", "seguirían"],
+    imperativoAfirmativo: ["", "sigue", "siga", "sigamos", "seguid", "sigan"],
+    imperativoNegativo: ["", "no sigas", "no siga", "no sigamos", "no sigáis", "no sigan"]
+  },
+  {
+    infinitive: "Encontrar", translation: "To find",
+    presente: ["encuentro", "encuentras", "encuentra", "encontramos", "encontráis", "encuentran"],
+    presenteSubjuntivo: ["encuentre", "encuentres", "encuentre", "encontremos", "encontréis", "encuentren"],
+    perfecto: ["he encontrado", "has encontrado", "ha encontrado", "hemos encontrado", "habéis encontrado", "han encontrado"],
+    indefinido: ["encontré", "encontraste", "encontró", "encontramos", "encontrasteis", "encontraron"],
+    imperfecto: ["encontraba", "encontrabas", "encontraba", "encontrábamos", "encontrabais", "encontraban"],
+    pluscuamperfecto: ["había encontrado", "habías encontrado", "había encontrado", "habíamos encontrado", "habíais encontrado", "habían encontrado"],
+    futuroSimple: ["encontraré", "encontrarás", "encontrará", "encontraremos", "encontraréis", "encontrarán"],
+    futuroCompuesto: ["habré encontrado", "habrás encontrado", "habrá encontrado", "habremos encontrado", "habréis encontrado", "habrán encontrado"],
+    condicional: ["encontraría", "encontrarías", "encontraría", "encontraríamos", "encontraríais", "encontrarían"],
+    imperativoAfirmativo: ["", "encuentra", "encuentre", "encontremos", "encontrad", "encuentren"],
+    imperativoNegativo: ["", "no encuentres", "no encuentre", "no encontremos", "no encontréis", "no encuentren"]
+  },
+  {
+    infinitive: "Llamar", translation: "To call",
+    presente: ["llamo", "llamas", "llama", "llamamos", "llamáis", "llaman"],
+    presenteSubjuntivo: ["llame", "llames", "llame", "llamemos", "llaméis", "llamen"],
+    perfecto: ["he llamado", "has llamado", "ha llamado", "hemos llamado", "habéis llamado", "han llamado"],
+    indefinido: ["llamé", "llamaste", "llamó", "llamamos", "llamasteis", "llamaron"],
+    imperfecto: ["llamaba", "llamabas", "llamaba", "llamábamos", "llamabais", "llamaban"],
+    pluscuamperfecto: ["había llamado", "habías llamado", "había llamado", "habíamos llamado", "habíais llamado", "habían llamado"],
+    futuroSimple: ["llamaré", "llamarás", "llamará", "llamaremos", "llamaréis", "llamarán"],
+    futuroCompuesto: ["habré llamado", "habrás llamado", "habrá llamado", "habremos llamado", "habréis llamado", "habrán llamado"],
+    condicional: ["llamaría", "llamarías", "llamaría", "llamaríamos", "llamaríais", "llamarían"],
+    imperativoAfirmativo: ["", "llama", "llame", "llamemos", "llamad", "llamen"],
+    imperativoNegativo: ["", "no llames", "no llame", "no llamemos", "no llaméis", "no llamen"]
+  },
+  {
+    infinitive: "Vivir", translation: "To live",
+    presente: ["vivo", "vives", "vive", "vivimos", "vivís", "viven"],
+    presenteSubjuntivo: ["viva", "vivas", "viva", "vivamos", "viváis", "vivan"],
+    perfecto: ["he vivido", "has vivido", "ha vivido", "hemos vivido", "habéis vivido", "han vivido"],
+    indefinido: ["viví", "viviste", "vivió", "vivimos", "vivisteis", "vivieron"],
+    imperfecto: ["vivía", "vivías", "vivía", "vivíamos", "vivíais", "vivían"],
+    pluscuamperfecto: ["había vivido", "habías vivido", "había vivido", "habíamos vivido", "habíais vivido", "habían vivido"],
+    futuroSimple: ["viviré", "vivirás", "vivirá", "viviremos", "viviréis", "vivirán"],
+    futuroCompuesto: ["habré vivido", "habrás vivido", "habrá vivido", "habremos vivido", "habréis vivido", "habrán vivido"],
+    condicional: ["viviría", "vivirías", "viviría", "viviríamos", "viviríais", "vivirían"],
+    imperativoAfirmativo: ["", "vive", "viva", "vivamos", "vivid", "vivan"],
+    imperativoNegativo: ["", "no vivas", "no viva", "no vivamos", "no viváis", "no vivan"]
+  },
+  {
+    infinitive: "Escuchar", translation: "To listen",
+    presente: ["escucho", "escuchas", "escucha", "escuchamos", "escucháis", "escuchan"],
+    presenteSubjuntivo: ["escuche", "escuches", "escuche", "escuchemos", "escuchéis", "escuchen"],
+    perfecto: ["he escuchado", "has escuchado", "ha escuchado", "hemos escuchado", "habéis escuchado", "han escuchado"],
+    indefinido: ["escuché", "escuchaste", "escuchó", "escuchamos", "escuchasteis", "escucharon"],
+    imperfecto: ["escuchaba", "escuchabas", "escuchaba", "escuchábamos", "escuchabais", "escuchaban"],
+    pluscuamperfecto: ["había escuchado", "habías escuchado", "había escuchado", "habíamos escuchado", "habíais escuchado", "habían escuchado"],
+    futuroSimple: ["escucharé", "escucharás", "escuchará", "escucharemos", "escucharéis", "escucharán"],
+    futuroCompuesto: ["habré escuchado", "habrás escuchado", "habrá escuchado", "habremos escuchado", "habréis escuchado", "habrán escuchado"],
+    condicional: ["escucharía", "escucharías", "escucharía", "escucharíamos", "escucharíais", "escucharían"],
+    imperativoAfirmativo: ["", "escucha", "escuche", "escuchemos", "escuchad", "escuchen"],
+    imperativoNegativo: ["", "no escuches", "no escuche", "no escuchemos", "no escuchéis", "no escuchen"]
+  },
+  {
+    infinitive: "Mirar", translation: "To look",
+    presente: ["miro", "miras", "mira", "miramos", "miráis", "miran"],
+    presenteSubjuntivo: ["mire", "mires", "mire", "miremos", "miréis", "miren"],
+    perfecto: ["he mirado", "has mirado", "ha mirado", "hemos mirado", "habéis mirado", "han mirado"],
+    indefinido: ["miré", "miraste", "miró", "miramos", "mirasteis", "miraron"],
+    imperfecto: ["miraba", "mirabas", "miraba", "mirábamos", "mirabais", "miraban"],
+    pluscuamperfecto: ["había mirado", "habías mirado", "había mirado", "habíamos mirado", "habíais mirado", "habían mirado"],
+    futuroSimple: ["miraré", "mirarás", "mirará", "miraremos", "miraréis", "mirarán"],
+    futuroCompuesto: ["habré mirado", "habrás mirado", "habrá mirado", "habremos mirado", "habréis mirado", "habrán mirado"],
+    condicional: ["miraría", "mirarías", "miraría", "miraríamos", "miraríais", "mirarían"],
+    imperativoAfirmativo: ["", "mira", "mire", "miremos", "mirad", "miren"],
+    imperativoNegativo: ["", "no mires", "no mire", "no miremos", "no miréis", "no miren"]
+  },
+  {
+    infinitive: "Jugar", translation: "To play",
+    presente: ["juego", "juegas", "juega", "jugamos", "jugáis", "juegan"],
+    presenteSubjuntivo: ["juegue", "juegues", "juegue", "juguemos", "juguéis", "jueguen"],
+    perfecto: ["he jugado", "has jugado", "ha jugado", "hemos jugado", "habéis jugado", "han jugado"],
+    indefinido: ["jugué", "jugaste", "jugó", "jugamos", "jugasteis", "jugaron"],
+    imperfecto: ["jugaba", "jugabas", "jugaba", "jugábamos", "jugabais", "jugaban"],
+    pluscuamperfecto: ["había jugado", "habías jugado", "había jugado", "habíamos jugado", "habíais jugado", "habían jugado"],
+    futuroSimple: ["jugaré", "jugarás", "jugará", "jugaremos", "jugaréis", "jugarán"],
+    futuroCompuesto: ["habré jugado", "habrás jugado", "habrá jugado", "habremos jugado", "habréis jugado", "habrán jugado"],
+    condicional: ["jugaría", "jugarías", "jugaría", "jugaríamos", "jugaríais", "jugarían"],
+    imperativoAfirmativo: ["", "juega", "juegue", "juguemos", "jugad", "jueguen"],
+    imperativoNegativo: ["", "no juegues", "no juegue", "no juguemos", "no juguéis", "no jueguen"]
+  },
+  {
+    infinitive: "Empezar", translation: "To start",
+    presente: ["empiezo", "empiezas", "empieza", "empezamos", "empezáis", "empiezan"],
+    presenteSubjuntivo: ["empiece", "empieces", "empiece", "empecemos", "empecéis", "empiecen"],
+    perfecto: ["he empezado", "has empezado", "ha empezado", "hemos empezado", "habéis empezado", "han empezado"],
+    indefinido: ["empecé", "empezaste", "empezó", "empezamos", "empezasteis", "empezaron"],
+    imperfecto: ["empezaba", "empezabas", "empezaba", "empezábamos", "empezabais", "empezaban"],
+    pluscuamperfecto: ["había empezado", "habías empezado", "había empezado", "habíamos empezado", "habíais empezado", "habían empezado"],
+    futuroSimple: ["empezaré", "empezarás", "empezará", "empezaremos", "empezaréis", "empezarán"],
+    futuroCompuesto: ["habré empezado", "habrás empezado", "habrá empezado", "habremos empezado", "habréis empezado", "habrán empezado"],
+    condicional: ["empezaría", "empezarías", "empezaría", "empezaríamos", "empezaríais", "empezarían"],
+    imperativoAfirmativo: ["", "empieza", "empiece", "empecemos", "empezad", "empiecen"],
+    imperativoNegativo: ["", "no empieces", "no empiece", "no empecemos", "no empecéis", "no empiecen"]
+  },
+  {
+    infinitive: "Buscar", translation: "To search",
+    presente: ["busco", "buscas", "busca", "buscamos", "buscáis", "buscan"],
+    presenteSubjuntivo: ["busque", "busques", "busque", "busquemos", "busquéis", "busquen"],
+    perfecto: ["he buscado", "has buscado", "ha buscado", "hemos buscado", "habéis buscado", "han buscado"],
+    indefinido: ["busqué", "buscaste", "buscó", "buscamos", "buscasteis", "buscaron"],
+    imperfecto: ["buscaba", "buscabas", "buscaba", "buscábamos", "buscabais", "buscaban"],
+    pluscuamperfecto: ["había buscado", "habías buscado", "había buscado", "habíamos buscado", "habíais buscado", "habían buscado"],
+    futuroSimple: ["buscaré", "buscarás", "buscará", "buscaremos", "buscaréis", "buscarán"],
+    futuroCompuesto: ["habré buscado", "habrás buscado", "habrá buscado", "habremos buscado", "habréis buscado", "habrán buscado"],
+    condicional: ["buscaría", "buscarías", "buscaría", "buscaríamos", "buscaríais", "buscarían"],
+    imperativoAfirmativo: ["", "busca", "busque", "busquemos", "buscad", "busquen"],
+    imperativoNegativo: ["", "no busques", "no busque", "no busquemos", "no busquéis", "no busquen"]
+  },
+  {
+    infinitive: "Escribir", translation: "To write",
+    presente: ["escribo", "escribes", "escribe", "escribimos", "escribís", "escriben"],
+    presenteSubjuntivo: ["escriba", "escribas", "escriba", "escribamos", "escribáis", "escriban"],
+    perfecto: ["he escrito", "has escrito", "ha escrito", "hemos escrito", "habéis escrito", "han escrito"],
+    indefinido: ["escribí", "escribiste", "escribió", "escribimos", "escribisteis", "escribieron"],
+    imperfecto: ["escribía", "escribías", "escribía", "escribíamos", "escribíais", "escribían"],
+    pluscuamperfecto: ["había escrito", "habías escrito", "había escrito", "habíamos escrito", "habíais escrito", "habían escrito"],
+    futuroSimple: ["escribiré", "escribirás", "escribirá", "escribiremos", "escribiréis", "escribirán"],
+    futuroCompuesto: ["habré escrito", "habrás escrito", "habrá escrito", "habremos escrito", "habréis escrito", "habrán escrito"],
+    condicional: ["escribiría", "escribirías", "escribiría", "escribiríamos", "escribiríais", "escribirían"],
+    imperativoAfirmativo: ["", "escribe", "escriba", "escribamos", "escribid", "escriban"],
+    imperativoNegativo: ["", "no escribas", "no escriba", "no escribamos", "no escribáis", "no escriban"]
+  },
+  {
+    infinitive: "Leer", translation: "To read",
+    presente: ["leo", "lees", "lee", "leemos", "leéis", "leen"],
+    presenteSubjuntivo: ["lea", "leas", "lea", "leamos", "leáis", "lean"],
+    perfecto: ["he leído", "has leído", "ha leído", "hemos leído", "habéis leído", "han leído"],
+    indefinido: ["leí", "leíste", "leyó", "leímos", "leísteis", "leyeron"],
+    imperfecto: ["leía", "leías", "leía", "leíamos", "leíais", "leían"],
+    pluscuamperfecto: ["había leído", "habías leído", "había leído", "habíamos leído", "habíais leído", "habían leído"],
+    futuroSimple: ["leeré", "leerás", "leerá", "leeremos", "leeréis", "leerán"],
+    futuroCompuesto: ["habré leído", "habrás leído", "habrá leído", "habremos leído", "habréis leído", "habrán leído"],
+    condicional: ["leería", "leerías", "leería", "leeríamos", "leeríais", "leerían"],
+    imperativoAfirmativo: ["", "lee", "lea", "leamos", "leed", "lean"],
+    imperativoNegativo: ["", "no leas", "no lea", "no leamos", "no leáis", "no lean"]
+  },
+  {
+    infinitive: "Caer", translation: "To fall",
+    presente: ["caigo", "caes", "cae", "caemos", "caéis", "caen"],
+    presenteSubjuntivo: ["caiga", "caigas", "caiga", "caigamos", "caigáis", "caigan"],
+    perfecto: ["he caído", "has caído", "ha caído", "hemos caído", "habéis caído", "han caído"],
+    indefinido: ["caí", "caíste", "cayó", "caímos", "caísteis", "cayeron"],
+    imperfecto: ["caía", "caías", "caía", "caíamos", "caíais", "caían"],
+    pluscuamperfecto: ["había caído", "habías caído", "había caído", "habíamos caído", "habíais caído", "habían caído"],
+    futuroSimple: ["caeré", "caerás", "caerá", "caeremos", "caeréis", "caerán"],
+    futuroCompuesto: ["habré caído", "habrás caído", "habrá caído", "habremos caído", "habréis caído", "habrán caído"],
+    condicional: ["caería", "caerías", "caería", "caeríamos", "caeríais", "caerían"],
+    imperativoAfirmativo: ["", "cae", "caiga", "caigamos", "caed", "caigan"],
+    imperativoNegativo: ["", "no caigas", "no caiga", "no caigamos", "no caigáis", "no caigan"]
+  },
+  {
+    infinitive: "Dormir", translation: "To sleep",
+    presente: ["duermo", "duermes", "duerme", "dormimos", "dormís", "duermen"],
+    presenteSubjuntivo: ["duerma", "duermas", "duerma", "durmamos", "durmáis", "duerman"],
+    perfecto: ["he dormido", "has dormido", "ha dormido", "hemos dormido", "habéis dormido", "han dormido"],
+    indefinido: ["dormí", "dormiste", "durmió", "dormimos", "dormisteis", "durmieron"],
+    imperfecto: ["dormía", "dormías", "dormía", "dormíamos", "dormíais", "dormían"],
+    pluscuamperfecto: ["había dormido", "habías dormido", "había dormido", "habíamos dormido", "habíais dormido", "habían dormido"],
+    futuroSimple: ["dormiré", "dormirás", "dormirá", "dormiremos", "dormiréis", "dormirán"],
+    futuroCompuesto: ["habré dormido", "habrás dormido", "habrá dormido", "habremos dormido", "habréis dormido", "habrán dormido"],
+    condicional: ["dormiría", "dormirías", "dormiría", "dormiríamos", "dormiríais", "dormirían"],
+    imperativoAfirmativo: ["", "duerme", "duerma", "durmamos", "dormid", "duerman"],
+    imperativoNegativo: ["", "no duermas", "no duerma", "no durmamos", "no durmáis", "no duerman"]
+  },
+  {
+    infinitive: "Entender", translation: "To understand",
+    presente: ["entiendo", "entiendes", "entiende", "entendemos", "entendéis", "entienden"],
+    presenteSubjuntivo: ["entienda", "entiendas", "entienda", "entendamos", "entendáis", "entiendan"],
+    perfecto: ["he entendido", "has entendido", "ha entendido", "hemos entendido", "habéis entendido", "han entendido"],
+    indefinido: ["entendí", "entendiste", "entendió", "entendimos", "entendisteis", "entendieron"],
+    imperfecto: ["entendía", "entendías", "entendía", "entendíamos", "entendíais", "entendían"],
+    pluscuamperfecto: ["había entendido", "habías entendido", "había entendido", "habíamos entendido", "habíais entendido", "habían entendido"],
+    futuroSimple: ["entenderé", "entenderás", "entenderá", "entenderemos", "entenderéis", "entenderán"],
+    futuroCompuesto: ["habré entendido", "habrás entendido", "habrá entendido", "habremos entendido", "habréis entendido", "habrán entendido"],
+    condicional: ["entendería", "entenderías", "entendería", "entenderíamos", "entenderíais", "entenderían"],
+    imperativoAfirmativo: ["", "entiende", "entienda", "entendamos", "entended", "entiendan"],
+    imperativoNegativo: ["", "no entiendas", "no entienda", "no entendamos", "no entendáis", "no entiendan"]
+  },
+  {
+    infinitive: "Pedir", translation: "To ask for",
+    presente: ["pido", "pides", "pide", "pedimos", "pedís", "piden"],
+    presenteSubjuntivo: ["pida", "pidas", "pida", "pidamos", "pidáis", "pidan"],
+    perfecto: ["he pedido", "has pedido", "ha pedido", "hemos pedido", "habéis pedido", "han pedido"],
+    indefinido: ["pedí", "pediste", "pidió", "pedimos", "pedisteis", "pidieron"],
+    imperfecto: ["pedía", "pedías", "pedía", "pedíamos", "pedíais", "pedían"],
+    pluscuamperfecto: ["había pedido", "habías pedido", "había pedido", "habíamos pedido", "habíais pedido", "habían pedido"],
+    futuroSimple: ["pediré", "pedirás", "pedirá", "pediremos", "pediréis", "pedirán"],
+    futuroCompuesto: ["habré pedido", "habrás pedido", "habrá pedido", "habremos pedido", "habréis pedido", "habrán pedido"],
+    condicional: ["pediría", "pedirías", "pediría", "pediríamos", "pediríais", "pedirían"],
+    imperativoAfirmativo: ["", "pide", "pida", "pidamos", "pedid", "pidan"],
+    imperativoNegativo: ["", "no pidas", "no pida", "no pidamos", "no pidáis", "no pidan"]
+  },
+  {
+    infinitive: "Pensar", translation: "To think",
+    presente: ["pienso", "piensas", "piensa", "pensamos", "pensáis", "piensan"],
+    presenteSubjuntivo: ["piense", "pienses", "piense", "pensemos", "penséis", "piensen"],
+    perfecto: ["he pensado", "has pensado", "ha pensado", "hemos pensado", "habéis pensado", "han pensado"],
+    indefinido: ["pensé", "pensaste", "pensó", "pensamos", "pensasteis", "pensaron"],
+    imperfecto: ["pensaba", "pensabas", "pensaba", "pensábamos", "pensabais", "pensaban"],
+    pluscuamperfecto: ["había pensado", "habías pensado", "había pensado", "habíamos pensado", "habíais pensado", "habían pensado"],
+    futuroSimple: ["pensaré", "pensarás", "pensará", "pensaremos", "pensaréis", "pensarán"],
+    futuroCompuesto: ["habré pensado", "habrás pensado", "habrá pensado", "habremos pensado", "habréis pensado", "habrán pensado"],
+    condicional: ["pensaría", "pensarías", "pensaría", "pensaríamos", "pensaríais", "pensarían"],
+    imperativoAfirmativo: ["", "piensa", "piense", "pensemos", "pensad", "piensen"],
+    imperativoNegativo: ["", "no pienses", "no piense", "no pensemos", "no penséis", "no piensen"]
+  },
+  {
+    infinitive: "Perder", translation: "To lose",
+    presente: ["pierdo", "pierdes", "pierde", "perdemos", "perdéis", "pierden"],
+    presenteSubjuntivo: ["pierda", "pierdas", "pierda", "perdamos", "perdáis", "pierdan"],
+    perfecto: ["he perdido", "has perdido", "ha perdido", "hemos perdido", "habéis perdido", "han perdido"],
+    indefinido: ["perdí", "perdiste", "perdió", "perdimos", "perdisteis", "perdieron"],
+    imperfecto: ["perdía", "perdías", "perdía", "perdíamos", "perdíais", "perdían"],
+    pluscuamperfecto: ["había perdido", "habías perdido", "había perdido", "habíamos perdido", "habíais perdido", "habían perdido"],
+    futuroSimple: ["perderé", "perderás", "perderá", "perderemos", "perderéis", "perderán"],
+    futuroCompuesto: ["habré perdido", "habrás perdido", "habrá perdido", "habremos perdido", "habréis perdido", "habrán perdido"],
+    condicional: ["perdería", "perderías", "perdería", "perderíamos", "perderíais", "perderían"],
+    imperativoAfirmativo: ["", "pierde", "pierda", "perdamos", "perded", "pierdan"],
+    imperativoNegativo: ["", "no pierdas", "no pierda", "no perdamos", "no perdáis", "no pierdan"]
+  },
+  {
+    infinitive: "Preferir", translation: "To prefer",
+    presente: ["prefiero", "prefieres", "prefiere", "preferimos", "preferís", "prefieren"],
+    presenteSubjuntivo: ["prefiera", "prefieras", "prefiera", "prefiramos", "prefiráis", "prefieran"],
+    perfecto: ["he preferido", "has preferido", "ha preferido", "hemos preferido", "habéis preferido", "han preferido"],
+    indefinido: ["preferí", "preferiste", "prefirió", "preferimos", "preferisteis", "prefirieron"],
+    imperfecto: ["prefería", "preferías", "prefería", "preferíamos", "preferíais", "preferían"],
+    pluscuamperfecto: ["había preferido", "habías preferido", "había preferido", "habíamos preferido", "habíais preferido", "habían preferido"],
+    futuroSimple: ["preferiré", "preferirás", "preferirá", "preferiremos", "preferiréis", "preferirán"],
+    futuroCompuesto: ["habré preferido", "habrás preferido", "habrá preferido", "habremos preferido", "habréis preferido", "habrán preferido"],
+    condicional: ["preferiría", "preferirías", "preferiría", "preferiríamos", "preferiríais", "preferirían"],
+    imperativoAfirmativo: ["", "prefiere", "prefiera", "prefiramos", "preferid", "prefieran"],
+    imperativoNegativo: ["", "no prefieras", "no prefiera", "no prefiramos", "no prefiráis", "no prefieran"]
+  },
+  {
+    infinitive: "Sentir", translation: "To feel",
+    presente: ["siento", "sientes", "siente", "sentimos", "sentís", "sienten"],
+    presenteSubjuntivo: ["sienta", "sientas", "sienta", "sintamos", "sintáis", "sientan"],
+    perfecto: ["he sentido", "has sentido", "ha sentido", "hemos sentido", "habéis sentido", "han sentido"],
+    indefinido: ["sentí", "sentiste", "sintió", "sentimos", "sentisteis", "sintieron"],
+    imperfecto: ["sentía", "sentías", "sentía", "sentíamos", "sentíais", "sentían"],
+    pluscuamperfecto: ["había sentido", "habías sentido", "había sentido", "habíamos sentido", "habíais sentido", "habían sentido"],
+    futuroSimple: ["sentiré", "sentirás", "sentirá", "sentiremos", "sentiréis", "sentirán"],
+    futuroCompuesto: ["habré sentido", "habrás sentido", "habrá sentido", "habremos sentido", "habréis sentido", "habrán sentido"],
+    condicional: ["sentiría", "sentirías", "sentiría", "sentiríamos", "sentiríais", "sentirían"],
+    imperativoAfirmativo: ["", "siente", "sienta", "sintamos", "sentid", "sientan"],
+    imperativoNegativo: ["", "no sientas", "no sienta", "no sintamos", "no sintáis", "no sientan"]
+  },
+  {
+    infinitive: "Traer", translation: "To bring",
+    presente: ["traigo", "traes", "trae", "traemos", "traéis", "traen"],
+    presenteSubjuntivo: ["traiga", "traigas", "traiga", "traigamos", "traigáis", "traigan"],
+    perfecto: ["he traído", "has traído", "ha traído", "hemos traído", "habéis traído", "han traído"],
+    indefinido: ["traje", "trajiste", "trajo", "trajimos", "trajisteis", "trajeron"],
+    imperfecto: ["traía", "traías", "traía", "traíamos", "traíais", "traían"],
+    pluscuamperfecto: ["había traído", "habías traído", "había traído", "habíamos traído", "habíais traído", "habían traído"],
+    futuroSimple: ["traeré", "traerás", "traerá", "traeremos", "traeréis", "traerán"],
+    futuroCompuesto: ["habré traído", "habrás traído", "habrá traído", "habremos traído", "habréis traído", "habrán traído"],
+    condicional: ["traería", "traerías", "traería", "traeríamos", "traeríais", "traerían"],
+    imperativoAfirmativo: ["", "trae", "traiga", "traigamos", "traed", "traigan"],
+    imperativoNegativo: ["", "no traigas", "no traiga", "no traigamos", "no traigáis", "no traigan"]
+  },
+  {
+    infinitive: "Volver", translation: "To return",
+    presente: ["vuelvo", "vuelves", "vuelve", "volvemos", "volvéis", "vuelven"],
+    presenteSubjuntivo: ["vuelva", "vuelvas", "vuelva", "volvamos", "volváis", "vuelvan"],
+    perfecto: ["he vuelto", "has vuelto", "ha vuelto", "hemos vuelto", "habéis vuelto", "han vuelto"],
+    indefinido: ["volví", "volviste", "volvió", "volvimos", "volvisteis", "volvieron"],
+    imperfecto: ["volvía", "volvías", "volvía", "volvíamos", "volvíais", "volvían"],
+    pluscuamperfecto: ["había vuelto", "habías vuelto", "había vuelto", "habíamos vuelto", "habíais vuelto", "habían vuelto"],
+    futuroSimple: ["volveré", "volverás", "volverá", "volveremos", "volveréis", "volverán"],
+    futuroCompuesto: ["habré vuelto", "habrás vuelto", "habrá vuelto", "habremos vuelto", "habréis vuelto", "habrán vuelto"],
+    condicional: ["volvería", "volverías", "volvería", "volveríamos", "volveríais", "volverían"],
+    imperativoAfirmativo: ["", "vuelve", "vuelva", "volvamos", "volved", "vuelvan"],
+    imperativoNegativo: ["", "no vuelvas", "no vuelva", "no volvamos", "no volváis", "no vuelvan"]
+  },
+  {
+    infinitive: "Conocer", translation: "To know (people)",
+    presente: ["conozco", "conoces", "conoce", "conocemos", "conocéis", "conocen"],
+    presenteSubjuntivo: ["conozca", "conozcas", "conozca", "conozcamos", "conozcáis", "conozcan"],
+    perfecto: ["he conocido", "has conocido", "ha conocido", "hemos conocido", "habéis conocido", "han conocido"],
+    indefinido: ["conocí", "conociste", "conoció", "conocimos", "conocisteis", "conocieron"],
+    imperfecto: ["conocía", "conocías", "conocía", "conocíamos", "conocíais", "conocían"],
+    pluscuamperfecto: ["había conocido", "habías conocido", "había conocido", "habíamos conocido", "habíais conocido", "habían conocido"],
+    futuroSimple: ["conoceré", "conocerás", "conocerá", "conoceremos", "conoceréis", "conocerán"],
+    futuroCompuesto: ["habré conocido", "habrás conocido", "habrá conocido", "habremos conocido", "habréis conocido", "habrán conocido"],
+    condicional: ["conocería", "conocerías", "conocería", "conoceríamos", "conoceríais", "conocerían"],
+    imperativoAfirmativo: ["", "conoce", "conozca", "conozcamos", "conoced", "conozcan"],
+    imperativoNegativo: ["", "no conozcas", "no conozca", "no conozcamos", "no conozcáis", "no conozcan"]
+  },
+  {
+    infinitive: "Salir", translation: "To go out",
+    presente: ["salgo", "sales", "sale", "salimos", "salís", "salen"],
+    presenteSubjuntivo: ["salga", "salgas", "salga", "salgamos", "salgáis", "salgan"],
+    perfecto: ["he salido", "has salido", "ha salido", "hemos salido", "habéis salido", "han salido"],
+    indefinido: ["salí", "saliste", "salió", "salimos", "salisteis", "salieron"],
+    imperfecto: ["salía", "salías", "salía", "salíamos", "salíais", "salían"],
+    pluscuamperfecto: ["había salido", "habías salido", "había salido", "habíamos salido", "habíais salido", "habían salido"],
+    futuroSimple: ["saldré", "saldrás", "saldrá", "saldremos", "saldréis", "saldrán"],
+    futuroCompuesto: ["habré salido", "habrás salido", "habrá salido", "habremos salido", "habréis salido", "habrán salido"],
+    condicional: ["saldría", "saldrías", "saldría", "saldríamos", "saldríais", "saldrían"],
+    imperativoAfirmativo: ["", "sal", "salga", "salgamos", "salid", "salgan"],
+    imperativoNegativo: ["", "no salgas", "no salga", "no salgamos", "no salgáis", "no salgan"]
+  },
+  {
+    infinitive: "Abrir", translation: "To open",
+    presente: ["abro", "abres", "abre", "abrimos", "abrís", "abren"],
+    presenteSubjuntivo: ["abra", "abras", "abra", "abramos", "abráis", "abran"],
+    perfecto: ["he abierto", "has abierto", "ha abierto", "hemos abierto", "habéis abierto", "han abierto"],
+    indefinido: ["abrí", "abriste", "abrió", "abrimos", "abristeis", "abrieron"],
+    imperfecto: ["abría", "abrías", "abría", "abríamos", "abríais", "abrían"],
+    pluscuamperfecto: ["había abierto", "habías abierto", "había abierto", "habíamos abierto", "habíais abierto", "habían abierto"],
+    futuroSimple: ["abriré", "abrirás", "abrirá", "abriremos", "abriréis", "abrirán"],
+    futuroCompuesto: ["habré abierto", "habrás abierto", "habrá abierto", "habremos abierto", "habréis abierto", "habrán abierto"],
+    condicional: ["abriría", "abrirías", "abriría", "abriríamos", "abriríais", "abrirían"],
+    imperativoAfirmativo: ["", "abre", "abra", "abramos", "abrid", "abran"],
+    imperativoNegativo: ["", "no abras", "no abra", "no abramos", "no abráis", "no abran"]
+  },
+  {
+    infinitive: "Cerrar", translation: "To close",
+    presente: ["cierro", "cierras", "cierra", "cerramos", "cerráis", "cierran"],
+    presenteSubjuntivo: ["cierre", "cierres", "cierre", "cerremos", "cerréis", "cierren"],
+    perfecto: ["he cerrado", "has cerrado", "ha cerrado", "hemos cerrado", "habéis cerrado", "han cerrado"],
+    indefinido: ["cerré", "cerraste", "cerró", "cerramos", "cerrasteis", "cerraron"],
+    imperfecto: ["cerraba", "cerrabas", "cerraba", "cerrábamos", "cerrabais", "cerraban"],
+    pluscuamperfecto: ["había cerrado", "habías cerrado", "había cerrado", "habíamos cerrado", "habíais cerrado", "habían cerrado"],
+    futuroSimple: ["cerraré", "cerrarás", "cerrará", "cerraremos", "cerraréis", "cerrarán"],
+    futuroCompuesto: ["habré cerrado", "habrás cerrado", "habrá cerrado", "habremos cerrado", "habréis cerrado", "habrán cerrado"],
+    condicional: ["cerraría", "cerrarías", "cerraría", "cerraríamos", "cerraríais", "cerrarían"],
+    imperativoAfirmativo: ["", "cierra", "cierre", "cerremos", "cerrad", "cierren"],
+    imperativoNegativo: ["", "no cierres", "no cierre", "no cerremos", "no cerréis", "no cierren"]
+  },
+  {
+    infinitive: "Comprar", translation: "To buy",
+    presente: ["compro", "compras", "compra", "compramos", "compráis", "compran"],
+    presenteSubjuntivo: ["compre", "compres", "compre", "compremos", "compréis", "compren"],
+    perfecto: ["he comprado", "has comprado", "ha comprado", "hemos comprado", "habéis comprado", "han comprado"],
+    indefinido: ["compré", "compraste", "compró", "compramos", "comprasteis", "compraron"],
+    imperfecto: ["compraba", "comprabas", "compraba", "comprábamos", "comprabais", "compraban"],
+    pluscuamperfecto: ["había comprado", "habías comprado", "había comprado", "habíamos comprado", "habíais comprado", "habían comprado"],
+    futuroSimple: ["compraré", "comprarás", "comprará", "compraremos", "compraréis", "comprarán"],
+    futuroCompuesto: ["habré comprado", "habrás comprado", "habrá comprado", "habremos comprado", "habréis comprado", "habrán comprado"],
+    condicional: ["compraría", "comprarías", "compraría", "compraríamos", "compraríais", "comprarían"],
+    imperativoAfirmativo: ["", "compra", "compre", "compremos", "comprad", "compren"],
+    imperativoNegativo: ["", "no compres", "no compre", "no compremos", "no compréis", "no compren"]
+  },
+  {
+    infinitive: "Viajar", translation: "To travel",
+    presente: ["viajo", "viajas", "viaja", "viajamos", "viajáis", "viajan"],
+    presenteSubjuntivo: ["viaje", "viajes", "viaje", "viajemos", "viajéis", "viajen"],
+    perfecto: ["he viajado", "has viajado", "ha viajado", "hemos viajado", "habéis viajado", "han viajado"],
+    indefinido: ["viajé", "viajaste", "viajó", "viajamos", "viajasteis", "viajaron"],
+    imperfecto: ["viajaba", "viajabas", "viajaba", "viajábamos", "viajabais", "viajaban"],
+    pluscuamperfecto: ["había viajado", "habías viajado", "había viajado", "habíamos viajado", "habíais viajado", "habían viajado"],
+    futuroSimple: ["viajaré", "viajarás", "viajará", "viajaremos", "viajaréis", "viajarán"],
+    futuroCompuesto: ["habré viajado", "habrás viajado", "habrá viajado", "habremos viajado", "habréis viajado", "habrán viajado"],
+    condicional: ["viajaría", "viajarías", "viajaría", "viajaríamos", "viajaríais", "viajarían"],
+    imperativoAfirmativo: ["", "viaja", "viaje", "viajemos", "viajad", "viajen"],
+    imperativoNegativo: ["", "no viajes", "no viaje", "no viajemos", "no viajéis", "no viajen"]
+  },
+  {
+    infinitive: "Beber", translation: "To drink",
+    presente: ["bebo", "bebes", "bebe", "bebemos", "bebéis", "beben"],
+    presenteSubjuntivo: ["beba", "bebas", "beba", "bebamos", "bebáis", "beban"],
+    perfecto: ["he bebido", "has bebido", "ha bebido", "hemos bebido", "habéis bebido", "han bebido"],
+    indefinido: ["bebí", "bebiste", "bebió", "bebimos", "bebisteis", "bebieron"],
+    imperfecto: ["bebía", "bebías", "bebía", "bebíamos", "bebíais", "bebían"],
+    pluscuamperfecto: ["había bebido", "habías bebido", "había bebido", "habíamos bebido", "habíais bebido", "habían bebido"],
+    futuroSimple: ["beberé", "beberás", "beberá", "beberemos", "beberéis", "beberán"],
+    futuroCompuesto: ["habré bebido", "habrás bebido", "habrá bebido", "habremos bebido", "habréis bebido", "habrán bebido"],
+    condicional: ["bebería", "beberías", "bebería", "beberíamos", "beberíais", "beberían"],
+    imperativoAfirmativo: ["", "bebe", "beba", "bebamos", "bebed", "beban"],
+    imperativoNegativo: ["", "no bebas", "no beba", "no bebamos", "no bebáis", "no beban"]
+  },
+  {
+    infinitive: "Caminar", translation: "To walk",
+    presente: ["camino", "caminas", "camina", "caminamos", "camináis", "caminan"],
+    presenteSubjuntivo: ["camine", "camines", "camine", "caminemos", "caminéis", "caminen"],
+    perfecto: ["he caminado", "has caminado", "ha caminado", "hemos caminado", "habéis caminado", "han caminado"],
+    indefinido: ["caminé", "caminaste", "caminó", "caminamos", "caminasteis", "caminaron"],
+    imperfecto: ["caminaba", "caminabas", "caminaba", "caminábamos", "caminabais", "caminaban"],
+    pluscuamperfecto: ["había caminado", "habías caminado", "había caminado", "habíamos caminado", "habíais caminado", "habían caminado"],
+    futuroSimple: ["caminaré", "caminarás", "caminará", "caminaremos", "caminaréis", "caminarán"],
+    futuroCompuesto: ["habré caminado", "habrás caminado", "habrá caminado", "habremos caminado", "habréis caminado", "habrán caminado"],
+    condicional: ["caminaría", "caminarías", "caminaría", "caminaríamos", "caminaríais", "caminaría"],
+    imperativoAfirmativo: ["", "camina", "camine", "caminemos", "caminad", "caminen"],
+    imperativoNegativo: ["", "no camines", "no camine", "no caminemos", "no caminéis", "no caminen"]
+  },
+  {
+    infinitive: "Cocinar", translation: "To cook",
+    presente: ["cocino", "cocinas", "cocina", "cocinamos", "cocináis", "cocinan"],
+    presenteSubjuntivo: ["cocine", "cocines", "cocine", "cocinemos", "cocinéis", "cocinen"],
+    perfecto: ["he cocinado", "has cocinado", "ha cocinado", "hemos cocinado", "habéis cocinado", "han cocinado"],
+    indefinido: ["cociné", "cocinaste", "cocinó", "cocinamos", "cocinasteis", "cocinaron"],
+    imperfecto: ["cocinaba", "cocinabas", "cocinaba", "cocinábamos", "cocinabais", "cocinaban"],
+    pluscuamperfecto: ["había cocinado", "habías cocinado", "había cocinado", "habíamos cocinado", "habíais cocinado", "habían cocinado"],
+    futuroSimple: ["cocinaré", "cocinarás", "cocinará", "cocinaremos", "cocinaréis", "cocinarán"],
+    futuroCompuesto: ["habré cocinado", "habrás cocinado", "habrá cocinado", "habremos cocinado", "habréis cocinado", "habrán cocinado"],
+    condicional: ["cocinaría", "cocinarías", "cocinaría", "cocinaríamos", "cocinaríais", "cocinarían"],
+    imperativoAfirmativo: ["", "cocina", "cocine", "cocinemos", "cocinad", "cocinen"],
+    imperativoNegativo: ["", "no cocines", "no cocine", "no cocinemos", "no cocinéis", "no cocinen"]
+  },
+  {
+    infinitive: "Usar", translation: "To use",
+    presente: ["uso", "usas", "usa", "usamos", "usáis", "usan"],
+    presenteSubjuntivo: ["use", "uses", "use", "usemos", "uséis", "usen"],
+    perfecto: ["he usado", "has usado", "ha usado", "hemos usado", "habéis usado", "han usado"],
+    indefinido: ["usé", "usaste", "usó", "usamos", "usasteis", "usaron"],
+    imperfecto: ["usaba", "usabas", "usaba", "usábamos", "usabais", "usaban"],
+    pluscuamperfecto: ["había usado", "habías usado", "había usado", "habíamos usado", "habíais usado", "habían usado"],
+    futuroSimple: ["usaré", "usarás", "usará", "usaremos", "usaréis", "usarán"],
+    futuroCompuesto: ["habré usado", "habrás usado", "habrá usado", "habremos usado", "habréis usado", "habrán usado"],
+    condicional: ["usaría", "usarías", "usaría", "usaríamos", "usaríais", "usarían"],
+    imperativoAfirmativo: ["", "usa", "use", "usemos", "usad", "usen"],
+    imperativoNegativo: ["", "no uses", "no use", "no usemos", "no uséis", "no usen"]
+  },
+  {
+    infinitive: "Gustar", translation: "To like",
+    presente: ["me gusta", "te gusta", "le gusta", "nos gusta", "os gusta", "les gusta"],
+    presenteSubjuntivo: ["me guste", "te guste", "le guste", "nos guste", "os guste", "les guste"],
+    perfecto: ["me ha gustado", "te ha gustado", "le ha gustado", "nos ha gustado", "os ha gustado", "les ha gustado"],
+    indefinido: ["me gustó", "te gustó", "le gustó", "nos gustó", "os gustó", "les gustó"],
+    imperfecto: ["me gustaba", "te gustaba", "le gustaba", "nos gustaba", "os gustaba", "les gustaba"],
+    pluscuamperfecto: ["me había gustado", "te había gustado", "le había gustado", "nos había gustado", "os había gustado", "les había gustado"],
+    futuroSimple: ["me gustará", "te gustará", "le gustará", "nos gustará", "os gustará", "les gustará"],
+    futuroCompuesto: ["me habrá gustado", "te habrá gustado", "le habrá gustado", "nos habrá gustado", "os habrá gustado", "les habrá gustado"],
+    condicional: ["me gustaría", "te gustaría", "le gustaría", "nos gustaría", "os gustaría", "les gustaría"],
+    imperativoAfirmativo: ["", "gusta", "guste", "gustemos", "gustad", "gusten"],
+    imperativoNegativo: ["", "no gustes", "no guste", "no gustemos", "no gustéis", "no gusten"]
+  },
+  {
+    infinitive: "Haber", translation: "To have / To exist",
+    presente: ["he", "has", "ha", "hemos", "habéis", "han"],
+    presenteSubjuntivo: ["haya", "hayas", "haya", "hayamos", "hayáis", "hayan"],
+    perfecto: ["he habido", "has habido", "ha habido", "hemos habido", "habéis habido", "han habido"],
+    indefinido: ["hube", "hubiste", "hubo", "hubimos", "hubisteis", "hubieron"],
+    imperfecto: ["había", "habías", "había", "habíamos", "habíais", "habían"],
+    pluscuamperfecto: ["había habido", "habías habido", "había habido", "habíamos habido", "habíais habido", "habían habido"],
+    futuroSimple: ["habré", "habrás", "habrá", "habremos", "habréis", "habrán"],
+    futuroCompuesto: ["habré habido", "habrás habido", "habrá habido", "habremos habido", "habréis habido", "habrán habido"],
+    condicional: ["habría", "habrías", "habría", "habríamos", "habríais", "habrían"],
+    imperativoAfirmativo: ["", "he", "haya", "hayamos", "habed", "hayan"],
+    imperativoNegativo: ["", "no hayas", "no haya", "no hayamos", "no hayáis", "no hayan"]
+  },
+  {
+    infinitive: "Parecer", translation: "To seem",
+    presente: ["parezco", "pareces", "parece", "parecemos", "parecéis", "parecen"],
+    presenteSubjuntivo: ["parezca", "parezcas", "parezca", "parezcamos", "parezcáis", "parezcan"],
+    perfecto: ["he parecido", "has parecido", "ha parecido", "hemos parecido", "habéis parecido", "han parecido"],
+    indefinido: ["parecí", "pareciste", "pareció", "parecimos", "parecisteis", "parecieron"],
+    imperfecto: ["parecía", "parecías", "parecía", "parecíamos", "parecíais", "parecían"],
+    pluscuamperfecto: ["había parecido", "habías parecido", "había parecido", "habíamos parecido", "habíais parecido", "habían parecido"],
+    futuroSimple: ["pareceré", "parecerás", "parecerá", "pareceremos", "pareceréis", "parecerán"],
+    futuroCompuesto: ["habré parecido", "habrás parecido", "habrá parecido", "habremos parecido", "habréis parecido", "habrán parecido"],
+    condicional: ["parecería", "parecerías", "parecería", "pareceríamos", "pareceríais", "parecerían"],
+    imperativoAfirmativo: ["", "parece", "parezca", "parezcamos", "pareced", "parezcan"],
+    imperativoNegativo: ["", "no parezcas", "no parezca", "no parezcamos", "no parezcáis", "no parezcan"]
+  },
+  {
+    infinitive: "Soler", translation: "To usually do / To tend to",
+    presente: ["suelo", "sueles", "suele", "solemos", "soléis", "suelen"],
+    presenteSubjuntivo: ["suela", "suelas", "suela", "solamos", "soláis", "suelan"],
+    perfecto: ["he solido", "has solido", "ha solido", "hemos solido", "habéis solido", "han solido"],
+    indefinido: ["solí", "soliste", "solió", "solimos", "solisteis", "solieron"],
+    imperfecto: ["solía", "solías", "solía", "solíamos", "solíais", "solían"],
+    pluscuamperfecto: ["había solido", "habías solido", "había solido", "habíamos solido", "habíais solido", "habían solido"],
+    futuroSimple: ["soleré", "solerás", "solerá", "soleremos", "soleréis", "solerán"],
+    futuroCompuesto: ["habré solido", "habrás solido", "habrá solido", "habremos solido", "habréis solido", "habrán solido"],
+    condicional: ["solería", "solerías", "solería", "soleríamos", "soleríais", "solerían"],
+    imperativoAfirmativo: ["", "suele", "suela", "solamos", "soled", "suelan"],
+    imperativoNegativo: ["", "no suelas", "no suela", "no solamos", "no soláis", "no suelan"]
+  },
+  {
+    infinitive: "Traducir", translation: "To translate",
+    presente: ["traduzco", "traduces", "traduce", "traducimos", "traducís", "traducen"],
+    presenteSubjuntivo: ["traduzca", "traduzcas", "traduzca", "traduzcamos", "traduzcáis", "traduzcan"],
+    perfecto: ["he traducido", "has traducido", "ha traducido", "hemos traducido", "habéis traducido", "han traducido"],
+    indefinido: ["traduje", "tradujiste", "tradujo", "tradujimos", "tradujisteis", "tradujeron"],
+    imperfecto: ["traducía", "traducías", "traducía", "traducíamos", "traducíais", "traducían"],
+    pluscuamperfecto: ["había traducido", "habías traducido", "había traducido", "habíamos traducido", "habíais traducido", "habían traducido"],
+    futuroSimple: ["traduciré", "traducirás", "traducirá", "traduciremos", "traduciréis", "traducirán"],
+    futuroCompuesto: ["habré traducido", "habrás traducido", "habrá traducido", "habremos traducido", "habréis traducido", "habrán traducido"],
+    condicional: ["traduciría", "traducirías", "traduciría", "traduciríamos", "traduciríais", "traducirían"],
+    imperativoAfirmativo: ["", "traduce", "traduzca", "traduzcamos", "traducid", "traduzcan"],
+    imperativoNegativo: ["", "no traduzcas", "no traduzca", "no traduzcamos", "no traduzcáis", "no traduzcan"]
+  },
+  {
+    infinitive: "Producir", translation: "To produce",
+    presente: ["produzco", "produces", "produce", "producimos", "producís", "producen"],
+    presenteSubjuntivo: ["produzca", "produzcas", "produzca", "produzcamos", "produzcáis", "produzcan"],
+    perfecto: ["he producido", "has producido", "ha producido", "hemos producido", "habéis producido", "han producido"],
+    indefinido: ["produje", "produjiste", "produjo", "produjimos", "produjisteis", "produjeron"],
+    imperfecto: ["producía", "producías", "producía", "producíamos", "producíais", "producían"],
+    pluscuamperfecto: ["había producido", "habías producido", "había producido", "habíamos producido", "habíais producido", "habían producido"],
+    futuroSimple: ["produciré", "producirás", "producirá", "produciremos", "produciréis", "producirán"],
+    futuroCompuesto: ["habré producido", "habrás producido", "habrá producido", "habremos producido", "habréis producido", "habrán producido"],
+    condicional: ["produciría", "producirías", "produciría", "produciríamos", "produciríais", "producirían"],
+    imperativoAfirmativo: ["", "produce", "produzca", "produzcamos", "producid", "produzcan"],
+    imperativoNegativo: ["", "no produzcas", "no produzca", "no produzcamos", "no produzcáis", "no produzcan"]
+  },
+  {
+    infinitive: "Conducir", translation: "To drive / To lead",
+    presente: ["conduzco", "conduces", "conduce", "conducimos", "conducís", "conducen"],
+    presenteSubjuntivo: ["conduzca", "conduzcas", "conduzca", "conduzcamos", "conduzcáis", "conduzcan"],
+    perfecto: ["he conducido", "has conducido", "ha conducido", "hemos conducido", "habéis conducido", "han conducido"],
+    indefinido: ["conduje", "condujiste", "condujo", "condujimos", "condujisteis", "condujeron"],
+    imperfecto: ["conducía", "conducías", "conducía", "conducíamos", "conducíais", "conducían"],
+    pluscuamperfecto: ["había conducido", "habías conducido", "había conducido", "habíamos conducido", "habíais conducido", "habían conducido"],
+    futuroSimple: ["conduciré", "conducirás", "conducirá", "conduciremos", "conduciréis", "conducirán"],
+    futuroCompuesto: ["habré conducido", "habrás conducido", "habrá conducido", "habremos conducido", "habréis conducido", "habrán conducido"],
+    condicional: ["conduciría", "conducirías", "conduciría", "conduciríamos", "conduciríais", "conducirían"],
+    imperativoAfirmativo: ["", "conduce", "conduzca", "conduzcamos", "conducid", "conduzcan"],
+    imperativoNegativo: ["", "no conduzcas", "no conduzca", "no conduzcamos", "no conduzcáis", "no conduzcan"]
+  },
+  {
+    infinitive: "Oír", translation: "To hear",
+    presente: ["oigo", "oyes", "oye", "oímos", "oís", "oyen"],
+    presenteSubjuntivo: ["oiga", "oigas", "oiga", "oigamos", "oigáis", "oigan"],
+    perfecto: ["he oído", "has oído", "ha oído", "hemos oído", "habéis oído", "han oído"],
+    indefinido: ["oí", "oíste", "oyó", "oímos", "oísteis", "oyeron"],
+    imperfecto: ["oía", "oías", "oía", "oíamos", "oíais", "oían"],
+    pluscuamperfecto: ["había oído", "habías oído", "había oído", "habíamos oído", "habíais oído", "habían oído"],
+    futuroSimple: ["oiré", "oirás", "oirá", "oiremos", "oiréis", "oirán"],
+    futuroCompuesto: ["habré oído", "habrás oído", "habrá oído", "habremos oído", "habréis oído", "habrán oído"],
+    condicional: ["oiría", "oirías", "oiría", "oiríamos", "oiríais", "oirían"],
+    imperativoAfirmativo: ["", "oye", "oiga", "oigamos", "oíd", "oigan"],
+    imperativoNegativo: ["", "no oigas", "no oiga", "no oigamos", "no oigáis", "no oigan"]
+  },
+  {
+    infinitive: "Morir", translation: "To die",
+    presente: ["muero", "mueres", "muere", "morimos", "morís", "mueren"],
+    presenteSubjuntivo: ["muera", "mueras", "muera", "muramos", "muráis", "mueran"],
+    perfecto: ["he muerto", "has muerto", "ha muerto", "hemos muerto", "habéis muerto", "han muerto"],
+    indefinido: ["morí", "moriste", "murió", "morimos", "moristeis", "murieron"],
+    imperfecto: ["moría", "morías", "moría", "moríamos", "moríais", "morían"],
+    pluscuamperfecto: ["había muerto", "habías muerto", "había muerto", "habíamos muerto", "habíais muerto", "habían muerto"],
+    futuroSimple: ["moriré", "morirás", "morirá", "moriremos", "moriréis", "morirán"],
+    futuroCompuesto: ["habré muerto", "habrás muerto", "habrá muerto", "habremos muerto", "habréis muerto", "habrán muerto"],
+    condicional: ["moriría", "morirías", "moriría", "moriríamos", "moriríais", "morirían"],
+    imperativoAfirmativo: ["", "muere", "muera", "muramos", "morid", "mueran"],
+    imperativoNegativo: ["", "no mueras", "no muera", "no muramos", "no muráis", "no mueran"]
+  },
+  {
+    infinitive: "Costar", translation: "To cost",
+    presente: ["cuesto", "cuestas", "cuesta", "costamos", "costáis", "cuestan"],
+    presenteSubjuntivo: ["cueste", "cuestes", "cueste", "costemos", "costéis", "cuesten"],
+    perfecto: ["he costado", "has costado", "ha costado", "hemos costado", "habéis costado", "han costado"],
+    indefinido: ["costé", "costaste", "costó", "costamos", "costasteis", "costaron"],
+    imperfecto: ["costaba", "costabas", "costaba", "costábamos", "costabais", "costaban"],
+    pluscuamperfecto: ["había costado", "habías costado", "había costado", "habíamos costado", "habíais costado", "habían costado"],
+    futuroSimple: ["costaré", "costarás", "costará", "costaremos", "costaréis", "costarán"],
+    futuroCompuesto: ["habré costado", "habrás costado", "habrá costado", "habremos costado", "habréis costado", "habrán costado"],
+    condicional: ["costaría", "costarías", "costaría", "costaríamos", "costaríais", "costarían"],
+    imperativoAfirmativo: ["", "cuesta", "cueste", "costemos", "costad", "cuesten"],
+    imperativoNegativo: ["", "no cuestes", "no cueste", "no costemos", "no costéis", "no cuesten"]
+  },
+  {
+    infinitive: "Sentirse", translation: "To feel",
+    presente: ["me siento", "te sientes", "se siente", "nos sentimos", "os sentís", "se sienten"],
+    presenteSubjuntivo: ["me sienta", "te sientas", "se sienta", "nos sintamos", "os sintáis", "se sientan"],
+    perfecto: ["me he sentido", "te has sentido", "se ha sentido", "nos hemos sentido", "os habéis sentido", "se han sentido"],
+    indefinido: ["me sentí", "te sentiste", "se sintió", "nos sentimos", "os sentisteis", "se sintieron"],
+    imperfecto: ["me sentía", "te sentías", "se sentía", "nos sentíamos", "os sentíais", "se sentían"],
+    pluscuamperfecto: ["me había sentido", "te había sentido", "se había sentido", "nos habíamos sentido", "os habéis sentido", "se habían sentido"],
+    futuroSimple: ["me sentiré", "te sentirás", "se sentirá", "nos sentiremos", "os sentiréis", "se sentirán"],
+    futuroCompuesto: ["me habré sentido", "te habrás sentido", "se habrá sentido", "nos habremos sentido", "os habréis sentido", "se habrán sentido"],
+    condicional: ["me sentiría", "te sentirías", "se sentiría", "nos sentiríamos", "os sentiríais", "se sentirían"],
+    imperativoAfirmativo: ["", "siéntete", "siéntase", "sintámonos", "sentíos", "siéntanse"],
+    imperativoNegativo: ["", "no te sientas", "no se sienta", "no nos sintamos", "no os sintáis", "no se sientan"]
+  },
+  {
+    infinitive: "Preguntar", translation: "To ask",
+    presente: ["pregunto", "preguntas", "pregunta", "preguntamos", "preguntáis", "preguntan"],
+    presenteSubjuntivo: ["pregunte", "preguntes", "pregunte", "preguntemos", "preguntéis", "pregunten"],
+    perfecto: ["he preguntado", "has preguntado", "ha preguntado", "hemos preguntado", "habéis preguntado", "han preguntado"],
+    indefinido: ["pregunté", "preguntaste", "preguntó", "preguntamos", "preguntasteis", "preguntaron"],
+    imperfecto: ["preguntaba", "preguntabas", "preguntaba", "preguntábamos", "preguntabais", "preguntaban"],
+    pluscuamperfecto: ["había preguntado", "habías preguntado", "había preguntado", "habíamos preguntado", "habíais preguntado", "habían preguntado"],
+    futuroSimple: ["preguntaré", "preguntarás", "preguntará", "preguntaremos", "preguntaréis", "preguntarán"],
+    futuroCompuesto: ["habré preguntado", "habrás preguntado", "habrá preguntado", "habremos preguntado", "habréis preguntado", "habrán preguntado"],
+    condicional: ["preguntaría", "preguntarías", "preguntaría", "preguntaríamos", "preguntaríais", "preguntarían"],
+    imperativoAfirmativo: ["", "pregunta", "pregunte", "preguntemos", "preguntad", "pregunten"],
+    imperativoNegativo: ["", "no preguntes", "no pregunte", "no preguntemos", "no preguntéis", "no pregunten"]
+  },
+  {
+    infinitive: "Recordar", translation: "To remember",
+    presente: ["recuerdo", "recuerdas", "recuerda", "recordamos", "recordáis", "recuerdan"],
+    presenteSubjuntivo: ["recuerde", "recuerdes", "recuerde", "recordemos", "recordéis", "recuerden"],
+    perfecto: ["he recordado", "has recordado", "ha recordado", "hemos recordado", "habéis recordado", "han recordado"],
+    indefinido: ["recordé", "recordaste", "recordó", "recordamos", "recordasteis", "recordaron"],
+    imperfecto: ["recordaba", "recordabas", "recordaba", "recordábamos", "recordabais", "recordaban"],
+    pluscuamperfecto: ["había recordado", "habías recordado", "había recordado", "habíamos recordado", "habíais recordado", "habían recordado"],
+    futuroSimple: ["recordaré", "recordarás", "recordará", "recordaremos", "recordaréis", "recordarán"],
+    futuroCompuesto: ["habré recordado", "habrás recordado", "habrá recordado", "habremos recordado", "habréis recordado", "habrán recordado"],
+    condicional: ["recordaría", "recordarías", "recordaría", "recordaríamos", "recordaríais", "recordarían"],
+    imperativoAfirmativo: ["", "recuerda", "recuerde", "recordemos", "recordad", "recuerden"],
+    imperativoNegativo: ["", "no recuerdes", "no recuerde", "no recordemos", "no recordéis", "no recuerden"]
+  },
+  {
+    infinitive: "Darse cuenta (de)", translation: "To realize",
+    presente: ["me doy cuenta", "te das cuenta", "se da cuenta", "nos damos cuenta", "os dais cuenta", "se dan cuenta"],
+    presenteSubjuntivo: ["me dé cuenta", "te des cuenta", "se dé cuenta", "nos demos cuenta", "os deis cuenta", "se den cuenta"],
+    perfecto: ["me he dado cuenta", "te has dado cuenta", "se ha dado cuenta", "nos hemos dado cuenta", "os habéis dado cuenta", "se han dado cuenta"],
+    indefinido: ["me di cuenta", "te diste cuenta", "se dio cuenta", "nos dimos cuenta", "os disteis cuenta", "se dieron cuenta"],
+    imperfecto: ["me daba cuenta", "te dabas cuenta", "se daba cuenta", "nos dábamos cuenta", "os dabais cuenta", "se daban cuenta"],
+    pluscuamperfecto: ["me había dado cuenta", "te habías dado cuenta", "se había dado cuenta", "nos habíamos dado cuenta", "os habéis dado cuenta", "se han dado cuenta"],
+    futuroSimple: ["me daré cuenta", "te darás cuenta", "se dará cuenta", "nos daremos cuenta", "os daréis cuenta", "se darán cuenta"],
+    futuroCompuesto: ["me habré dado cuenta", "te habrás dado cuenta", "se habrá dado cuenta", "nos habremos dado cuenta", "os habréis dado cuenta", "se habrán dado cuenta"],
+    condicional: ["me daría cuenta", "te darías cuenta", "se daría cuenta", "nos daríamos cuenta", "os daríais cuenta", "se darían cuenta"],
+    imperativoAfirmativo: ["", "date cuenta", "dése cuenta", "démonos cuenta", "daos cuenta", "dense cuenta"],
+    imperativoNegativo: ["", "no te des cuenta", "no se dé cuenta", "no nos demos cuenta", "no os deis cuenta", "no se den cuenta"]
+  }
+
+];
+
+/* ════════════════════════════════════════════
+   STATE
+════════════════════════════════════════════ */
+const S = {
+  verbIdx:    null,
+  tenseIdx:   0,
+  panorama:   false,
+  theme:      'light',
+  filtered:   [...VERBS],
+};
+
+/* ════════════════════════════════════════════
+   UTILS
+════════════════════════════════════════════ */
+function setAccent(color) {
+  const root = document.documentElement;
+  root.style.setProperty('--accent', color);
+  root.style.setProperty('--accent-glow', color + '22');
+}
+
+// Smart split: highlight endings for simple tenses
+function splitForm(form) {
+  if (!form) return { stem:'—', end:'' };
+  if (form.includes(' ')) return { stem: form, end: '' }; // compound
+  const ENDINGS = ['aba','ías','íamos','abais','aban','abas',
+                   'aron','asteis','aron','amos','ais','an',
+                   'ría','rías','ría','ríamos','ríais','rían',
+                   'ra','ras','ramos','rais','ran',
+                   'é','ás','á','éis','án',
+                   'o','es','e','emos','éis','en',
+                   'ó','ste','mos','steis'];
+  ENDINGS.sort((a,b) => b.length - a.length);
+  for (const e of ENDINGS) {
+    if (form.endsWith(e) && form.length > e.length) {
+      return { stem: form.slice(0, -e.length), end: e };
+    }
+  }
+  return { stem: form, end: '' };
+}
+
+function dotClass(type) {
+  return type === 'irregular' ? 'dot-i' : type === 'reflexive' ? 'dot-x' : 'dot-r';
+}
+
+/* ════════════════════════════════════════════
+   RENDER
+════════════════════════════════════════════ */
+function renderSidebar() {
+  const list  = document.getElementById('verbList');
+  const badge = document.getElementById('countBadge');
+  badge.textContent = `${S.filtered.length} / ${VERBS.length} verbos`;
+
+  list.innerHTML = VERBS.map((v, i) => {
+    const inFilter = S.filtered.includes(v);
+    return `<div class="verb-item ${i === S.verbIdx ? 'active' : ''} ${inFilter ? '' : 'hidden'}"
+                 data-i="${i}" onclick="selectVerb(${i})">
+      
+      <div class="verb-texts">
+        <div class="verb-name">${v.infinitive}</div>
+        <div class="verb-sub">${v.translation}</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function renderChroma() {
+  const strip = document.getElementById('chromaStrip');
+  strip.innerHTML = TENSES.map((t, i) => `
+    <div class="tense-seg ${i === S.tenseIdx ? 'active' : ''}"
+         style="--chroma-color: ${t.color}; background: ${t.color}22;"
+         onclick="selectTense(${i})">
+      <span class="seg-main">${t.name}</span>
+      <span class="seg-sub">${t.sub}</span>
+    </div>
+  `).join('');
+}
+
+function renderSingle() {
+  const area = document.getElementById('viewSingle');
+  if (S.verbIdx === null) {
+    area.innerHTML = `<div class="empty">
+      <div class="empty-glyph">V</div>
+      <div class="empty-msg">Selecciona un verbo para comenzar</div>
+    </div>`;
+    return;
+  }
+
+  const verb  = VERBS[S.verbIdx];
+  const tense = TENSES[S.tenseIdx];
+  const forms = verb[tense.key] || [];
+  const rows = PRONOUNS.map((p, i) => {
+    const { stem, end } = splitForm(forms[i]);
+    const formHtml = end
+      ? `<span class="form-stem">${stem}</span><span class="form-end">${end}</span>`
+      : `<span style="color:var(--text)">${stem}</span>`;
+    return `<div class="conj-row" style="animation-delay:${i*35}ms">
+      <div class="conj-pronoun">${p}</div>
+      <div class="conj-form">${formHtml}</div>
+    </div>`;
+  }).join('');
+
+  const pos = S.filtered.indexOf(verb);
+  document.getElementById('navProgress').textContent =
+    pos >= 0 ? `${pos+1} / ${S.filtered.length}` : '';
+
+  area.innerHTML = `
+    <div class="conj-header">
+      <div>
+        <div class="verb-hero">${verb.infinitive}</div>
+        <div class="verb-hero-sub">${verb.translation}</div>
+      </div>
+      <div class="tense-label-box">
+        <div class="tense-label-main">${tense.name}</div>
+        <div class="tense-label-sub">${tense.sub}</div>
+      </div>
+    </div>
+    <div class="conj-table">${rows}</div>
+  `;
+}
+
+function renderPanorama() {
+  const wrap = document.getElementById('viewPanorama');
+  if (S.verbIdx === null) {
+    wrap.innerHTML = `<div class="empty" style="height:100%">
+      <div class="empty-glyph">⊞</div>
+      <div class="empty-msg">Selecciona un verbo para ver la panorama</div>
+    </div>`;
+    return;
+  }
+  const verb = VERBS[S.verbIdx];
+
+  const cols = TENSES.map((t, ti) => {
+    const forms = verb[t.key] || [];
+    const rows = PRONOUNS.map((p, pi) => `
+      <div class="pano-row">
+        <div class="pano-pronoun">${p}</div>
+        <div class="pano-form" style="color:${ti===S.tenseIdx?t.color:'var(--text)'}">
+          ${forms[pi] || '—'}
         </div>
+      </div>
+    `).join('');
+    return `<div class="pano-col" style="animation-delay:${ti*25}ms">
+      <div class="pano-header" style="border-color:${t.color}; color:${t.color}">
+        <div class="pano-tense-main">${t.name}</div>
+        <div class="pano-tense-sub">${t.sub}</div>
+      </div>
+      <div class="pano-rows">${rows}</div>
+    </div>`;
+  }).join('');
 
-        <h1>Nexo</h1>
-        
-        <nav class="nav-pills">
-            <button class="nav-btn active" onclick="showSection('study')" id="nav-study">Verbos</button>
-            <button class="nav-btn" onclick="showSection('quiz')" id="nav-quiz">Game Arena</button>
-        </nav>
-    </header>
+  wrap.innerHTML = `<div class="panorama-scroll">${cols}</div>`;
+}
 
-    <main>
-        <div id="section-study" class="section active">
-            <input type="text" id="search-bar" placeholder="Buscar verbo (e.g. Tener)..." 
-                   style="width:100%; padding:15px; border-radius:15px; border:1px solid var(--border-color); background:var(--card-bg); color:var(--text-main); margin-bottom:15px; font-size:1rem;" 
-                   onkeyup="renderCards()">
-            
-            <div class="filter-chips">
-                <button class="filter-btn" id="filter-presente" onclick="toggleFilter('presente')">Presente</button>
-                <button class="filter-btn" id="filter-imperfecto" onclick="toggleFilter('imperfecto')">Imperfecto</button>
-                <button class="filter-btn" id="filter-perfecto" onclick="toggleFilter('perfecto')">Perfecto</button>
-                <button class="filter-btn" id="filter-indefinido" onclick="toggleFilter('indefinido')">Indefinido</button>
-            </div>
+function renderNavBtns() {
+  const verb = S.verbIdx !== null ? VERBS[S.verbIdx] : null;
+  const pos  = verb ? S.filtered.indexOf(verb) : -1;
+  document.getElementById('btnPrevVerb').disabled = pos <= 0;
+  document.getElementById('btnNextVerb').disabled = pos < 0 || pos >= S.filtered.length - 1;
+}
 
-            <div class="cards-grid" id="cards-container"></div>
-        </div>
+function render() {
+  renderSidebar();
+  renderChroma();
+  if (S.panorama) renderPanorama();
+  else renderSingle();
+  renderNavBtns();
+}
 
-        <div id="section-quiz" class="section">
-            
-            <div id="tense-menu" class="tense-menu">
-                <div class="tense-btn" onclick="startGame('presente')">Presente</div>
-                <div class="tense-btn" onclick="startGame('imperfecto')">Imperfecto</div>
-                <div class="tense-btn" onclick="startGame('perfecto')">Perfecto</div>
-                <div class="tense-btn" onclick="startGame('indefinido')">Indefinido</div>
-            </div>
+/* ════════════════════════════════════════════
+   ACTIONS
+════════════════════════════════════════════ */
+function selectVerb(i) {
+  S.verbIdx = i;
+  setAccent(TENSES[S.tenseIdx].color);
+  render();
+  // scroll sidebar item into view
+  requestAnimationFrame(() => {
+    document.querySelector(`[data-i="${i}"]`)
+      ?.scrollIntoView({ block:'nearest', behavior:'smooth' });
+  });
+}
 
-            <div id="game-viewport" class="game-viewport" style="display:none;">
-                <div class="game-header">
-                    <div class="game-header-left">
-                        <button class="back-btn" onclick="exitGame()">❮ Salir</button>
-                        <button class="skip-btn" onclick="skipVerb()">⏭ Saltar</button>
-                    </div>
-                    <span id="game-mode-title" style="font-weight:bold; color:var(--accent); text-transform:uppercase"></span>
-                    <div class="score-board">
-                        <span>Restantes: <b id="verbs-remaining">0</b></span>
-                        <span style="font-weight:bold">Pts: <span id="score">0</span></span>
-                    </div>
-                </div>
+function selectTense(i) {
+  S.tenseIdx = i;
+  setAccent(TENSES[i].color);
+  render();
+}
 
-                <div class="game-content">
-                    <div class="progress-dots" id="progress-dots"></div>
+function navigateVerb(dir) {
+  const verb = S.verbIdx !== null ? VERBS[S.verbIdx] : null;
+  const pos  = verb ? S.filtered.indexOf(verb) : -1;
+  if (pos + dir >= 0 && pos + dir < S.filtered.length) {
+    selectVerb(VERBS.indexOf(S.filtered[pos + dir]));
+  } else if (pos === -1 && S.filtered.length > 0) {
+    selectVerb(VERBS.indexOf(S.filtered[0]));
+  }
+}
 
-                    <div id="prev-sentence" class="prev-sentence" style="display:none"></div>
+function togglePanorama() {
+  S.panorama = !S.panorama;
+  document.getElementById('panoramaBtn').classList.toggle('active', S.panorama);
+  document.getElementById('viewSingle').classList.toggle('hidden', S.panorama);
+  document.getElementById('viewPanorama').classList.toggle('active', S.panorama);
+  render();
+}
 
-                    <div class="sentence-builder">
-                        <span class="target-pronoun" id="curr-pronoun"></span>
-                        <span class="verb-hint" id="curr-infinitive"></span>
-                        
-                        <input type="text" id="game-input" class="game-input" autocomplete="off" placeholder="?">
-                        <span id="curr-context"></span>
-                    </div>
-                </div>
+function toggleTheme() {
+  S.theme = S.theme === 'light' ? 'dark' : 'light';
+  document.documentElement.setAttribute('data-theme', S.theme);
+  document.getElementById('themeBtn').textContent = S.theme === 'light' ? '🌙' : '☀️';
+}
 
-                <button class="btn-submit" onclick="checkAnswer()">Enviar</button>
-            </div>
-        </div>
-    </main>
+/* ════════════════════════════════════════════
+   EVENTS
+════════════════════════════════════════════ */
+document.getElementById('searchInput').addEventListener('input', e => {
+  const q = e.target.value.toLowerCase().trim();
+  S.filtered = q
+    ? VERBS.filter(v => v.infinitive.toLowerCase().includes(q)) 
+    : [...VERBS];
+  render();
+});
 
-    <script>
-        // --- DATA ---
-        const pronouns = ["Yo", "Tú", "Él/Ella", "Nosotros", "Vosotros", "Ellos"];
-        
-        const verbContexts = {
-            "Ser": "muy inteligente.", "Estar": "en la oficina.", "Tener": "mucho trabajo.",
-            "Ir": "al supermercado.", "Hacer": "la tarea.", "Poder": "ayudar mañana.",
-            "Decir": "la verdad.", "Ver": "una película.", "Comer": "paella hoy.",
-            "Tomar": "un café.", "Querer": "viajar a España.", "Saber": "la respuesta.",
-            "Venir": "a la fiesta.", "Poner": "la mesa.", "Dar": "un regalo.",
-            "Llegar": "a casa tarde.", "Pasar": "el verano aquí.", "Deber": "estudiar más.",
-            "Quedar": "con amigos.", "Creer": "en ti.", "Hablar": "con mi madre.",
-            "Llevar": "una camisa azul.", "Dejar": "las llaves aquí.", "Seguir": "el camino.",
-            "Encontrar": "un buen libro.", "Llamar": "por teléfono.", "Vivir": "en Madrid.",
-            "Escuchar": "música rock.", "Mirar": "el paisaje.", "Jugar": "al fútbol.",
-            "Empezar": "el trabajo.", "Buscar": "mis gafas.", "Escribir": "una carta.",
-            "Leer": "el periódico.", "Caer": "al suelo.", "Dormir": "ocho horas.",
-            "Entender": "la lección.", "Pedir": "la cuenta.", "Pensar": "en el futuro.",
-            "Perder": "el autobús.", "Preferir": "el té.", "Sentir": "frío.",
-            "Traer": "un postre.", "Volver": "pronto.", "Conocer": "a mucha gente.",
-            "Salir": "esta noche.", "Abrir": "la ventana.", "Cerrar": "la puerta.",
-            "Comprar": "comida.", "Viajar": "en tren.", "Beber": "agua.",
-            "Caminar": "por el parque.", "Cocinar": "la cena.", "Usar": "el coche.",
-            "Gustar": "el chocolate."
-        };
+document.getElementById('themeBtn').addEventListener('click', toggleTheme);
+document.getElementById('panoramaBtn').addEventListener('click', togglePanorama);
+document.getElementById('btnPrevVerb').addEventListener('click', () => navigateVerb(-1));
+document.getElementById('btnNextVerb').addEventListener('click', () => navigateVerb(1));
 
-        // ! IMPORTANT: PASTE YOUR UPDATED ARRAY WITH 'imperfecto' HERE !
-        const verbsData = [
-             { infinitive: "Ser", translation: "To be (perm)", presente: ["soy", "eres", "es", "somos", "sois", "son"], imperfecto: ["era", "eras", "era", "éramos", "erais", "eran"], perfecto: ["he sido", "has sido", "ha sido", "hemos sido", "habéis sido", "han sido"], indefinido: ["fui", "fuiste", "fue", "fuimos", "fuisteis", "fueron"] },
-{ infinitive: "Estar", translation: "To be (temp)", presente: ["estoy", "estás", "está", "estamos", "estáis", "están"], imperfecto: ["estaba", "estabas", "estaba", "estábamos", "estabais", "estaban"], perfecto: ["he estado", "has estado", "ha estado", "hemos estado", "habéis estado", "han estado"], indefinido: ["estuve", "estuviste", "estuvo", "estuvimos", "estuvisteis", "estuvieron"] },
-{ infinitive: "Tener", translation: "To have", presente: ["tengo", "tienes", "tiene", "tenemos", "tenéis", "tienen"], imperfecto: ["tenía", "tenías", "tenía", "teníamos", "teníais", "tenían"], perfecto: ["he tenido", "has tenido", "ha tenido", "hemos tenido", "habéis tenido", "han tenido"], indefinido: ["tuve", "tuviste", "tuvo", "tuvimos", "tuvisteis", "tuvieron"] },
-{ infinitive: "Ir", translation: "To go", presente: ["voy", "vas", "va", "vamos", "vais", "van"], imperfecto: ["iba", "ibas", "iba", "íbamos", "ibais", "iban"], perfecto: ["he ido", "has ido", "ha ido", "hemos ido", "habéis ido", "han ido"], indefinido: ["fui", "fuiste", "fue", "fuimos", "fuisteis", "fueron"] },
-{ infinitive: "Hacer", translation: "To do/make", presente: ["hago", "haces", "hace", "hacemos", "hacéis", "hacen"], imperfecto: ["hacía", "hacías", "hacía", "hacíamos", "hacíais", "hacían"], perfecto: ["he hecho", "has hecho", "ha hecho", "hemos hecho", "habéis hecho", "han hecho"], indefinido: ["hice", "hiciste", "hizo", "hicimos", "hicisteis", "hicieron"] },
-{ infinitive: "Poder", translation: "To can", presente: ["puedo", "puedes", "puede", "podemos", "podéis", "pueden"], imperfecto: ["podía", "podías", "podía", "podíamos", "podíais", "podían"], perfecto: ["he podido", "has podido", "ha podido", "hemos podido", "habéis podido", "han podido"], indefinido: ["pude", "pudiste", "pudo", "pudimos", "pudisteis", "pudieron"] },
-{ infinitive: "Decir", translation: "To say", presente: ["digo", "dices", "dice", "decimos", "decís", "dicen"], imperfecto: ["decía", "decías", "decía", "decíamos", "decíais", "decían"], perfecto: ["he dicho", "has dicho", "ha dicho", "hemos dicho", "habéis dicho", "han dicho"], indefinido: ["dije", "dijiste", "dijo", "dijimos", "dijisteis", "dijeron"] },
-{ infinitive: "Ver", translation: "To see", presente: ["veo", "ves", "ve", "vemos", "veis", "ven"], imperfecto: ["veía", "veías", "veía", "veíamos", "veíais", "veían"], perfecto: ["he visto", "has visto", "ha visto", "hemos visto", "habéis visto", "han visto"], indefinido: ["vi", "viste", "vio", "vimos", "visteis", "vieron"] },
-{ infinitive: "Comer", translation: "To eat", presente: ["como", "comes", "come", "comemos", "coméis", "comen"], imperfecto: ["comía", "comías", "comía", "comíamos", "comíais", "comían"], perfecto: ["he comido", "has comido", "ha comido", "hemos comido", "habéis comido", "han comido"], indefinido: ["comí", "comiste", "comió", "comimos", "comisteis", "comieron"] },
-{ infinitive: "Tomar", translation: "To take/drink", presente: ["tomo", "tomas", "toma", "tomamos", "tomáis", "toman"], imperfecto: ["tomaba", "tomabas", "tomaba", "tomábamos", "tomabais", "tomaban"], perfecto: ["he tomado", "has tomado", "ha tomado", "hemos tomado", "habéis tomado", "han tomado"], indefinido: ["tomé", "tomaste", "tomó", "tomamos", "tomasteis", "tomaron"] },
-{ infinitive: "Querer", translation: "To want", presente: ["quiero", "quieres", "quiere", "queremos", "queréis", "quieren"], imperfecto: ["quería", "querías", "quería", "queríamos", "queríais", "querían"], perfecto: ["he querido", "has querido", "ha querido", "hemos querido", "habéis querido", "han querido"], indefinido: ["quise", "quisiste", "quiso", "quisimos", "quisisteis", "quisieron"] },
-{ infinitive: "Saber", translation: "To know (info)", presente: ["sé", "sabes", "sabe", "sabemos", "sabéis", "saben"], imperfecto: ["sabía", "sabías", "sabía", "sabíamos", "sabíais", "sabían"], perfecto: ["he sabido", "has sabido", "ha sabido", "hemos sabido", "habéis sabido", "han sabido"], indefinido: ["supe", "supiste", "supo", "supimos", "supisteis", "supieron"] },
-{ infinitive: "Venir", translation: "To come", presente: ["vengo", "vienes", "viene", "venimos", "venís", "vienen"], imperfecto: ["venía", "venías", "venía", "veníamos", "veníais", "venían"], perfecto: ["he venido", "has venido", "ha venido", "hemos venido", "habéis venido", "han venido"], indefinido: ["vine", "viniste", "vino", "vinimos", "vinisteis", "vinieron"] },
-{ infinitive: "Poner", translation: "To put", presente: ["pongo", "pones", "pone", "ponemos", "ponéis", "ponen"], imperfecto: ["ponía", "ponías", "ponía", "poníamos", "poníais", "ponían"], perfecto: ["he puesto", "has puesto", "ha puesto", "hemos puesto", "habéis puesto", "han puesto"], indefinido: ["puse", "pusiste", "puso", "pusimos", "pusisteis", "pusieron"] },
-{ infinitive: "Dar", translation: "To give", presente: ["doy", "das", "da", "damos", "dais", "dan"], imperfecto: ["daba", "dabas", "daba", "dábamos", "dabais", "daban"], perfecto: ["he dado", "has dado", "ha dado", "hemos dado", "habéis dado", "han dado"], indefinido: ["di", "diste", "dio", "dimos", "disteis", "dieron"] },
-{ infinitive: "Llegar", translation: "To arrive", presente: ["llego", "llegas", "llega", "llegamos", "llegáis", "llegan"], imperfecto: ["llegaba", "llegabas", "llegaba", "llegábamos", "llegabais", "llegaban"], perfecto: ["he llegado", "has llegado", "ha llegado", "hemos llegado", "habéis llegado", "han llegado"], indefinido: ["llegué", "llegaste", "llegó", "llegamos", "llegasteis", "llegaron"] },
-{ infinitive: "Pasar", translation: "To pass/happen", presente: ["paso", "pasas", "pasa", "pasamos", "pasáis", "pasan"], imperfecto: ["pasaba", "pasabas", "pasaba", "pasábamos", "pasabais", "pasaban"], perfecto: ["he pasado", "has pasado", "ha pasado", "hemos pasado", "habéis pasado", "han pasado"], indefinido: ["pasé", "pasaste", "pasó", "pasamos", "pasasteis", "pasaron"] },
-{ infinitive: "Deber", translation: "To must/owe", presente: ["debo", "debes", "debe", "debemos", "debéis", "deben"], imperfecto: ["debía", "debías", "debía", "debíamos", "debíais", "debían"], perfecto: ["he debido", "has debido", "ha debido", "hemos debido", "habéis debido", "han debido"], indefinido: ["debí", "debiste", "debió", "debimos", "debisteis", "debieron"] },
-{ infinitive: "Quedar", translation: "To stay/meet", presente: ["quedo", "quedas", "queda", "quedamos", "quedáis", "quedan"], imperfecto: ["quedaba", "quedabas", "quedaba", "quedábamos", "quedabais", "quedaban"], perfecto: ["he quedado", "has quedado", "ha quedado", "hemos quedado", "habéis quedado", "han quedado"], indefinido: ["quedé", "quedaste", "quedó", "quedamos", "quedasteis", "quedaron"] },
-{ infinitive: "Creer", translation: "To believe", presente: ["creo", "crees", "cree", "creemos", "creéis", "creen"], imperfecto: ["creía", "creías", "creía", "creíamos", "creíais", "creían"], perfecto: ["he creído", "has creído", "ha creído", "hemos creído", "habéis creído", "han creído"], indefinido: ["creí", "creíste", "creyó", "creímos", "creísteis", "creyeron"] },
-{ infinitive: "Hablar", translation: "To speak", presente: ["hablo", "hablas", "habla", "hablamos", "habláis", "hablan"], imperfecto: ["hablaba", "hablabas", "hablaba", "hablábamos", "hablabais", "hablaban"], perfecto: ["he hablado", "has hablado", "ha hablado", "hemos hablado", "habéis hablado", "han hablado"], indefinido: ["hablé", "hablaste", "habló", "hablamos", "hablasteis", "hablaron"] },
-{ infinitive: "Llevar", translation: "To carry/wear", presente: ["llevo", "llevas", "lleva", "llevamos", "lleváis", "llevan"], imperfecto: ["llevaba", "llevabas", "llevaba", "llevábamos", "llevabais", "llevaban"], perfecto: ["he llevado", "has llevado", "ha llevado", "hemos llevado", "habéis llevado", "han llevado"], indefinido: ["llevé", "llevaste", "llevó", "llevamos", "llevasteis", "llevaron"] },
-{ infinitive: "Dejar", translation: "To leave/let", presente: ["dejo", "dejas", "deja", "dejamos", "dejáis", "dejan"], imperfecto: ["dejaba", "dejabas", "dejaba", "dejábamos", "dejabais", "dejaban"], perfecto: ["he dejado", "has dejado", "ha dejado", "hemos dejado", "habéis dejado", "han dejado"], indefinido: ["dejé", "dejaste", "dejó", "dejamos", "dejasteis", "dejaron"] },
-{ infinitive: "Seguir", translation: "To follow", presente: ["sigo", "sigues", "sigue", "seguimos", "seguís", "siguen"], imperfecto: ["seguía", "seguías", "seguía", "seguíamos", "seguíais", "seguían"], perfecto: ["he seguido", "has seguido", "ha seguido", "hemos seguido", "habéis seguido", "han seguido"], indefinido: ["seguí", "seguiste", "siguió", "seguimos", "seguisteis", "siguieron"] },
-{ infinitive: "Encontrar", translation: "To find", presente: ["encuentro", "encuentras", "encuentra", "encontramos", "encontráis", "encuentran"], imperfecto: ["encontraba", "encontrabas", "encontraba", "encontrábamos", "encontrabais", "encontraban"], perfecto: ["he encontrado", "has encontrado", "ha encontrado", "hemos encontrado", "habéis encontrado", "han encontrado"], indefinido: ["encontré", "encontraste", "encontró", "encontramos", "encontrasteis", "encontraron"] },
-{ infinitive: "Llamar", translation: "To call", presente: ["llamo", "llamas", "llama", "llamamos", "llamáis", "llaman"], imperfecto: ["llamaba", "llamabas", "llamaba", "llamábamos", "llamabais", "llamaban"], perfecto: ["he llamado", "has llamado", "ha llamado", "hemos llamado", "habéis llamado", "han llamado"], indefinido: ["llamé", "llamaste", "llamó", "llamamos", "llamasteis", "llamaron"] },
-{ infinitive: "Vivir", translation: "To live", presente: ["vivo", "vives", "vive", "vivimos", "vivís", "viven"], imperfecto: ["vivía", "vivías", "vivía", "vivíamos", "vivíais", "vivían"], perfecto: ["he vivido", "has vivido", "ha vivido", "hemos vivido", "habéis vivido", "han vivido"], indefinido: ["viví", "viviste", "vivió", "vivimos", "vivisteis", "vivieron"] },
-{ infinitive: "Escuchar", translation: "To listen", presente: ["escucho", "escuchas", "escucha", "escuchamos", "escucháis", "escuchan"], imperfecto: ["escuchaba", "escuchabas", "escuchaba", "escuchábamos", "escuchabais", "escuchaban"], perfecto: ["he escuchado", "has escuchado", "ha escuchado", "hemos escuchado", "habéis escuchado", "han escuchado"], indefinido: ["escuché", "escuchaste", "escuchó", "escuchamos", "escuchasteis", "escucharon"] },
-{ infinitive: "Mirar", translation: "To look", presente: ["miro", "miras", "mira", "miramos", "miráis", "miran"], imperfecto: ["miraba", "mirabas", "miraba", "mirábamos", "mirabais", "miraban"], perfecto: ["he mirado", "has mirado", "ha mirado", "hemos mirado", "habéis mirado", "han mirado"], indefinido: ["miré", "miraste", "miró", "miramos", "mirasteis", "miraron"] },
-{ infinitive: "Jugar", translation: "To play", presente: ["juego", "juegas", "juega", "jugamos", "jugáis", "juegan"], imperfecto: ["jugaba", "jugabas", "jugaba", "jugábamos", "jugabais", "jugaban"], perfecto: ["he jugado", "has jugado", "ha jugado", "hemos jugado", "habéis jugado", "han jugado"], indefinido: ["jugué", "jugaste", "jugó", "jugamos", "jugasteis", "jugaron"] },
-{ infinitive: "Empezar", translation: "To start", presente: ["empiezo", "empiezas", "empieza", "empezamos", "empezáis", "empiezan"], imperfecto: ["empezaba", "empezabas", "empezaba", "empezábamos", "empezabais", "empezaban"], perfecto: ["he empezado", "has empezado", "ha empezado", "hemos empezado", "habéis empezado", "han empezado"], indefinido: ["empecé", "empezaste", "empezó", "empezamos", "empezasteis", "empezaron"] },
-{ infinitive: "Buscar", translation: "To search", presente: ["busco", "buscas", "busca", "buscamos", "buscáis", "buscan"], imperfecto: ["buscaba", "buscabas", "buscaba", "buscábamos", "buscabais", "buscaban"], perfecto: ["he buscado", "has buscado", "ha buscado", "hemos buscado", "habéis buscado", "han buscado"], indefinido: ["busqué", "buscaste", "buscó", "buscamos", "buscasteis", "buscaron"] },
-{ infinitive: "Escribir", translation: "To write", presente: ["escribo", "escribes", "escribe", "escribimos", "escribís", "escriben"], imperfecto: ["escribía", "escribías", "escribía", "escribíamos", "escribíais", "escribían"], perfecto: ["he escrito", "has escrito", "ha escrito", "hemos escrito", "habéis escrito", "han escrito"], indefinido: ["escribí", "escribiste", "escribió", "escribimos", "escribisteis", "escribieron"] },
-{ infinitive: "Leer", translation: "To read", presente: ["leo", "lees", "lee", "leemos", "leéis", "leen"], imperfecto: ["leía", "leías", "leía", "leíamos", "leíais", "leían"], perfecto: ["he leído", "has leído", "ha leído", "hemos leído", "habéis leído", "han leído"], indefinido: ["leí", "leíste", "leyó", "leímos", "leísteis", "leyeron"] },
-{ infinitive: "Caer", translation: "To fall", presente: ["caigo", "caes", "cae", "caemos", "caéis", "caen"], imperfecto: ["caía", "caías", "caía", "caíamos", "caíais", "caían"], perfecto: ["he caído", "has caído", "ha caído", "hemos caído", "habéis caído", "han caído"], indefinido: ["caí", "caíste", "cayó", "caímos", "caísteis", "cayeron"] },
-{ infinitive: "Dormir", translation: "To sleep", presente: ["duermo", "duermes", "duerme", "dormimos", "dormís", "duermen"], imperfecto: ["dormía", "dormías", "dormía", "dormíamos", "dormíais", "dormían"], perfecto: ["he dormido", "has dormido", "ha dormido", "hemos dormido", "habéis dormido", "han dormido"], indefinido: ["dormí", "dormiste", "durmió", "dormimos", "dormisteis", "durmieron"] },
-{ infinitive: "Entender", translation: "To understand", presente: ["entiendo", "entiendes", "entiende", "entendemos", "entendéis", "entienden"], imperfecto: ["entendía", "entendías", "entendía", "entendíamos", "entendíais", "entendían"], perfecto: ["he entendido", "has entendido", "ha entendido", "hemos entendido", "habéis entendido", "han entendido"], indefinido: ["entendí", "entendiste", "entendió", "entendimos", "entendisteis", "entendieron"] },
-{ infinitive: "Pedir", translation: "To ask for", presente: ["pido", "pides", "pide", "pedimos", "pedís", "piden"], imperfecto: ["pedía", "pedías", "pedía", "pedíamos", "pedíais", "pedían"], perfecto: ["he pedido", "has pedido", "ha pedido", "hemos pedido", "habéis pedido", "han pedido"], indefinido: ["pedí", "pediste", "pidió", "pedimos", "pedisteis", "pidieron"] },
-{ infinitive: "Pensar", translation: "To think", presente: ["pienso", "piensas", "piensa", "pensamos", "pensáis", "piensan"], imperfecto: ["pensaba", "pensabas", "pensaba", "pensábamos", "pensabais", "pensaban"], perfecto: ["he pensado", "has pensado", "ha pensado", "hemos pensado", "habéis pensado", "han pensado"], indefinido: ["pensé", "pensaste", "pensó", "pensamos", "pensasteis", "pensaron"] },
-{ infinitive: "Perder", translation: "To lose", presente: ["pierdo", "pierdes", "pierde", "perdemos", "perdéis", "pierden"], imperfecto: ["perdía", "perdías", "perdía", "perdíamos", "perdíais", "perdían"], perfecto: ["he perdido", "has perdido", "ha perdido", "hemos perdido", "habéis perdido", "han perdido"], indefinido: ["perdí", "perdiste", "perdió", "perdimos", "perdisteis", "perdieron"] },
-{ infinitive: "Preferir", translation: "To prefer", presente: ["prefiero", "prefieres", "prefiere", "preferimos", "preferís", "prefieren"], imperfecto: ["prefería", "preferías", "prefería", "preferíamos", "preferíais", "preferían"], perfecto: ["he preferido", "has preferido", "ha preferido", "hemos preferido", "habéis preferido", "han preferido"], indefinido: ["preferí", "preferiste", "prefirió", "preferimos", "preferisteis", "prefirieron"] },
-{ infinitive: "Sentir", translation: "To feel", presente: ["siento", "sientes", "siente", "sentimos", "sentís", "sienten"], imperfecto: ["sentía", "sentías", "sentía", "sentíamos", "sentíais", "sentían"], perfecto: ["he sentido", "has sentido", "ha sentido", "hemos sentido", "habéis sentido", "han sentido"], indefinido: ["sentí", "sentiste", "sintió", "sentimos", "sentisteis", "sintieron"] },
-{ infinitive: "Traer", translation: "To bring", presente: ["traigo", "traes", "trae", "traemos", "traéis", "traen"], imperfecto: ["traía", "traías", "traía", "traíamos", "traíais", "traían"], perfecto: ["he traído", "has traído", "ha traído", "hemos traído", "habéis traído", "han traído"], indefinido: ["traje", "trajiste", "trajo", "trajimos", "trajisteis", "trajeron"] },
-{ infinitive: "Volver", translation: "To return", presente: ["vuelvo", "vuelves", "vuelve", "volvemos", "volvéis", "vuelven"], imperfecto: ["volvía", "volvías", "volvía", "volvíamos", "volvíais", "volvían"], perfecto: ["he vuelto", "has vuelto", "ha vuelto", "hemos vuelto", "habéis vuelto", "han vuelto"], indefinido: ["volví", "volviste", "volvió", "volvimos", "volvisteis", "volvieron"] },
-{ infinitive: "Conocer", translation: "To know (people)", presente: ["conozco", "conoces", "conoce", "conocemos", "conocéis", "conocen"], imperfecto: ["conocía", "conocías", "conocía", "conocíamos", "conocíais", "conocían"], perfecto: ["he conocido", "has conocido", "ha conocido", "hemos conocido", "habéis conocido", "han conocido"], indefinido: ["conocí", "conociste", "conoció", "conocimos", "conocisteis", "conocieron"] },
-{ infinitive: "Salir", translation: "To go out", presente: ["salgo", "sales", "sale", "salimos", "salís", "salen"], imperfecto: ["salía", "salías", "salía", "salíamos", "salíais", "salían"], perfecto: ["he salido", "has salido", "ha salido", "hemos salido", "habéis salido", "han salido"], indefinido: ["salí", "saliste", "salió", "salimos", "salisteis", "salieron"] },
-{ infinitive: "Abrir", translation: "To open", presente: ["abro", "abres", "abre", "abrimos", "abrís", "abren"], imperfecto: ["abría", "abrías", "abría", "abríamos", "abríais", "abrían"], perfecto: ["he abierto", "has abierto", "ha abierto", "hemos abierto", "habéis abierto", "han abierto"], indefinido: ["abrí", "abriste", "abrió", "abrimos", "abristeis", "abrieron"] },
-{ infinitive: "Cerrar", translation: "To close", presente: ["cierro", "cierras", "cierra", "cerramos", "cerráis", "cierran"], imperfecto: ["cerraba", "cerrabas", "cerraba", "cerrábamos", "cerrabais", "cerraban"], perfecto: ["he cerrado", "has cerrado", "ha cerrado", "hemos cerrado", "habéis cerrado", "han cerrado"], indefinido: ["cerré", "cerraste", "cerró", "cerramos", "cerrasteis", "cerraron"] },
-{ infinitive: "Comprar", translation: "To buy", presente: ["compro", "compras", "compra", "compramos", "compráis", "compran"], imperfecto: ["compraba", "comprabas", "compraba", "comprábamos", "comprabais", "compraban"], perfecto: ["he comprado", "has comprado", "ha comprado", "hemos comprado", "habéis comprado", "han comprado"], indefinido: ["compré", "compraste", "compró", "compramos", "comprasteis", "compraron"] },
-{ infinitive: "Viajar", translation: "To travel", presente: ["viajo", "viajas", "viaja", "viajamos", "viajáis", "viajan"], imperfecto: ["viajaba", "viajabas", "viajaba", "viajábamos", "viajabais", "viajaban"], perfecto: ["he viajado", "has viajado", "ha viajado", "hemos viajado", "habéis viajado", "han viajado"], indefinido: ["viajé", "viajaste", "viajó", "viajamos", "viajasteis", "viajaron"] },
-{ infinitive: "Beber", translation: "To drink", presente: ["bebo", "bebes", "bebe", "bebemos", "bebéis", "beben"], imperfecto: ["bebía", "bebías", "bebía", "bebíamos", "bebíais", "bebían"], perfecto: ["he bebido", "has bebido", "ha bebido", "hemos bebido", "habéis bebido", "han bebido"], indefinido: ["bebí", "bebiste", "bebió", "bebimos", "bebisteis", "bebieron"] },
-{ infinitive: "Caminar", translation: "To walk", presente: ["camino", "caminas", "camina", "caminamos", "camináis", "caminan"], imperfecto: ["caminaba", "caminabas", "caminaba", "caminábamos", "caminabais", "caminaban"], perfecto: ["he caminado", "has caminado", "ha caminado", "hemos caminado", "habéis caminado", "han caminado"], indefinido: ["caminé", "caminaste", "caminó", "caminamos", "caminasteis", "caminaron"] },
-{ infinitive: "Cocinar", translation: "To cook", presente: ["cocino", "cocinas", "cocina", "cocinamos", "cocináis", "cocinan"], imperfecto: ["cocinaba", "cocinabas", "cocinaba", "cocinábamos", "cocinabais", "cocinaban"], perfecto: ["he cocinado", "has cocinado", "ha cocinado", "hemos cocinado", "habéis cocinado", "han cocinado"], indefinido: ["cociné", "cocinaste", "cocinó", "cocinamos", "cocinasteis", "cocinaron"] },
-{ infinitive: "Usar", translation: "To use", presente: ["uso", "usas", "usa", "usamos", "usáis", "usan"], imperfecto: ["usaba", "usabas", "usaba", "usábamos", "usabais", "usaban"], perfecto: ["he usado", "has usado", "ha usado", "hemos usado", "habéis usado", "han usado"], indefinido: ["usé", "usaste", "usó", "usamos", "usasteis", "usaron"] },
-{ infinitive: "Gustar", translation: "To like", presente: ["Me gusta", "Te gusta", "Le gusta", "Nos gusta", "Os gusta", "Les gusta"], imperfecto: ["Me gustaba", "Te gustaba", "Le gustaba", "Nos gustaba", "Os gustaba", "Les gustaba"], perfecto: ["Me ha gustado", "Te ha gustado", "Le ha gustado", "Nos ha gustado", "Os ha gustado", "Les han gustado"], indefinido: ["Me gustó", "Te gustó", "Le gustó", "Nos gustó", "Os gustó", "Les gustó"] },
-{ infinitive: "Haber", translation: "To have / To exist", presente: ["he", "has", "ha", "hemos", "habéis", "han"], imperfecto: ["había", "habías", "había", "habíamos", "habíais", "habían"], perfecto: ["he habido", "has habido", "ha habido", "hemos habido", "habéis habido", "han habido"], indefinido: ["hube", "hubiste", "hubo", "hubimos", "hubisteis", "hubieron"] },
-{ infinitive: "Parecer", translation: "To seem", presente: ["parezco", "pareces", "parece", "parecemos", "parecéis", "parecen"], imperfecto: ["parecía", "parecías", "parecía", "parecíamos", "parecíais", "parecían"], perfecto: ["he parecido", "has parecido", "ha parecido", "hemos parecido", "habéis parecido", "han parecido"], indefinido: ["parecí", "pareciste", "pareció", "parecimos", "parecisteis", "parecieron"] },
-{ infinitive: "Soler", translation: "To usually do / To tend to", presente: ["suelo", "sueles", "suele", "solemos", "soléis", "suelen"], imperfecto: ["solía", "solías", "solía", "solíamos", "solíais", "solían"], perfecto: ["he solido", "has solido", "ha solido", "hemos solido", "habéis solido", "han solido"], indefinido: ["solí", "soliste", "solió", "solimos", "solisteis", "solieron"] },
-{ infinitive: "Traducir", translation: "To translate", presente: ["traduzco", "traduces", "traduce", "traducimos", "traducís", "traducen"], imperfecto: ["traducía", "traducías", "traducía", "traducíamos", "traducíais", "traducían"], perfecto: ["he traducido", "has traducido", "ha traducido", "hemos traducido", "habéis traducido", "han traducido"], indefinido: ["traduje", "tradujiste", "tradujo", "tradujimos", "tradujisteis", "tradujeron"] },
-{ infinitive: "Producir", translation: "To produce", presente: ["produzco", "produces", "produce", "producimos", "producís", "producen"], imperfecto: ["producía", "producías", "producía", "producíamos", "producíais", "producían"], perfecto: ["he producido", "has producido", "ha producido", "hemos producido", "habéis producido", "han producido"], indefinido: ["produje", "produjiste", "produjo", "produjimos", "produjisteis", "produjeron"] },
-{ infinitive: "Conducir", translation: "To drive / To lead", presente: ["conduzco", "conduces", "conduce", "conducimos", "conducís", "conducen"], imperfecto: ["conducía", "conducías", "conducía", "conducíamos", "conducíais", "conducían"], perfecto: ["he conducido", "has conducido", "ha conducido", "hemos conducido", "habéis conducido", "han conducido"], indefinido: ["conduje", "condujiste", "condujo", "condujimos", "condujisteis", "condujeron"] },
-{ infinitive: "Oír", translation: "To hear", presente: ["oigo", "oyes", "oye", "oímos", "oís", "oyen"], imperfecto: ["oía", "oías", "oía", "oíamos", "oíais", "oían"], perfecto: ["he oído", "has oído", "ha oído", "hemos oído", "habéis oído", "han oído"], indefinido: ["oí", "oíste", "oyó", "oímos", "oísteis", "oyeron"] },
-{ infinitive: "Morir", translation: "To die", presente: ["muero", "mueres", "muere", "morimos", "morís", "mueren"], imperfecto: ["moría", "morías", "moría", "moríamos", "moríais", "morían"], perfecto: ["he muerto", "has muerto", "ha muerto", "hemos muerto", "habéis muerto", "han muerto"], indefinido: ["morí", "moriste", "murió", "morimos", "moristeis", "murieron"] },
-{ infinitive: "Costar", translation: "To cost", presente: ["cuesto", "cuestas", "cuesta", "costamos", "costáis", "cuestan"], imperfecto: ["costaba", "costabas", "costaba", "costábamos", "costabais", "costaban"], perfecto: ["he costado", "has costado", "ha costado", "hemos costado", "habéis costado", "han costado"], indefinido: ["costé", "costaste", "costó", "costamos", "costasteis", "costaron"] },
-{ infinitive: "Sentirse", translation: "To feel", presente: ["me siento", "te sientes", "se siente", "nos sentimos", "os sentís", "se sienten"], imperfecto: ["me sentía", "te sentías", "se sentía", "nos sentíamos", "os sentíais", "se sentían"], perfecto: ["me he sentido", "te has sentido", "se ha sentido", "nos hemos sentido", "os habéis sentido", "se han sentido"], indefinido: ["me sentí", "te sentiste", "se sintió", "nos sentimos", "os sentisteis", "se sintieron"] },
-{ infinitive: "Preguntar", translation: "To ask", presente: ["pregunto", "preguntas", "pregunta", "preguntamos", "preguntáis", "preguntan"], imperfecto: ["preguntaba", "preguntabas", "preguntaba", "preguntábamos", "preguntabais", "preguntaban"], perfecto: ["he preguntado", "has preguntado", "ha preguntado", "hemos preguntado", "habéis preguntado", "han preguntado"], indefinido: ["pregunté", "preguntaste", "preguntó", "preguntamos", "preguntasteis", "preguntaron"] },
-{ infinitive: "Recordar", translation: "To remember", presente: ["recuerdo", "recuerdas", "recuerda", "recordamos", "recordáis", "recuerdan"], imperfecto: ["recordaba", "recordabas", "recordaba", "recordábamos", "recordabais", "recordaban"], perfecto: ["he recordado", "has recordado", "ha recordado", "hemos recordado", "habéis recordado", "han recordado"], indefinido: ["recordé", "recordaste", "recordó", "recordamos", "recordasteis", "recordaron"] },
-{ infinitive: "Darse cuenta (de)", translation: "To realize", presente: ["me doy cuenta", "te das cuenta", "se da cuenta", "nos damos cuenta", "os dais cuenta", "se dan cuenta"], imperfecto: ["me daba cuenta", "te dabas cuenta", "se daba cuenta", "nos dábamos cuenta", "os dabais cuenta", "se daban cuenta"], perfecto: ["me he dado cuenta", "te has dado cuenta", "se ha dado cuenta", "nos hemos dado cuenta", "os habéis dado cuenta", "se han dado cuenta"], indefinido: ["me di cuenta", "te diste cuenta", "se dio cuenta", "nos dimos cuenta", "os disteis cuenta", "se dieron cuenta"] },
-        ];
+document.addEventListener('keydown', e => {
+  if (e.target.tagName === 'INPUT') return;
+  const k = e.key;
+  if (k === 'ArrowDown')  { e.preventDefault(); navigateVerb(1); }
+  if (k === 'ArrowUp')    { e.preventDefault(); navigateVerb(-1); }
+  if (k === 'ArrowRight') { e.preventDefault(); selectTense((S.tenseIdx + 1) % 11); }
+  if (k === 'ArrowLeft')  { e.preventDefault(); selectTense((S.tenseIdx + 10) % 11); }
+  if (k === 'p' || k === 'P') togglePanorama();
+  if (k === 't' || k === 'T') toggleTheme();
+});
 
-        // --- AUTH ---
-        if(localStorage.getItem('nexo_auth_token') === 'valid') {
-            document.getElementById('auth-overlay').style.display = 'none';
-        }
-
-        function checkAuth() {
-            const pass = document.getElementById('auth-pass').value;
-            if(pass === '07:10') {
-                document.getElementById('auth-overlay').style.display = 'none';
-                localStorage.setItem('nexo_auth_token', 'valid'); 
-            } else {
-                document.getElementById('auth-error').style.display = 'block';
-            }
-        }
-        document.getElementById('auth-pass').addEventListener('keypress', (e) => {
-            if(e.key === 'Enter') checkAuth();
-        });
-
-        // --- THEME ---
-        function toggleTheme() {
-            document.body.classList.toggle('dark-mode');
-            updateIcon();
-        }
-        function updateIcon() {
-            const icon = document.getElementById('theme-icon');
-            if(document.body.classList.contains('dark-mode')){
-                icon.innerHTML = '<circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>';
-            } else {
-                icon.innerHTML = '<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>';
-            }
-        }
-        updateIcon();
-
-        // --- NAVIGATION ---
-        function showSection(id) {
-            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
-            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-            document.getElementById(`section-${id}`).classList.add('active');
-            document.getElementById(`nav-${id}`).classList.add('active');
-            if(id === 'study') renderCards();
-        }
-
-        // --- STUDY SECTION LOGIC ---
-        let activeTenseFilter = null;
-
-        function toggleFilter(tense) {
-            if (activeTenseFilter === tense) {
-                activeTenseFilter = null;
-                document.getElementById(`filter-${tense}`).classList.remove('active');
-            } else {
-                activeTenseFilter = tense;
-                document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-                document.getElementById(`filter-${tense}`).classList.add('active');
-            }
-            renderCards();
-        }
-
-        function renderCards() {
-            const container = document.getElementById('cards-container');
-            const search = document.getElementById('search-bar').value.toLowerCase();
-            container.innerHTML = '';
-
-            const filtered = verbsData.filter(v => v.infinitive.toLowerCase().includes(search));
-
-            filtered.forEach((verb, index) => {
-                const uid = `card-${index}`;
-                // Fallback for missing imperfecto in case data is partial
-                if(!verb.imperfecto) verb.imperfecto = ["-", "-", "-", "-", "-", "-"];
-
-                const generateList = (tenseArr) => {
-                    if(!tenseArr) return '';
-                    return tenseArr.map((conj, i) => `
-                        <li>
-                            <span class="pronoun">${pronouns[i]}</span>
-                            <span style="font-weight:600">${conj}</span>
-                        </li>
-                    `).join('');
-                };
-
-                // Logic to set active tab based on filter
-                const defaultTense = activeTenseFilter ? activeTenseFilter : 'presente';
-                
-                // Tabs Status
-                const isPresActive = defaultTense === 'presente' ? 'active' : '';
-                const isImpActive = defaultTense === 'imperfecto' ? 'active' : ''; // New
-                const isPerfActive = defaultTense === 'perfecto' ? 'active' : '';
-                const isIndefActive = defaultTense === 'indefinido' ? 'active' : '';
-
-                // List Status
-                const showPres = defaultTense === 'presente' ? 'active' : '';
-                const showImp = defaultTense === 'imperfecto' ? 'active' : ''; // New
-                const showPerf = defaultTense === 'perfecto' ? 'active' : '';
-                const showIndef = defaultTense === 'indefinido' ? 'active' : '';
-
-                const html = `
-                    <div class="verb-card">
-                        <div class="card-header">
-                            <h3>${verb.infinitive}</h3>
-                            <span>${verb.translation}</span>
-                        </div>
-                        
-                        <div class="card-tabs">
-                            <button class="tab-btn ${isPresActive}" onclick="switchCardTab('${uid}', 'presente', this)">Presente</button>
-                            <button class="tab-btn ${isImpActive}" onclick="switchCardTab('${uid}', 'imperfecto', this)">Imperfecto</button>
-                            <button class="tab-btn ${isPerfActive}" onclick="switchCardTab('${uid}', 'perfecto', this)">Perfecto</button>
-                            <button class="tab-btn ${isIndefActive}" onclick="switchCardTab('${uid}', 'indefinido', this)">Indefinido</button>
-                        </div>
-
-                        <ul id="${uid}-presente" class="conjugation-list ${showPres}">${generateList(verb.presente)}</ul>
-                        <ul id="${uid}-imperfecto" class="conjugation-list ${showImp}">${generateList(verb.imperfecto)}</ul>
-                        <ul id="${uid}-perfecto" class="conjugation-list ${showPerf}">${generateList(verb.perfecto)}</ul>
-                        <ul id="${uid}-indefinido" class="conjugation-list ${showIndef}">${generateList(verb.indefinido)}</ul>
-                    </div>
-                `;
-                container.innerHTML += html;
-            });
-        }
-
-        function switchCardTab(uid, tense, btn) {
-            const card = btn.closest('.verb-card');
-            card.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-            card.querySelectorAll('.conjugation-list').forEach(l => l.classList.remove('active'));
-            btn.classList.add('active');
-            document.getElementById(`${uid}-${tense}`).classList.add('active');
-        }
-
-        // --- ADD VERB LOGIC ---
-        function openAddModal() {
-            const container = document.getElementById('conjugation-forms');
-            container.innerHTML = '';
-            // Added 'imperfecto' to the array
-            const tenses = ['presente', 'imperfecto', 'perfecto', 'indefinido'];
-            tenses.forEach(tense => {
-                let html = `<div style="font-weight:bold; color:var(--accent); margin:10px 0">${tense.toUpperCase()}</div><div class="form-grid-6">`;
-                pronouns.forEach(p => {
-                    html += `<input type="text" class="form-input new-verb-input" data-tense="${tense}" placeholder="${p}">`;
-                });
-                html += `</div>`;
-                container.innerHTML += html;
-            });
-            document.getElementById('add-verb-modal').style.display = 'flex';
-        }
-        function closeAddModal() { document.getElementById('add-verb-modal').style.display = 'none'; }
-        function saveNewVerb() {
-            const inf = document.getElementById('new-infinitive').value.trim();
-            const trans = document.getElementById('new-trans').value.trim();
-            if(!inf || !trans) return alert("Faltan datos");
-            
-            let newVerb = { infinitive: inf, translation: trans, presente: [], imperfecto: [], perfecto: [], indefinido: [] };
-            document.querySelectorAll('.new-verb-input').forEach(inp => {
-                newVerb[inp.getAttribute('data-tense')].push(inp.value.trim() || "---");
-            });
-            verbsData.push(newVerb);
-            showToast("Verbo añadido", true);
-            closeAddModal();
-            renderCards();
-        }
-
-        // --- GAME LOGIC ---
-        let gameState = {
-            tense: null,
-            score: 0,
-            currentVerb: null,
-            currentContext: "",
-            pronounQueue: [],
-            targetIndex: -1,
-            verbQueue: [] 
-        };
-
-        function startGame(tense) {
-            gameState.tense = tense;
-            gameState.score = 0;
-            document.getElementById('score').innerText = "0";
-            document.getElementById('game-mode-title').innerText = tense;
-            
-            refillVerbQueue();
-            updateGameCounter();
-
-            document.getElementById('tense-menu').style.display = 'none';
-            document.getElementById('game-viewport').style.display = 'flex';
-            
-            loadNewVerb();
-        }
-
-        function exitGame() {
-            document.getElementById('game-viewport').style.display = 'none';
-            document.getElementById('tense-menu').style.display = 'grid';
-        }
-
-        function refillVerbQueue() {
-            gameState.verbQueue = Array.from({length: verbsData.length}, (_, i) => i);
-            gameState.verbQueue.sort(() => Math.random() - 0.5);
-        }
-
-        function updateGameCounter() {
-            document.getElementById('verbs-remaining').innerText = gameState.verbQueue.length;
-        }
-
-        // NEW: SKIP FUNCTION
-        function skipVerb() {
-            showToast("Verbo saltado", false);
-            // Move to next without score update
-            setTimeout(loadNewVerb, 300);
-        }
-
-        function loadNewVerb() {
-            if (gameState.verbQueue.length === 0) {
-                refillVerbQueue();
-                showToast("¡Ronda completada! Reiniciando...", true);
-            }
-            
-            updateGameCounter();
-
-            const nextIndex = gameState.verbQueue.pop();
-            gameState.currentVerb = verbsData[nextIndex];
-            
-            const inf = gameState.currentVerb.infinitive;
-            gameState.currentContext = verbContexts[inf] || "ahora mismo.";
-            
-            // Shuffle Pronouns
-            gameState.pronounQueue = [0, 1, 2, 3, 4, 5].sort(() => Math.random() - 0.5);
-            
-            document.getElementById('prev-sentence').style.display = 'none';
-            const dots = document.getElementById('progress-dots');
-            dots.innerHTML = '';
-            for(let i=0; i<6; i++) dots.innerHTML += `<div class="dot" id="dot-${i}"></div>`;
-
-            nextPronoun();
-        }
-
-        function nextPronoun() {
-            if(gameState.pronounQueue.length === 0) {
-                showToast("¡Verbo completado!", true);
-                setTimeout(loadNewVerb, 1500);
-                return;
-            }
-
-            gameState.targetIndex = gameState.pronounQueue.pop();
-            
-            document.getElementById('curr-pronoun').innerText = pronouns[gameState.targetIndex];
-            document.getElementById('curr-infinitive').innerText = `(${gameState.currentVerb.infinitive})`;
-            document.getElementById('curr-context').innerText = gameState.currentContext;
-            
-            const input = document.getElementById('game-input');
-            input.value = '';
-            input.focus();
-
-            const step = 5 - gameState.pronounQueue.length;
-            document.querySelectorAll('.dot').forEach(d => d.classList.remove('active'));
-            document.getElementById(`dot-${step}`).classList.add('active');
-        }
-
-        function checkAnswer() {
-            const input = document.getElementById('game-input');
-            const val = input.value.trim().toLowerCase();
-            
-            // Access logic respects 'imperfecto' key
-            const correct = gameState.currentVerb[gameState.tense][gameState.targetIndex].toLowerCase();
-
-            if(val === correct) {
-                gameState.score += 10;
-                document.getElementById('score').innerText = gameState.score;
-                showToast("¡Correcto!", true);
-                
-                const pName = pronouns[gameState.targetIndex];
-                document.getElementById('prev-sentence').innerHTML = `Anterior: <b>${pName} ${input.value}</b> ${gameState.currentContext}`;
-                document.getElementById('prev-sentence').style.display = 'block';
-
-                const step = 5 - gameState.pronounQueue.length;
-                document.getElementById(`dot-${step}`).classList.remove('active');
-                document.getElementById(`dot-${step}`).classList.add('done');
-
-                nextPronoun();
-            } else {
-                showToast("Incorrecto", false);
-                input.style.borderColor = 'red';
-                setTimeout(() => input.style.borderColor = 'var(--border-color)', 500);
-            }
-        }
-
-        document.getElementById('game-input').addEventListener('keypress', (e) => {
-            if(e.key === 'Enter') checkAnswer();
-        });
-
-        function showToast(msg, isSuccess) {
-            const t = document.getElementById('toast');
-            t.innerText = msg;
-            t.className = isSuccess ? 'toast show' : 'toast show error';
-            setTimeout(() => t.className = 'toast', 2000);
-        }
-
-        // Init
-        renderCards();
-    </script>
+/* ════════════════════════════════════════════
+   BOOT
+════════════════════════════════════════════ */
+setAccent(TENSES[0].color);
+selectVerb(0);
+</script>
 </body>
 </html>
